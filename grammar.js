@@ -97,11 +97,16 @@ module.exports = grammar({
     ),
 
     integer_literal: _ => token(seq(
+      optional('-'),
       choice(
         /[0-9][0-9_]*/,
-        /0x[0-9a-fA-F_]+/,
+        /0[xX][0-9a-fA-F_]+/,
+        /[0-9]+[eE][0-9]+/,
       ),
-      optional(choice('UL','LL','U'),),
+      seq(
+        optional(choice('u', 'U')),
+        optional(choice('ll', 'l', 'L', 'LL')),
+        ),
     )),
 
     identifier: _ => /[_a-zA-Z][_a-zA-Z0-9]*/,
