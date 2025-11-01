@@ -13,13 +13,35 @@ module.exports = grammar({
 
   rules: {
     // TODO: all grammar rules
-    source_file: $ => seq(optional($._preamble), repeat($.action_block)),
+    source_file: $ => seq(optional($.preamble), repeat($.action_block)),
 
     line_comment: _ => token(seq('//', /.*/)),
     block_comment: _ => token(seq('/*', /[^*]*\*+([^/*][^*]*\*+)*/, '/')),
 
-    _preamble: $ => repeat1($.preamble_line),
-    preamble_line: _ => 'TODO PREAMBLE',
+    preamble: $ => repeat1($._preamble_item),
+    _preamble_item: $ => choice(
+      $.config_block
+      //TODO
+    ),
+
+    config_block: $ => seq(
+      'config',
+      '=',
+      '{',
+      optional($._config_body),
+      '}'
+    ),
+
+    _config_body: $ => seq(
+      seq($.config_assignment, repeat(seq(';', $.config_assignment))),
+      optional(';'),
+    ),
+
+    config_assignment: $ => seq(
+      alias($.identifier, $.config_variable),
+      '=',
+      alias(choice(/\d+/, $.identifier), $.config_value),
+    ),
 
     action_block: $ => seq($._probe, optional($.predicate_exp), $._action_body),
 
