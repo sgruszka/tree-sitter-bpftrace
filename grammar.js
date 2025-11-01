@@ -64,8 +64,11 @@ module.exports = grammar({
       '}'
     ),
 
-    action: $ => repeat1($.statemant),
-    statemant: $ => seq($._expression, ';'),
+    action: $ => seq(
+      seq($.statement, repeat(seq(';', $.statement))),
+      optional(';'),
+    ),
+    statement: $ => $._expression,
 
     _expression: $ => choice(
       $.call_expression,
