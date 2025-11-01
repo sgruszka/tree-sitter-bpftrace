@@ -88,11 +88,14 @@ module.exports = grammar({
     ),
 
 
-    args_item: $=> seq('args', '.', $.identifier),
+    args_item: $ => seq('args', '.', $.identifier),
 
-    string_literal: _ => seq(
+    string_literal: $ => seq(
       '"',
-      /[^"]+/,
+      repeat(choice(
+        alias(/[^"\\\n]+/, $.string_content),
+        alias(/\\[^\n]/, $.escape_sequence),
+      )),
       '"'
     ),
 
