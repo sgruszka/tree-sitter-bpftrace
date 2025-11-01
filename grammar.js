@@ -32,8 +32,8 @@ module.exports = grammar({
     ),
 
     probe_provider: _ => choice(
-      'begin',
-      'end',
+      'BEGIN',
+      'END',
       'bench',
       'self',
       'hardware', 'h',
