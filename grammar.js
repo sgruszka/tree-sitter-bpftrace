@@ -43,19 +43,22 @@ module.exports = grammar({
       alias(choice(/\d+/, $.identifier), $.config_value),
     ),
 
-    action_block: $ => seq($._probe, optional($.predicate), $._action_body),
+    action_block: $ => seq($._probes_list, optional($.predicate), $._action_body),
 
-    _probe: $ => seq($.probe, repeat(seq(',', $.probe))),
+    _probes_list: $ => seq($.probe, repeat(seq(',', $.probe))),
     predicate: $ => seq('/', $._expression, '/'),
 
-    probe: $ => seq(
-      $.probe_provider,
-      repeat($.probe_def),
-    ),
+    probe: $ => choice(
+      'BEGIN', // Two built-in probes with no arguments
+      'END',
+      seq(
+        field('provider', $.probe_provider),
+        optional(seq( ':', field('module', $.wildcard_identifier))),
+        ':',
+        field('event', $.wildcard_identifier),
+    )),
 
     probe_provider: _ => choice(
-      'BEGIN',
-      'END',
       'bench',
       'self',
       'hardware', 'h',
@@ -75,8 +78,6 @@ module.exports = grammar({
       'watchpoint', 'w',
       'asyncwatchpoint', 'aw',
     ),
-
-    probe_def: _ => seq(':', /[a-zA-Z_]+/),
 
     _action_body: $ => seq(
       '{',
@@ -136,5 +137,6 @@ module.exports = grammar({
     )),
 
     identifier: _ => /[_a-zA-Z][_a-zA-Z0-9]*/,
+    wildcard_identifier: _ => /[_a-zA-Z*][_a-zA-Z0-9*]*/,
   }
 });
