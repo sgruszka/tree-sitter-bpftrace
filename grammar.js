@@ -14,6 +14,11 @@ const PREC = {
   shift: 8,
   relational: 7,
   equal: 6,
+  bitwise_and: 5,
+  bitwise_xor: 4,
+  bitwise_or: 3,
+  logical_and: 3,
+  logical_or: 2,
 };
 
 module.exports = grammar({
@@ -137,6 +142,11 @@ module.exports = grammar({
         ['>',  PREC.relational],
         ['==', PREC.equal],
         ['!=', PREC.equal],
+        ['&',  PREC.bitwise_and],
+        ['^',  PREC.bitwise_xor],
+        ['|',  PREC.bitwise_or],
+        ['&&', PREC.logical_and],
+        ['||', PREC.logical_or],
       ];
 
       return choice( ...table.map(([operator, precedence]) =>
