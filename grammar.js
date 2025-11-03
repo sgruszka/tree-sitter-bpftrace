@@ -9,6 +9,9 @@
 
 const PREC = {
   call: 15,
+  multiplicative: 10,
+  additive: 9,
+  shift: 8,
   relational: 7,
   equal: 6,
 };
@@ -109,6 +112,13 @@ module.exports = grammar({
 
     binary_expression: $ => {
       const table = [
+        ['%',  PREC.multiplicative],
+        // ['/',  PREC.multiplicative],
+        ['*',  PREC.multiplicative],
+        ['+',  PREC.additive],
+        ['-',  PREC.additive],
+        ['<<', PREC.shift],
+        ['>>', PREC.shift],
         ['<=', PREC.relational],
         ['<',  PREC.relational],
         ['>=', PREC.relational],
