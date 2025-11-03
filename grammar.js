@@ -107,16 +107,25 @@ module.exports = grammar({
       // TODO
     ),
 
-    binary_expression: $ => choice(
-      prec.left(PREC.relational, seq($._expression, "<=", $._expression)),
-      prec.left(PREC.relational, seq($._expression, "<", $._expression)),
-      prec.left(PREC.relational, seq($._expression, ">=", $._expression)),
-      prec.left(PREC.relational, seq($._expression, ">", $._expression)),
+    binary_expression: $ => {
+      const table = [
+        ['<=', PREC.relational],
+        ['<',  PREC.relational],
+        ['>=', PREC.relational],
+        ['>',  PREC.relational],
+        ['==', PREC.equal],
+        ['!=', PREC.equal],
+      ];
 
-      prec.left(PREC.equal, seq($._expression, "==", $._expression)),
-      prec.left(PREC.equal, seq($._expression, "!=", $._expression)),
-      // TODO
-    ),
+      return choice( ...table.map(([operator, precedence]) =>
+          prec.left(precedence, seq(
+            field('left', $._expression),
+            operator,
+            field('right', $._expression),
+          ))
+        )
+      );
+    },
 
     call_expression: $ => prec(PREC.call,
       seq(
