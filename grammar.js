@@ -43,10 +43,10 @@ module.exports = grammar({
       alias(choice(/\d+/, $.identifier), $.config_value),
     ),
 
-    action_block: $ => seq($._probe, optional($.predicate_exp), $._action_body),
+    action_block: $ => seq($._probe, optional($.predicate), $._action_body),
 
     _probe: $ => seq($.probe, repeat(seq(',', $.probe))),
-    predicate_exp: $ => seq('/', $.predicate, '/'),
+    predicate: $ => seq('/', $._expression, '/'),
 
     probe: $ => seq(
       $.probe_provider,
@@ -77,8 +77,6 @@ module.exports = grammar({
     ),
 
     probe_def: _ => seq(':', /[a-zA-Z_]+/),
-
-    predicate: _ => 'TODO PREDICATE',
 
     _action_body: $ => seq(
       '{',
