@@ -20,6 +20,10 @@ module.exports = grammar({
   name: 'bpftrace',
   extras: $ => [/\s/, $.line_comment, $.block_comment],
 
+  conflicts: $ => [
+    [$._div_left_side, $._predicate_expression]
+  ],
+
   rules: {
     // TODO: all grammar rules
     source_file: $ => seq(optional($.preamble), repeat($.action_block)),
@@ -55,7 +59,8 @@ module.exports = grammar({
     action_block: $ => seq($._probes_list, optional($.predicate), $._action_body),
 
     _probes_list: $ => seq($.probe, repeat(seq(',', $.probe))),
-    predicate: $ => seq('/', $._expression, '/'),
+    predicate: $ => seq('/', $._predicate_expression),
+    _predicate_expression: $ => seq($._expression, '/'),
 
     probe: $ => choice(
       'BEGIN', // Two built-in probes with no arguments
@@ -102,6 +107,7 @@ module.exports = grammar({
 
     _expression: $ => choice(
       $.binary_expression,
+      $.div_expression,
       $.call_expression,
       $.string_literal,
       $.integer_literal,
@@ -109,6 +115,12 @@ module.exports = grammar({
       $.identifier,
       // TODO
     ),
+
+    div_expression: $ => prec.left(PREC.multiplicative, seq(
+      $._div_left_side,
+      field('right', $._expression),
+    )),
+    _div_left_side: $ => seq(field('left',$._expression), '/'),
 
     binary_expression: $ => {
       const table = [
