@@ -7,6 +7,12 @@
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
 
+const PREC = {
+  call: 15,
+  relational: 7,
+  equal: 6,
+};
+
 module.exports = grammar({
   name: 'bpftrace',
   extras: $ => [/\s/, $.line_comment, $.block_comment],
@@ -92,6 +98,7 @@ module.exports = grammar({
     statement: $ => $._expression,
 
     _expression: $ => choice(
+      $.binary_expression,
       $.call_expression,
       $.string_literal,
       $.integer_literal,
@@ -100,9 +107,22 @@ module.exports = grammar({
       // TODO
     ),
 
-    call_expression: $ => seq(
-      field('function', $.identifier),
-      field('arguments', $.arguments),
+    binary_expression: $ => choice(
+      prec.left(PREC.relational, seq($._expression, "<=", $._expression)),
+      prec.left(PREC.relational, seq($._expression, "<", $._expression)),
+      prec.left(PREC.relational, seq($._expression, ">=", $._expression)),
+      prec.left(PREC.relational, seq($._expression, ">", $._expression)),
+
+      prec.left(PREC.equal, seq($._expression, "==", $._expression)),
+      prec.left(PREC.equal, seq($._expression, "!=", $._expression)),
+      // TODO
+    ),
+
+    call_expression: $ => prec(PREC.call,
+      seq(
+        field('function', $.identifier),
+        field('arguments', $.arguments),
+      ),
     ),
 
     arguments: $ => seq(
