@@ -63,7 +63,7 @@ module.exports = grammar({
 
     action_block: $ => seq($._probes_list, optional($.predicate), $._action_body),
 
-    _probes_list: $ => seq($.probe, repeat(seq(',', $.probe))),
+    _probes_list: $ => sepBy1(',', $.probe),
     predicate: $ => seq('/', $._predicate_expression),
     _predicate_expression: $ => seq($._expression, '/'),
 
@@ -105,7 +105,7 @@ module.exports = grammar({
     ),
 
     action: $ => seq(
-      seq($.statement, repeat(seq(';', $.statement))),
+      sepBy1(';', $.statement),
       optional(';'),
     ),
     statement: $ => $._expression,
@@ -169,7 +169,7 @@ module.exports = grammar({
 
     arguments: $ => seq(
       '(',
-      seq($._expression, repeat(seq(',', $._expression))),
+      sepBy(',', $._expression),
       ')'
     ),
 
@@ -213,3 +213,11 @@ module.exports = grammar({
     wildcard_identifier: _ => /[_a-zA-Z*][_a-zA-Z0-9*]*/,
   }
 });
+
+function sepBy1(sep, rule) {
+  return seq(rule, repeat(seq(sep, rule)));
+}
+
+function sepBy(sep, rule) {
+  return optional(sepBy1(sep, rule));
+}
