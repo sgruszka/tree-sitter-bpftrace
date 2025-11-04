@@ -117,6 +117,7 @@ module.exports = grammar({
       $.string_literal,
       $.integer_literal,
       $.args_item,
+      $._variable,
       $.identifier,
       // TODO
     ),
@@ -172,7 +173,6 @@ module.exports = grammar({
       ')'
     ),
 
-
     args_item: $ => seq('args', '.', $.identifier),
 
     string_literal: $ => seq(
@@ -197,6 +197,18 @@ module.exports = grammar({
         ),
     )),
 
+    _variable: $ => choice(
+      $.scratch_variable,
+      $.map_variable,
+    ),
+
+    map_variable: $ => seq(
+      '@',
+      optional(/[_a-zA-Z][_a-zA-Z0-9]*/),
+      optional(seq('[', $._expression, ']')), // TODO
+    ),
+
+    scratch_variable: _ => /\$[_a-zA-Z][_a-zA-Z0-9]*/,
     identifier: _ => /[_a-zA-Z][_a-zA-Z0-9]*/,
     wildcard_identifier: _ => /[_a-zA-Z*][_a-zA-Z0-9*]*/,
   }
