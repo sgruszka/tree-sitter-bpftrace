@@ -1,0 +1,40 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "bpftrace",
+      "camelcase": "Bpftrace",
+      "title": "Bpftrace",
+      "scope": "source.bpftrace",
+      "file-types": [
+        "bt"
+      ],
+      "injection-regex": "^bpftrace$",
+      "class-name": "TreeSitterBpftrace"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "tree-sitter parser for bpftrace",
+    "authors": [
+      {
+        "name": "Stanislaw Gruszka",
+        "email": "stf_xl@wp.pl"
+      }
+    ],
+    "links": {
+      "repository": "https://github.com/sgruszka/tree-sitter-bpftrace",
+      "funding": "https://github.com/sgruszka/tree-sitter-bpftrace"
+    }
+  },
+  "bindings": {
+    "c": true,
+    "go": true,
+    "node": true,
+    "python": true,
+    "rust": true,
+    "swift": true,
+    "zig": false
+  }
+}
