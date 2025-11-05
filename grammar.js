@@ -19,6 +19,7 @@ const PREC = {
   bitwise_or: 3,
   logical_and: 3,
   logical_or: 2,
+  assignment: 1,
 };
 
 module.exports = grammar({
@@ -26,7 +27,7 @@ module.exports = grammar({
   extras: $ => [/\s/, $.line_comment, $.block_comment],
 
   conflicts: $ => [
-    [$._div_left_side, $._predicate_expression]
+    [$._div_left_side, $._predicate_expression],
   ],
 
   rules: {
@@ -108,7 +109,29 @@ module.exports = grammar({
       sepBy1(';', $.statement),
       optional(';'),
     ),
-    statement: $ => $._expression,
+
+    statement: $ => choice(
+      $._expression,
+      $.assignment,
+    ),
+
+    assignment: $ => prec(PREC.assignment, seq(
+      field('left', $._variable),
+      choice(
+        '=',
+        '<<=',
+        '>>=',
+        '+=',
+        '-=',
+        '*=',
+        '/=',
+        '%=',
+        '&=',
+        '|=',
+        '^=',
+      ),
+      field('right', $._expression),
+    )),
 
     _expression: $ => choice(
       $.binary_expression,
