@@ -9,6 +9,7 @@
 
 const PREC = {
   call: 15,
+  cast: 14,
   multiplicative: 10,
   additive: 9,
   shift: 8,
@@ -137,6 +138,7 @@ module.exports = grammar({
       $.binary_expression,
       $.div_expression,
       $.call_expression,
+      $.cast_expression,
       $.string_literal,
       $.integer_literal,
       $.args_item,
@@ -196,6 +198,26 @@ module.exports = grammar({
       ')'
     ),
 
+    cast_expression: $ => prec(PREC.cast,
+      seq(
+        '(',
+        field('type', $.integer_type),
+        ')',
+        field('value', $._expression),
+      ),
+    ),
+
+    integer_type: _ => choice(
+      "bool",
+      "int8",
+      "int16",
+      "int32",
+      "int64",
+      "uint8",
+      "uint16",
+      "uint32",
+      "uint64",
+    ),
     args_item: $ => seq('args', '.', $.identifier),
 
     string_literal: $ => seq(
