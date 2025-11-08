@@ -62,7 +62,7 @@ module.exports = grammar({
       alias(choice(/\d+/, $.identifier), $.config_value),
     ),
 
-    action_block: $ => seq($._probes_list, optional($.predicate), $._action_body),
+    action_block: $ => seq($._probes_list, optional($.predicate), $.action),
 
     _probes_list: $ => sepBy1(',', $.probe),
     predicate: $ => seq('/', $._predicate_expression),
@@ -99,13 +99,13 @@ module.exports = grammar({
       'asyncwatchpoint', 'aw',
     ),
 
-    _action_body: $ => seq(
+    action: $ => seq(
       '{',
-      optional($.action),
+      optional($._action_body),
       '}'
     ),
 
-    action: $ => seq(
+    _action_body: $ => seq(
       sepBy1(';', $.statement),
       optional(';'),
     ),
