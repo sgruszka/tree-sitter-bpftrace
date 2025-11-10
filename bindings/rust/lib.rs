@@ -48,4 +48,34 @@ mod tests {
             .set_language(&super::LANGUAGE.into())
             .expect("Error loading Bpftrace parser");
     }
+
+    #[test]
+    fn test_simple_action_block() {
+        let mut parser = tree_sitter::Parser::new();
+        parser
+            .set_language(&super::LANGUAGE.into())
+            .expect("Error loading Bpftrace parser");
+
+        let source_code = "kprobe:tcp_reset {}";
+
+        let tree = parser.parse(source_code, None).unwrap();
+        let root_node = tree.root_node();
+
+        assert_eq!(root_node.kind(), "source_file");
+        assert_eq!(root_node.start_position().column, 0);
+
+        let action_block = root_node.child(0).unwrap();
+        assert_eq!(action_block.kind(), "action_block");
+
+        let probes = action_block.child(0).unwrap();
+        let action = action_block.child(1).unwrap();
+
+        assert_eq!(probes.kind(), "probes");
+        assert_eq!(action.kind(), "action" );
+
+        let probe = probes.child(0).unwrap();
+        assert_eq!(probe.kind(), "probe");
+        assert_eq!(probe.start_position().row, 0);
+        assert_eq!(probe.start_position().column, 0);
+    }
 }
