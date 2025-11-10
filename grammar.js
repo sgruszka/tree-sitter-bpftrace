@@ -63,9 +63,9 @@ module.exports = grammar({
       alias(choice(/\d+/, $.identifier), $.config_value),
     ),
 
-    action_block: $ => seq($._probes_list, optional($.predicate), $.action),
+    action_block: $ => seq($.probes, optional($.predicate), $.action),
 
-    _probes_list: $ => sepBy1(',', $.probe),
+    probes: $ => sepBy1(',', $.probe),
     predicate: $ => seq('/', $._predicate_expression),
     _predicate_expression: $ => seq($._expression, '/'),
 
