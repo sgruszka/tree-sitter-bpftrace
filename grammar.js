@@ -40,7 +40,9 @@ module.exports = grammar({
 
     preamble: $ => repeat1($._preamble_item),
     _preamble_item: $ => choice(
-      $.config_block
+      $.config_block,
+      $.preproc_include,
+      $.preproc_define,
       //TODO
     ),
 
@@ -62,6 +64,32 @@ module.exports = grammar({
       '=',
       alias(choice(/\d+/, $.identifier), $.config_value),
     ),
+
+    preproc_include: $ => seq(
+      '#',
+      'include',
+      field('path', choice(
+        $.string_literal,
+        $.header_literal,
+        token.immediate('\n'),
+      )),
+    ),
+
+    header_literal: $ => token(seq(
+      '<',
+      repeat(/[^>\n]*/),
+      '>',
+    )),
+
+    preproc_define: $ => seq(
+      '#',
+      'define',
+      field('name', $.identifier),
+      field('value', $.preproc_arg),
+      token.immediate('\n'),
+    ),
+
+    preproc_arg: _ => token(/\S[^\n]*/),
 
     action_block: $ => seq($.probes, optional($.predicate), $.action),
 
