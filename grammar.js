@@ -43,6 +43,7 @@ module.exports = grammar({
       $.config_block,
       $.preproc_include,
       $.preproc_define,
+      $.struct_definition,
       //TODO
     ),
 
@@ -90,6 +91,56 @@ module.exports = grammar({
     ),
 
     preproc_arg: _ => token(/\S[^\n]*/),
+
+    struct_definition: $ => seq(
+      'struct',
+      field('name', $.identifier),
+      '{',
+      field('body', optional($.struct_fields)),
+      '}',
+      ';',
+    ),
+
+    struct_fields: $ => repeat1($.field_declaration),
+
+    field_declaration: $ => seq(
+      $.c_type_specifier,
+      $.identifier,
+      ';'
+    ),
+
+    c_type_specifier: $ => seq(
+      $.c_primitive_type,
+      $.c_linux_type,
+      $.c_struct_specifier,
+      //TOOD
+    ),
+
+    c_primitive_type: $ => token(choice(
+      'bool',
+      'char',
+      'int',
+      'void',
+      'size_t',
+      'ssize_t',
+      //TODO
+      ...[8, 16, 32, 64].map(n => `int${n}_t`),
+      ...[8, 16, 32, 64].map(n => `uint${n}_t`),
+      ...[8, 16, 32, 64].map(n => `char${n}_t`),
+    )),
+
+    c_linux_type: $ => token(choice(
+      ...[8, 16, 32, 64].map(n => `u${n}`),
+      ...[8, 16, 32, 64].map(n => `s${n}`),
+      ...[8, 16, 32, 64].map(n => `__be${n}`),
+      ...[8, 16, 32, 64].map(n => `__le${n}`),
+      //TODO
+    )),
+
+    c_struct_specifier: $ => seq(
+      'struct',
+      $.identifier,
+    ),
 
     action_block: $ => seq($.probes, optional($.predicate), $.action),
 
