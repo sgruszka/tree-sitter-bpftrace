@@ -86,7 +86,7 @@ module.exports = grammar({
       '#',
       'define',
       field('name', $.identifier),
-      field('value', $.preproc_arg),
+      field('value', optional($.preproc_arg)),
       token.immediate('\n'),
     ),
 
