@@ -104,12 +104,12 @@ module.exports = grammar({
     struct_fields: $ => repeat1($.field_declaration),
 
     field_declaration: $ => seq(
-      $.c_type_specifier,
+      $._c_type_specifier,
       $.identifier,
       ';'
     ),
 
-    c_type_specifier: $ => seq(
+    _c_type_specifier: $ => choice(
       $.c_primitive_type,
       $.c_linux_type,
       $.c_struct_specifier,
