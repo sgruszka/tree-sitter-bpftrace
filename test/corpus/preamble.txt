@@ -1,0 +1,58 @@
+============================================
+Config parameters assigment
+============================================
+
+config = {
+  stack_mode = perf;
+  max_map_kays=2
+}
+
+---
+
+(source_file
+  (preamble
+    (config_block
+      (config_assignment
+        name: (identifier)
+        value: (identifier))
+      (config_assignment
+        name: (identifier)
+        value: (integer_literal)))))
+
+============================================
+Simple definitions
+============================================
+
+#define ENABLE_FEAT
+#define ADD(a, b) (a + b)
+#define PAGE_SIZE 4096
+
+---
+
+(source_file
+  (preamble
+    (preproc_define
+      name: (identifier))
+    (preproc_define
+      name: (identifier)
+      value: (preproc_arg))
+    (preproc_define
+      name: (identifier)
+      value: (preproc_arg))))
+
+============================================
+Simple includes
+============================================
+
+ # include "net/sock.h"
+ #include <linux/socket.h>
+
+---
+
+(source_file
+  (preamble
+    (preproc_include
+      path: (string_literal
+        (string_content)))
+    (preproc_include
+      path: (header_literal))))
