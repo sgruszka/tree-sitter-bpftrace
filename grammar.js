@@ -280,10 +280,30 @@ module.exports = grammar({
     cast_expression: $ => prec(PREC.cast,
       seq(
         '(',
-        field('type', $.integer_type),
+        field('type', $.type_specifier),
         ')',
         field('value', $._expression),
       ),
+    ),
+
+    type_specifier: $ => choice(
+      $.integer_type,
+      $.array_type,
+      $.pointer_type,
+    ),
+
+    array_type: $ => seq(
+      $.integer_type,
+      repeat1(seq( '[', optional(/\d+/), ']',)),
+    ),
+
+    pointer_type: $ => seq(
+      choice(
+        seq('struct', $.identifier),
+        $.integer_type,
+        $.array_type,
+      ),
+      repeat1('*'),
     ),
 
     integer_type: _ => choice(
