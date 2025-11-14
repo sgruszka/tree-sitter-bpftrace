@@ -61,9 +61,9 @@ module.exports = grammar({
     ),
 
     config_assignment: $ => seq(
-      alias($.identifier, $.config_variable),
+      field('name',  $.identifier),
       '=',
-      alias(choice(/\d+/, $.identifier), $.config_value),
+      field('value', choice($.integer_literal, $.identifier)),
     ),
 
     preproc_include: $ => seq(
