@@ -169,6 +169,8 @@ module.exports = grammar({
       'fexit', 'fr',
       'kprobe', 'k',
       'kretprobe', 'kr',
+      'kfunc', // Deprecated by fentry
+      'kretfunc', // Deprecated by fexit
       'profile', 'p',
       'rawtracepoint', 'rt',
       'software',	's',
