@@ -8,6 +8,7 @@
 // @ts-check
 
 const PREC = {
+  field: 16,
   call: 15,
   cast: 14,
   multiplicative: 10,
@@ -218,6 +219,7 @@ module.exports = grammar({
       $.div_expression,
       $.call_expression,
       $.cast_expression,
+      $.field_expression,
       $.string_literal,
       $.integer_literal,
       $.args_item,
@@ -318,7 +320,17 @@ module.exports = grammar({
       'uint64',
     ),
 
-    args_item: $ => seq('args', '.', $.identifier),
+    field_expression: $ => prec.left(PREC.field, seq(
+      field('argument', choice(
+        $.scratch_variable,
+        $.identifier,
+        $.field_expression,
+      )),
+      choice('.', '->'),
+      field('field', $.identifier),
+    )),
+
+    args_item: $ => seq('args', '.', choice($.identifier, $.field_expression)),
 
     string_literal: $ => seq(
       '"',
