@@ -294,7 +294,7 @@ module.exports = grammar({
 
     array_type: $ => seq(
       $.integer_type,
-      repeat1(seq( '[', optional(/\d+/), ']',)),
+      repeat1(seq( '[', optional($.integer_literal), ']',)),
     ),
 
     pointer_type: $ => seq(
