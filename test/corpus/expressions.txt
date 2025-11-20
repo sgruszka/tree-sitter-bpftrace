@@ -1,0 +1,102 @@
+============================================
+Division
+============================================
+
+kprobe:do_nanosleep / pid / 10 == 0 / { $x = 4 / 2; }
+
+---
+
+(source_file
+  (action_block
+    (probes
+      (probe
+        provider: (probe_provider)
+        event: (wildcard_identifier)))
+    (predicate
+      (binary_expression
+        left: (binary_expression
+          left: (identifier)
+          right: (integer_literal))
+        right: (integer_literal)))
+    (action
+      (statement
+        (assignment
+          left: (scratch_variable)
+          right: (binary_expression
+            left: (integer_literal)
+            right: (integer_literal)))))))
+
+============================================
+Assignment
+============================================
+
+software:dummy { $i = 10 }
+
+---
+
+(source_file
+  (action_block
+    (probes
+      (probe
+        provider: (probe_provider)
+        event: (wildcard_identifier)))
+    (action
+      (statement
+        (assignment
+          left: (scratch_variable)
+          right: (integer_literal))))))
+
+============================================
+Modulo division
+============================================
+
+software:dummy { 10 % 2 }
+
+---
+
+(source_file
+  (action_block
+    (probes
+      (probe
+        provider: (probe_provider)
+        event: (wildcard_identifier)))
+    (action
+      (statement
+        (binary_expression
+          left: (integer_literal)
+          right: (integer_literal))))))
+
+============================================
+Relational less than
+============================================
+kprobe:vfs_read /arg2 < 16/ {}
+---
+(source_file
+  (action_block
+    (probes
+      (probe
+        provider: (probe_provider)
+        event: (wildcard_identifier)))
+    (predicate
+      (binary_expression
+        left: (identifier)
+        right: (integer_literal)))
+    (action)))
+
+============================================
+Relational equal 
+============================================
+kprobe:vfs_read /comm == "bash"/ {}
+---
+(source_file
+  (action_block
+    (probes
+      (probe
+        provider: (probe_provider)
+        event: (wildcard_identifier)))
+    (predicate
+      (binary_expression
+        left: (identifier)
+        right: (string_literal
+          (string_content))))
+    (action)))
