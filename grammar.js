@@ -219,7 +219,7 @@ module.exports = grammar({
 
     _expression: $ => choice(
       $.binary_expression,
-      $.div_expression,
+      alias($._div_expression, $.binary_expression),
       $.call_expression,
       $.cast_expression,
       $.field_expression,
@@ -232,7 +232,7 @@ module.exports = grammar({
       // TODO
     ),
 
-    div_expression: $ => prec.left(PREC.multiplicative, seq(
+    _div_expression: $ => prec.left(PREC.multiplicative, seq(
       $._div_left_side,
       field('right', $._expression),
     )),
