@@ -201,7 +201,7 @@ module.exports = grammar({
 
     assignment: $ => prec(PREC.assignment, seq(
       field('left', $._variable),
-      choice(
+      field('operator', choice(
         '=',
         '<<=',
         '>>=',
@@ -213,7 +213,7 @@ module.exports = grammar({
         '&=',
         '|=',
         '^=',
-      ),
+      )),
       field('right', $._expression),
     )),
 
@@ -236,7 +236,7 @@ module.exports = grammar({
       $._div_left_side,
       field('right', $._expression),
     )),
-    _div_left_side: $ => seq(field('left',$._expression), '/'),
+    _div_left_side: $ => seq(field('left',$._expression), field('operator', '/')),
 
     binary_expression: $ => {
       const table = [
@@ -263,7 +263,7 @@ module.exports = grammar({
       return choice( ...table.map(([operator, precedence]) =>
           prec.left(precedence, seq(
             field('left', $._expression),
-            operator,
+            field('operator', operator),
             field('right', $._expression),
           ))
         )
