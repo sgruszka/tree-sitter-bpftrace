@@ -46,7 +46,7 @@ module.exports = grammar({
       $.config_block,
       $.preproc_include,
       $.preproc_define,
-      $.c_struct,
+      seq($.c_struct, optional(';')),
       //TODO
     ),
 
