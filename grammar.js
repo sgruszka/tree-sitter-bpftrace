@@ -30,7 +30,7 @@ const PREC = {
 module.exports = grammar({
   name: 'bpftrace',
   extras: $ => [/\s/, $.line_comment, $.block_comment],
-  externals: $ => [$.c_struct],
+  externals: $ => [$.c_struct, $.error_sentiel],
 
   conflicts: $ => [
     [$._div_left_side, $._predicate_expression],

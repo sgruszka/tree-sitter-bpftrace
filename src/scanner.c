@@ -5,6 +5,7 @@
 
 enum TokenType {
     C_STRUCT,
+    ERROR_SENTIEL,
 };
 
 enum ScannerState {
@@ -181,6 +182,10 @@ static bool scan_struct(Scanner *scanner, TSLexer *lexer)
 bool tree_sitter_bpftrace_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols)
 {
     Scanner *scanner = (Scanner *)payload;
+
+    if (valid_symbols[ERROR_SENTIEL]) {
+        return false;
+    }
 
     if (valid_symbols[C_STRUCT] && scan_struct(scanner, lexer)) {
         lexer->result_symbol = C_STRUCT;
