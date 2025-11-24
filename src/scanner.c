@@ -66,7 +66,7 @@ static bool skip_spaces(TSLexer *lexer)
 static bool scan_struct_start(Scanner *scanner, TSLexer *lexer)
 {
     char str[] = "struct";
-    int i;
+    unsigned int i;
 
     if (!skip_spaces(lexer))
         return false;
