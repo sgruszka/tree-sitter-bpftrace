@@ -8,7 +8,8 @@ enum TokenType {
 };
 
 enum ScannerState {
-    STRUCT_BODY = 0,
+    STRUCT_NAME = 0,
+    STRUCT_BODY,
     COMMENT_BEGIN,
     LINE_COMMENT,
     BLOCK_COMMENT,
@@ -81,34 +82,50 @@ static bool scan_struct_start(Scanner *scanner, TSLexer *lexer)
         lexer->advance(lexer, false);
     }
 
-    if (lexer->eof(lexer))
-        return false;
-    if (!iswspace(lexer->lookahead))
-        return false;
-    lexer->advance(lexer, false);
-
-    /*
-     * We could have gcc attribute with different non alphanumeric characters,
-     * so just detect '{' as beginning of struct body
-     *
-     * TODO: we can have comments with braceces between struct and actual {
-     */
-    for (; !lexer->eof(lexer); lexer->advance(lexer, false)) {
-        if (lexer->lookahead == '{') {
-            lexer->mark_end(lexer);
-            scanner->state = STRUCT_BODY;
-            scanner->braces_count = 1;
-            return true;
-        }
+    /* Spaces or comment between struct keyword and name/attributes */
+    if (iswspace(lexer->lookahead)) {
+        scanner->state = STRUCT_NAME;
+    } else if (lexer->lookahead == '/') {
+        lexer->advance(lexer, false);
+        if (lexer->lookahead == '/')
+            scanner->state = LINE_COMMENT;
+        else if (lexer->lookahead == '*')
+            scanner->state = BLOCK_COMMENT;
+        else
+            return false;
+    } else {
+         return false;
     }
 
-    return false;
+    lexer->advance(lexer, false);
+    lexer->mark_end(lexer);
+    return true;
 }
 
 static bool scan_struct_end(Scanner *scanner, TSLexer *lexer)
 {
+    enum ScannerState main_state = STRUCT_NAME;
+
     for ( ; !lexer->eof(lexer); lexer->advance(lexer, false)) {
+        /*
+         * We could have gcc attribute with different non alphanumeric characters,
+         * so just detect '{' as beginning of struct body, skip comments.
+         */
         switch (scanner->state) {
+        case STRUCT_NAME:
+            if (lexer->lookahead == '{') {
+                scanner->braces_count = 1;
+                main_state = STRUCT_BODY;
+                scanner->state = STRUCT_BODY;
+            }
+
+            /* Exit on fliped brace like for example 'struct MyStruct }' */
+            if (lexer->lookahead == '}')
+                return false;
+
+            if (lexer->lookahead == '/')
+                scanner->state = COMMENT_BEGIN;
+        break;
         case STRUCT_BODY:
             if (lexer->lookahead == '}') {
                 scanner->braces_count--;
@@ -131,11 +148,11 @@ static bool scan_struct_end(Scanner *scanner, TSLexer *lexer)
             else if (lexer->lookahead == '*')
                 scanner->state = BLOCK_COMMENT;
             else
-                scanner->state = STRUCT_BODY;
+                scanner->state = main_state;
         break;
         case LINE_COMMENT:
             if (lexer->lookahead == '\n')
-                scanner->state = STRUCT_BODY;
+                scanner->state = main_state;
         break;
         case BLOCK_COMMENT:
             if (lexer->lookahead == '*')
@@ -143,7 +160,7 @@ static bool scan_struct_end(Scanner *scanner, TSLexer *lexer)
         break;
         case BLOCK_COMMENT_END:
             if (lexer->lookahead == '/')
-                scanner->state = STRUCT_BODY;
+                scanner->state = main_state;
             else
                 scanner->state = BLOCK_COMMENT;
         break;
