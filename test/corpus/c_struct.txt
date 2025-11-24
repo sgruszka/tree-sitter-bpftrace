@@ -1,0 +1,50 @@
+============================================
+Simple structure
+============================================
+struct MyStruct {
+  int x;
+  int y;
+}
+---
+(source_file
+  (preamble
+    (c_struct)))
+
+============================================
+Nested structure
+============================================
+struct sock_common {
+	union {
+		__addrpair	skc_addrpair;
+		struct {
+			__be32	skc_daddr;
+			__be32	skc_rcv_saddr;
+		};
+	};
+}
+---
+(source_file
+  (preamble
+    (c_struct)))
+
+============================================
+Structure with comments before name
+============================================
+struct/* { */Name { }
+---
+(source_file
+  (preamble
+    (c_struct)))
+
+============================================
+Structure with comments inside
+============================================
+struct Name  {
+  int x; // }
+  int y; /* } */
+}
+---
+(source_file
+  (preamble
+    (c_struct)))
+
