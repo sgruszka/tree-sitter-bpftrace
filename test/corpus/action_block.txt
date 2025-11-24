@@ -32,9 +32,10 @@ tracepoint:syscalls:sys_enter_openat {
             (identifier)
             (call_expression
               function: (identifier)
-              arguments: (arguments
-                (args_item
-                  (identifier))))))))))
+                arguments: (arguments
+                  (field_expression
+                    argument: (args_keyword)
+                    field: (identifier))))))))))
 
 ============================================
 Probe with wildcard

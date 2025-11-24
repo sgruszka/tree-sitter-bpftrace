@@ -177,7 +177,6 @@ module.exports = grammar({
       $.subscript_expression,
       $.string_literal,
       $.integer_literal,
-      $.args_item,
       $._variable,
       $.identifier,
       // TODO
@@ -279,13 +278,14 @@ module.exports = grammar({
       field('argument', choice(
         $.scratch_variable,
         $.identifier,
+        $.args_keyword,
         $.field_expression,
       )),
       choice('.', '->'),
       field('field', $.identifier),
     )),
 
-    args_item: $ => seq('args', '.', choice($.identifier, $.field_expression)),
+    args_keyword: _ => 'args',
 
     subscript_expression: $ => prec(PREC.subscript, seq(
       field('argument', choice(
