@@ -283,7 +283,10 @@ module.exports = grammar({
         $.field_expression,
       )),
       choice('.', '->'),
-      field('field', $.identifier),
+      field('field', choice (
+        $.identifier,
+        $.integer_literal,
+      )),
     )),
 
     args_keyword: _ => 'args',
