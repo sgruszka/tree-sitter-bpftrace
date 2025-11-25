@@ -1,0 +1,62 @@
+============================================
+String literals
+============================================
+BEGIN { "1"; "\n"; "\""; "dot't be stupid";  }
+---
+(source_file
+  (action_block
+    (probes
+      (probe))
+    (action
+      (statement
+        (string_literal
+          (string_content)))
+      (statement
+        (string_literal
+          (escape_sequence)))
+      (statement
+        (string_literal
+          (escape_sequence)))
+      (statement
+        (string_literal
+          (string_content))))))
+
+============================================
+Simple numeric literals
+============================================
+BEGIN { 1; 0777; 0xffff0000; 1e3; }
+---
+(source_file
+  (action_block
+    (probes
+      (probe))
+    (action
+      (statement
+        (integer_literal))
+      (statement
+        (integer_literal))
+      (statement
+        (integer_literal))
+      (statement
+        (integer_literal)))))
+
+============================================
+Numeric literals with size specifiers
+============================================
+BEGIN { 1ULL; 0l; 10L; 2ul; 1e4ll }
+---
+(source_file
+  (action_block
+    (probes
+      (probe))
+    (action
+      (statement
+        (integer_literal))
+      (statement
+        (integer_literal))
+      (statement
+        (integer_literal))
+      (statement
+        (integer_literal))
+      (statement
+        (integer_literal)))))
