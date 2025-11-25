@@ -175,6 +175,7 @@ module.exports = grammar({
       $.cast_expression,
       $.field_expression,
       $.subscript_expression,
+      $.tuple_expression,
       $.string_literal,
       $.integer_literal,
       $._variable,
@@ -297,6 +298,12 @@ module.exports = grammar({
       field('index', $.integer_literal),
       ']'
     )),
+
+    tuple_expression: $ => seq(
+      '(',
+      sepBy1(',', $._expression),
+      ')',
+    ),
 
     string_literal: $ => seq(
       '"',
