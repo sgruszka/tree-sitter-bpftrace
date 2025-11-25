@@ -338,7 +338,7 @@ module.exports = grammar({
     map_variable: $ => seq(
       '@',
       optional(/[_a-zA-Z][_a-zA-Z0-9]*/),
-      optional(seq('[', sepBy1(',', $._expression), ']')), // TODO tuples
+      optional(seq('[', sepBy(',', $._expression), ']')),
     ),
 
     scratch_variable: _ => /\$[_a-zA-Z][_a-zA-Z0-9]*/,
