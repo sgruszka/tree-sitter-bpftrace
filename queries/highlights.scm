@@ -22,18 +22,19 @@
 (call_expression
   function: (identifier) @function.call)
 
-(preproc_include) @keyword.import
-(preproc_define) @keyword.directive.define
-
 ; Types
 (type_specifier) @type
 
 ; Keywords
+(preproc_include) @keyword.import
+(preproc_define) @keyword.directive.define
+
+(args_keyword) @keyword
+
 [
   "config"
   "BEGIN"
   "END"
-  "args"
 ] @keyword
 
 [
