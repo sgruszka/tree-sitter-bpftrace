@@ -169,3 +169,27 @@ kprobe:tcp_reset { $sk = (struct sock *) arg0; }
               (pointer_type
                 (identifier)))
             value: (identifier)))))))
+
+============================================
+Field expression
+============================================
+kfunc:vmlinux:timer_show { args.dev->kobj.sd->id }
+---
+(source_file
+  (action_block
+    (probes
+      (probe
+        provider: (probe_provider)
+        module: (wildcard_identifier)
+        event: (wildcard_identifier)))
+    (action
+      (statement
+        (field_expression
+          argument: (field_expression
+            argument: (field_expression
+              argument: (field_expression
+                argument: (args_keyword)
+                field: (identifier))
+              field: (identifier))
+            field: (identifier))
+          field: (identifier))))))
