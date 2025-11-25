@@ -148,3 +148,24 @@ software:dummy { $a = (1,"hello"); $b = $a.1; }
           right: (field_expression
             argument: (scratch_variable)
             field: (integer_literal)))))))
+
+============================================
+Cast expression
+============================================
+kprobe:tcp_reset { $sk = (struct sock *) arg0; }
+---
+(source_file
+  (action_block
+    (probes
+      (probe
+        provider: (probe_provider)
+        event: (wildcard_identifier)))
+    (action
+      (statement
+        (assignment
+          left: (scratch_variable)
+          right: (cast_expression
+            type: (type_specifier
+              (pointer_type
+                (identifier)))
+            value: (identifier)))))))
