@@ -100,3 +100,51 @@ kprobe:vfs_read /comm == "bash"/ {}
         right: (string_literal
           (string_content))))
     (action)))
+
+============================================
+Tuple declaration
+============================================
+kprobe:vfs_read { $a = (1,2,3,"hello") }
+---
+(source_file
+  (action_block
+    (probes
+      (probe
+        provider: (probe_provider)
+        event: (wildcard_identifier)))
+    (action
+      (statement
+        (assignment
+          left: (scratch_variable)
+          right: (tuple_expression
+            (integer_literal)
+            (integer_literal)
+            (integer_literal)
+            (string_literal
+              (string_content))))))))
+
+============================================
+Tuple indexing
+============================================
+software:dummy { $a = (1,"hello"); $b = $a.1; }
+---
+(source_file
+  (action_block
+    (probes
+      (probe
+        provider: (probe_provider)
+        event: (wildcard_identifier)))
+    (action
+      (statement
+        (assignment
+          left: (scratch_variable)
+          right: (tuple_expression
+            (integer_literal)
+            (string_literal
+              (string_content)))))
+      (statement
+        (assignment
+          left: (scratch_variable)
+          right: (field_expression
+            argument: (scratch_variable)
+            field: (integer_literal)))))))
