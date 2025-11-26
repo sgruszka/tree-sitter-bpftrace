@@ -160,7 +160,7 @@ module.exports = grammar({
       $.if_statement,
     ),
 
-    if_statement: $=> seq(
+    if_statement: $ => seq(
       'if',
       '(',
       $._expression,
