@@ -247,6 +247,7 @@ module.exports = grammar({
       $.field_expression,
       $.subscript_expression,
       $.tuple_expression,
+      $.parenthesized_expression,
       $.string_literal,
       $.integer_literal,
       $._variable,
@@ -375,7 +376,14 @@ module.exports = grammar({
 
     tuple_expression: $ => seq(
       '(',
+      seq($._expression, ','),
       sepBy1(',', $._expression),
+      ')',
+    ),
+
+    parenthesized_expression: $ => seq(
+      '(',
+      $._expression,
       ')',
     ),
 
