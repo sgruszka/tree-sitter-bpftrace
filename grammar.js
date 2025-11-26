@@ -360,8 +360,10 @@ module.exports = grammar({
     ),
 
     map_variable: $ => seq(
-      '@',
-      optional(/[_a-zA-Z][_a-zA-Z0-9]*/),
+      token(seq(
+        '@',
+        optional(/[_a-zA-Z][_a-zA-Z0-9]*/),
+      )),
       optional(seq('[', sepBy(',', $._expression), ']')),
     ),
 
