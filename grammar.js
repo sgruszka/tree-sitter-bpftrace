@@ -174,9 +174,9 @@ module.exports = grammar({
     while_statement: $ => seq(
       'while',
       '(',
-      $._expression,
+      field('condition', $._expression),
       ')',
-      $.block,
+      field('body',$.block),
     ),
 
     unroll_statement: $ => seq(
@@ -184,7 +184,7 @@ module.exports = grammar({
       '(',
       $.integer_literal,
       ')',
-      $.block,
+      field('body', $.block),
     ),
 
     for_statement: $ => seq(
@@ -194,7 +194,7 @@ module.exports = grammar({
       ':',
       choice($.map_variable, $.range),
       ')',
-      $.block,
+      field('body',$.block),
     ),
 
     range: $ => seq(
