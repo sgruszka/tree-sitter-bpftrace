@@ -325,10 +325,15 @@ module.exports = grammar({
         /0[xX][0-9a-fA-F_]+/,
         /[0-9]+[eE][0-9]+/,
       ),
-      seq(
-        optional(choice('u', 'U')),
-        optional(choice('ll', 'l', 'L', 'LL')),
+      choice(
+        seq(
+          optional(choice('u', 'U')),
+          optional(choice('ll', 'l', 'L', 'LL')),
         ),
+        seq(
+          optional(choice('ns', 'us', 'ms', 's', 'm', 'h', 'd')),
+        ),
+      ),
     )),
 
     _variable: $ => choice(
