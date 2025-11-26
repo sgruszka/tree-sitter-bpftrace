@@ -317,6 +317,7 @@ module.exports = grammar({
       '"'
     ),
 
+    /* TODO: bpfrace report errors on things like 0xffLL */
     integer_literal: _ => token(seq(
       optional('-'),
       choice(
