@@ -160,6 +160,7 @@ module.exports = grammar({
       $.if_statement,
       $.while_statement,
       $.unroll_statement,
+      $.for_statement,
     ),
 
     if_statement: $ => seq(
@@ -184,6 +185,28 @@ module.exports = grammar({
       $.integer_literal,
       ')',
       $.block,
+    ),
+
+    for_statement: $ => seq(
+      'for',
+      '(',
+      $.scratch_variable,
+      ':',
+      choice($.map_variable, $.range),
+      ')',
+      $.block,
+    ),
+
+    range: $ => seq(
+      field('left', $._range_limit),
+      '..',
+      field('right', $._range_limit),
+    ),
+
+    _range_limit: $ => choice(
+      $.identifier,
+      $.scratch_variable,
+      $.integer_literal,
     ),
 
     assignment: $ => prec(PREC.assignment, seq(
