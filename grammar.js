@@ -248,6 +248,7 @@ module.exports = grammar({
       $.subscript_expression,
       $.tuple_expression,
       $.parenthesized_expression,
+      $.update_expression,
       $.string_literal,
       $.integer_literal,
       $._variable,
@@ -386,6 +387,21 @@ module.exports = grammar({
       $._expression,
       ')',
     ),
+
+    update_expression: $ => choice(
+      $._sufix_increment,
+      $._sufix_decrement,
+      $._prefix_increment,
+      $._prefix_decrement,
+    ),
+
+    /* Sufix increment/decrement has the same precedence as funnction call */
+    _sufix_increment: $ => prec.left(PREC.call, seq($._expression, '++')),
+    _sufix_decrement: $ => prec.left(PREC.call, seq($._expression, '--')),
+
+    /* Prefix increment/decrement has the same precedence as cast */
+    _prefix_increment: $ => prec.right(PREC.cast, seq('++', $._expression)),
+    _prefix_decrement: $ => prec.right(PREC.cast, seq('--', $._expression)),
 
     string_literal: $ => seq(
       '"',
