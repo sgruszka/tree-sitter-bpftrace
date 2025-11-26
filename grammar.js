@@ -141,22 +141,32 @@ module.exports = grammar({
     ),
 
     _block_body: $ => seq(
-      sepBy1(';', $.statement),
-      optional(';'),
+      repeat(choice(
+        seq($.statement, ';'),
+        $.block_statement,
+      )),
+      choice(
+        seq($.statement, optional(';')),
+        $.block_statement,
+      ),
     ),
 
     statement: $ => choice(
       $._expression,
       $.assignment,
     ),
-/*
+
+    block_statement: $ => choice(
+      $.if_statement,
+    ),
+
     if_statement: $=> seq(
       'if',
       '(',
       $._expression,
-      ')'
-    )
-*/
+      ')',
+      $.block,
+    ),
 
     assignment: $ => prec(PREC.assignment, seq(
       field('left', $._variable),
