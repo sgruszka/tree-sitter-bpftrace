@@ -142,19 +142,22 @@ module.exports = grammar({
 
     _block_body: $ => seq(
       repeat(choice(
-        seq($.statement, ';'),
+        seq($._statement, ';'),
         $._block_statement,
       )),
       choice(
-        seq($.statement, optional(';')),
+        seq($._statement, optional(';')),
         $._block_statement,
       ),
     ),
 
-    statement: $ => choice(
-      $._expression,
-      $.assignment,
+    _statement: $ => choice(
+      alias($._expression, $.expression_statement),
+      alias($._assignment, $.assignment_statement),
     ),
+
+    // expression_statement: $ => seq($._expression, ';'),
+    // assignment_statement: $ => seq($._assignment, ';'),
 
     _block_statement: $ => choice(
       $.if_statement,
@@ -218,7 +221,7 @@ module.exports = grammar({
       $.integer_literal,
     ),
 
-    assignment: $ => prec(PREC.assignment, seq(
+    _assignment: $ => prec(PREC.assignment, seq(
       field('left', $._variable),
       field('operator', choice(
         '=',

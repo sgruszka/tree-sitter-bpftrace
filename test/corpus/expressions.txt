@@ -19,12 +19,11 @@ kprobe:do_nanosleep / pid / 10 == 0 / { $x = 4 / 2; }
           right: (integer_literal))
         right: (integer_literal)))
     (action
-      (statement
-        (assignment
-          left: (scratch_variable)
-          right: (binary_expression
-            left: (integer_literal)
-            right: (integer_literal)))))))
+      (assignment_statement
+        left: (scratch_variable)
+        right: (binary_expression
+          left: (integer_literal)
+          right: (integer_literal))))))
 
 ============================================
 Assignment
@@ -41,10 +40,9 @@ software:dummy { $i = 10 }
         provider: (probe_provider)
         event: (wildcard_identifier)))
     (action
-      (statement
-        (assignment
-          left: (scratch_variable)
-          right: (integer_literal))))))
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal)))))
 
 ============================================
 Modulo division
@@ -61,7 +59,7 @@ software:dummy { 10 % 2 }
         provider: (probe_provider)
         event: (wildcard_identifier)))
     (action
-      (statement
+      (expression_statement
         (binary_expression
           left: (integer_literal)
           right: (integer_literal))))))
@@ -113,15 +111,14 @@ kprobe:vfs_read { $a = (1,2,3,"hello") }
         provider: (probe_provider)
         event: (wildcard_identifier)))
     (action
-      (statement
-        (assignment
-          left: (scratch_variable)
-          right: (tuple_expression
-            (integer_literal)
-            (integer_literal)
-            (integer_literal)
-            (string_literal
-              (string_content))))))))
+      (assignment_statement
+        left: (scratch_variable)
+        right: (tuple_expression
+          (integer_literal)
+          (integer_literal)
+          (integer_literal)
+          (string_literal
+            (string_content)))))))
 
 ============================================
 Tuple indexing
@@ -135,19 +132,17 @@ software:dummy { $a = (1,"hello"); $b = $a.1; }
         provider: (probe_provider)
         event: (wildcard_identifier)))
     (action
-      (statement
-        (assignment
-          left: (scratch_variable)
-          right: (tuple_expression
-            (integer_literal)
-            (string_literal
-              (string_content)))))
-      (statement
-        (assignment
+      (assignment_statement
+        left: (scratch_variable)
+        right: (tuple_expression
+          (integer_literal)
+          (string_literal
+            (string_content))))
+        (assignment_statement
           left: (scratch_variable)
           right: (field_expression
             argument: (scratch_variable)
-            field: (integer_literal)))))))
+            field: (integer_literal))))))
 
 ============================================
 Cast expression
@@ -161,14 +156,13 @@ kprobe:tcp_reset { $sk = (struct sock *) arg0; }
         provider: (probe_provider)
         event: (wildcard_identifier)))
     (action
-      (statement
-        (assignment
-          left: (scratch_variable)
-          right: (cast_expression
-            type: (type_specifier
-              (pointer_type
-                (identifier)))
-            value: (identifier)))))))
+      (assignment_statement
+        left: (scratch_variable)
+        right: (cast_expression
+          type: (type_specifier
+            (pointer_type
+              (identifier)))
+          value: (identifier))))))
 
 ============================================
 Field expression
@@ -183,7 +177,7 @@ kfunc:vmlinux:timer_show { args.dev->kobj.sd->id }
         module: (wildcard_identifier)
         event: (wildcard_identifier)))
     (action
-      (statement
+      (expression_statement
         (field_expression
           argument: (field_expression
             argument: (field_expression
