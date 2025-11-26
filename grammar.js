@@ -102,8 +102,10 @@ module.exports = grammar({
     _predicate_expression: $ => seq($._expression, '/'),
 
     probe: $ => choice(
-      'BEGIN', // Two built-in probes with no arguments
-      'END',
+      /* Built-in probes with no arguments */
+      'BEGIN', 'begin',
+      'END', 'end',
+      /* Probes with provider e.g. kprobe */
       seq(
         field('provider', $.probe_provider),
         optional(seq( ':', field('module', $.wildcard_identifier))),
