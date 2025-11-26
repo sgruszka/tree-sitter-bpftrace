@@ -143,11 +143,11 @@ module.exports = grammar({
     _block_body: $ => seq(
       repeat(choice(
         seq($.statement, ';'),
-        $.block_statement,
+        $._block_statement,
       )),
       choice(
         seq($.statement, optional(';')),
-        $.block_statement,
+        $._block_statement,
       ),
     ),
 
@@ -156,14 +156,32 @@ module.exports = grammar({
       $.assignment,
     ),
 
-    block_statement: $ => choice(
+    _block_statement: $ => choice(
       $.if_statement,
+      $.while_statement,
+      $.unroll_statement,
     ),
 
     if_statement: $ => seq(
       'if',
       '(',
       $._expression,
+      ')',
+      $.block,
+    ),
+
+    while_statement: $ => seq(
+      'while',
+      '(',
+      $._expression,
+      ')',
+      $.block,
+    ),
+
+    unroll_statement: $ => seq(
+      'unroll',
+      '(',
+      $.integer_literal,
       ')',
       $.block,
     ),
