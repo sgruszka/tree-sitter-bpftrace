@@ -8,7 +8,7 @@ kprobe:do_nanosleep / pid / 10 == 0 / { $x = 4 / 2; }
 
 (source_file
   (action_block
-    (probes
+    (probes_list
       (probe
         provider: (probe_provider)
         event: (wildcard_identifier)))
@@ -35,7 +35,7 @@ software:dummy { $i = 10 }
 
 (source_file
   (action_block
-    (probes
+    (probes_list
       (probe
         provider: (probe_provider)
         event: (wildcard_identifier)))
@@ -54,7 +54,7 @@ software:dummy { 10 % 2 }
 
 (source_file
   (action_block
-    (probes
+    (probes_list
       (probe
         provider: (probe_provider)
         event: (wildcard_identifier)))
@@ -71,7 +71,7 @@ kprobe:vfs_read /arg2 < 16/ {}
 ---
 (source_file
   (action_block
-    (probes
+    (probes_list
       (probe
         provider: (probe_provider)
         event: (wildcard_identifier)))
@@ -88,7 +88,7 @@ kprobe:vfs_read /comm == "bash"/ {}
 ---
 (source_file
   (action_block
-    (probes
+    (probes_list
       (probe
         provider: (probe_provider)
         event: (wildcard_identifier)))
@@ -106,7 +106,7 @@ kprobe:vfs_read { $a = (1,2,3,"hello") }
 ---
 (source_file
   (action_block
-    (probes
+    (probes_list
       (probe
         provider: (probe_provider)
         event: (wildcard_identifier)))
@@ -127,7 +127,7 @@ software:dummy { $a = (1,"hello"); $b = $a.1; }
 ---
 (source_file
   (action_block
-    (probes
+    (probes_list
       (probe
         provider: (probe_provider)
         event: (wildcard_identifier)))
@@ -151,7 +151,7 @@ kprobe:tcp_reset { $sk = (struct sock *) arg0; }
 ---
 (source_file
   (action_block
-    (probes
+    (probes_list
       (probe
         provider: (probe_provider)
         event: (wildcard_identifier)))
@@ -171,7 +171,7 @@ kfunc:vmlinux:timer_show { args.dev->kobj.sd->id }
 ---
 (source_file
   (action_block
-    (probes
+    (probes_list
       (probe
         provider: (probe_provider)
         module: (wildcard_identifier)

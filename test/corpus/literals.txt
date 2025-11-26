@@ -5,7 +5,7 @@ BEGIN { "1"; "\n"; "\""; "dot't be stupid";  }
 ---
 (source_file
   (action_block
-    (probes
+    (probes_list
       (probe))
     (action
       (expression_statement
@@ -28,7 +28,7 @@ BEGIN { 1; 0777; 0xffff0000; 1e3; }
 ---
 (source_file
   (action_block
-    (probes
+    (probes_list
       (probe))
     (action
       (expression_statement
@@ -47,7 +47,7 @@ BEGIN { 1ULL; 0l; 10L; 2ul; 1e4ll }
 ---
 (source_file
   (action_block
-    (probes
+    (probes_list
       (probe))
     (action
       (expression_statement

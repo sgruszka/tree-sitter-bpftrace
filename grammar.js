@@ -95,9 +95,9 @@ module.exports = grammar({
 
     preproc_arg: _ => token(/\S[^\n]*/),
 
-    action_block: $ => seq($.probes, optional($.predicate), alias($.block, $.action)),
+    action_block: $ => seq($.probes_list, optional($.predicate), alias($.block, $.action)),
 
-    probes: $ => sepBy1(',', $.probe),
+    probes_list: $ => sepBy1(',', $.probe),
     predicate: $ => seq('/', $._predicate_expression),
     _predicate_expression: $ => seq($._expression, '/'),
 

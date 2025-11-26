@@ -5,7 +5,7 @@ BEGIN { @m[1,10] = 1; }
 ---
 (source_file
   (action_block
-    (probes
+    (probes_list
       (probe))
     (action
       (assignment_statement
@@ -22,7 +22,7 @@ BEGIN { $a = 1; }
 ---
 (source_file
   (action_block
-    (probes
+    (probes_list
       (probe))
     (action
       (assignment_statement
@@ -36,7 +36,7 @@ software:dummy { $a = 3; @ = 4; @r = $a + @; }
 ---
 (source_file
   (action_block
-    (probes
+    (probes_list
       (probe
         provider: (probe_provider)
         event: (wildcard_identifier)))

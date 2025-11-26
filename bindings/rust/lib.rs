@@ -67,13 +67,13 @@ mod tests {
         let action_block = root_node.child(0).unwrap();
         assert_eq!(action_block.kind(), "action_block");
 
-        let probes = action_block.child(0).unwrap();
+        let probes_list = action_block.child(0).unwrap();
         let action = action_block.child(1).unwrap();
 
-        assert_eq!(probes.kind(), "probes");
-        assert_eq!(action.kind(), "action" );
+        assert_eq!(probes_list.kind(), "probes_list");
+        assert_eq!(action.kind(), "action");
 
-        let probe = probes.child(0).unwrap();
+        let probe = probes_list.child(0).unwrap();
         assert_eq!(probe.kind(), "probe");
         assert_eq!(probe.start_position().row, 0);
         assert_eq!(probe.start_position().column, 0);
