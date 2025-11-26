@@ -95,7 +95,7 @@ module.exports = grammar({
 
     preproc_arg: _ => token(/\S[^\n]*/),
 
-    action_block: $ => seq($.probes, optional($.predicate), $.action),
+    action_block: $ => seq($.probes, optional($.predicate), alias($.block, $.action)),
 
     probes: $ => sepBy1(',', $.probe),
     predicate: $ => seq('/', $._predicate_expression),
@@ -134,13 +134,13 @@ module.exports = grammar({
       'asyncwatchpoint', 'aw',
     ),
 
-    action: $ => seq(
+    block: $ => seq(
       '{',
-      optional($._action_body),
+      optional($._block_body),
       '}'
     ),
 
-    _action_body: $ => seq(
+    _block_body: $ => seq(
       sepBy1(';', $.statement),
       optional(';'),
     ),
@@ -149,6 +149,14 @@ module.exports = grammar({
       $._expression,
       $.assignment,
     ),
+/*
+    if_statement: $=> seq(
+      'if',
+      '(',
+      $._expression,
+      ')'
+    )
+*/
 
     assignment: $ => prec(PREC.assignment, seq(
       field('left', $._variable),
