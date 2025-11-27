@@ -19,7 +19,6 @@ If else statement
 ============================================
 begin { if (2 < 0) {  } else if (1 > 0) {  } else { } }
 ---
-
 (source_file
   (action_block
     (probes_list
@@ -38,3 +37,113 @@ begin { if (2 < 0) {  } else if (1 > 0) {  } else { } }
             consequence: (block)
             alternative: (else_clause
               (block))))))))
+
+============================================
+While loop
+============================================
+begin {
+  $i = 0;
+  while ($i <= 10) {
+    print(++$i);
+  }
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal))
+      (while_statement
+        condition: (binary_expression
+          left: (scratch_variable)
+          right: (integer_literal))
+        body: (block
+          (expression_statement
+            (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (update_expression
+                  (scratch_variable))))))))))
+
+============================================
+For loop with range
+============================================
+begin {
+  for ($i : 0..3) {
+    print($i)
+  }
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe))
+    (action
+      (for_statement
+        (scratch_variable)
+        (range
+          left: (integer_literal)
+          right: (integer_literal))
+        body: (block
+          (expression_statement
+            (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (scratch_variable)))))))))
+
+============================================
+For loop with map
+============================================
+begin {
+  @[1,2] = 1;
+  for ($m : @) {
+    print($m)
+  }
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe))
+    (action
+      (assignment_statement
+        left: (map_variable
+          (integer_literal)
+          (integer_literal))
+        right: (integer_literal))
+      (for_statement
+        (scratch_variable)
+        (map_variable)
+        body: (block
+          (expression_statement
+            (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (scratch_variable)))))))))
+
+============================================
+Unroll statement
+============================================
+begin {
+  unroll(3) {
+    print("Test");
+  }
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe))
+    (action
+      (unroll_statement
+        (integer_literal)
+        body: (block
+          (expression_statement
+            (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (string_literal
+                  (string_content))))))))))
