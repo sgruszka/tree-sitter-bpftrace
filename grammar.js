@@ -398,12 +398,12 @@ module.exports = grammar({
     ),
 
     /* Sufix increment/decrement has the same precedence as funnction call */
-    _sufix_increment: $ => prec.left(PREC.call, seq($._expression, '++')),
-    _sufix_decrement: $ => prec.left(PREC.call, seq($._expression, '--')),
+    _sufix_increment: $ => prec.left(PREC.call, seq($._variable, '++')),
+    _sufix_decrement: $ => prec.left(PREC.call, seq($._variable, '--')),
 
     /* Prefix increment/decrement has the same precedence as cast */
-    _prefix_increment: $ => prec.right(PREC.cast, seq('++', $._expression)),
-    _prefix_decrement: $ => prec.right(PREC.cast, seq('--', $._expression)),
+    _prefix_increment: $ => prec.right(PREC.cast, seq('++', $._variable)),
+    _prefix_decrement: $ => prec.right(PREC.cast, seq('--', $._variable)),
 
     string_literal: $ => seq(
       '"',
