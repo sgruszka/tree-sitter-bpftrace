@@ -1,0 +1,40 @@
+============================================
+Single if statement 
+============================================
+begin { if (2 < 0) { } }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe))
+    (action
+      (if_statement
+        condition: (binary_expression
+          left: (integer_literal)
+          right: (integer_literal))
+        consequence: (block)))))
+
+============================================
+If else statement 
+============================================
+begin { if (2 < 0) {  } else if (1 > 0) {  } else { } }
+---
+
+(source_file
+  (action_block
+    (probes_list
+      (probe))
+    (action
+      (if_statement
+        condition: (binary_expression
+          left: (integer_literal)
+          right: (integer_literal))
+        consequence: (block)
+        alternative: (else_clause
+          (if_statement
+            condition: (binary_expression
+              left: (integer_literal)
+              right: (integer_literal))
+            consequence: (block)
+            alternative: (else_clause
+              (block))))))))
