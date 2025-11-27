@@ -1,5 +1,5 @@
 ============================================
-Map variable assignment_statement
+Map variable assignment
 ============================================
 BEGIN { @m[1,10] = 1; }
 ---
