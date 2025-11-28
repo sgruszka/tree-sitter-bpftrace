@@ -161,7 +161,8 @@ kprobe:tcp_reset { $sk = (struct sock *) arg0; }
         right: (cast_expression
           type: (type_specifier
             (pointer_type
-              (identifier)))
+              (struct_type
+                (identifier))))
           value: (identifier))))))
 
 ============================================

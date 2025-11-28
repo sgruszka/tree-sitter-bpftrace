@@ -272,6 +272,7 @@ module.exports = grammar({
       $.cast_expression,
       $.field_expression,
       $.subscript_expression,
+      $.sizeof_expression,
       $.tuple_expression,
       $.parenthesized_expression,
       $.update_expression,
@@ -346,6 +347,7 @@ module.exports = grammar({
       $.integer_type,
       $.array_type,
       $.pointer_type,
+      $.struct_type,
     ),
 
     array_type: $ => seq(
@@ -355,9 +357,9 @@ module.exports = grammar({
 
     pointer_type: $ => seq(
       choice(
-        seq('struct', $.identifier),
         $.integer_type,
         $.array_type,
+        $.struct_type,
       ),
       repeat1('*'),
     ),
@@ -373,6 +375,8 @@ module.exports = grammar({
       'uint32',
       'uint64',
     ),
+
+    struct_type: $ => seq('struct', $.identifier),
 
     field_expression: $ => prec.left(PREC.field, seq(
       field('argument', choice(
@@ -399,6 +403,16 @@ module.exports = grammar({
       '[',
       field('index', $.integer_literal),
       ']'
+    )),
+
+    sizeof_expression: $ => prec(PREC.cast, seq(
+      'sizeof',
+      '(',
+      choice(
+        $.type_specifier,
+        $._expression,
+      ),
+      ')',
     )),
 
     tuple_expression: $ => seq(
