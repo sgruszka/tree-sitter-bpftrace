@@ -95,7 +95,7 @@ module.exports = grammar({
 
     preproc_arg: _ => token(/\S[^\n]*/),
 
-    action_block: $ => seq($.probes_list, optional($.predicate), alias($.block, $.action)),
+    action_block: $ => seq($.probes_list, optional($.predicate), $.action),
 
     probes_list: $ => sepBy1(',', $.probe),
     predicate: $ => seq('/', $._predicate_expression),
@@ -136,13 +136,14 @@ module.exports = grammar({
       'asyncwatchpoint', 'aw',
     ),
 
-    block: $ => seq(
+    /* Main action block (no continue or break) */
+    action: $ => seq(
       '{',
-      optional($._block_body),
+      optional($._action_body),
       '}'
     ),
 
-    _block_body: $ => seq(
+    _action_body: $ => seq(
       repeat(choice(
         seq($._statement, ';'),
         $._block_statement,
@@ -153,13 +154,36 @@ module.exports = grammar({
       ),
     ),
 
+    /* Internal block */
+    block: $ => seq(
+      '{',
+      optional($._block_body),
+      '}'
+    ),
+
+    _block_body: $ => seq(
+      repeat(choice(
+        seq($._statement, ';'),
+        seq($._flow_statement, ';'),
+        $._block_statement,
+      )),
+      choice(
+        seq($._statement, optional(';')),
+        seq($._flow_statement, optional(';')),
+        $._block_statement,
+      ),
+    ),
+
     _statement: $ => choice(
       alias($._expression, $.expression_statement),
       alias($._assignment, $.assignment_statement),
+      alias('return', $.return_statement),
     ),
 
-    // expression_statement: $ => seq($._expression, ';'),
-    // assignment_statement: $ => seq($._assignment, ';'),
+    _flow_statement: $ => choice(
+      alias('break', $.break_statement),
+      alias('continue', $.continue_statement),
+    ),
 
     _block_statement: $ => choice(
       $.if_statement,

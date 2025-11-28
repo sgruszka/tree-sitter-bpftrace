@@ -31,11 +31,13 @@
 (preproc_include) @keyword.import
 (preproc_define) @keyword.directive.define
 
+(break_statement) @keyword
+(continue_statement) @keyword
+(return_statement) @keyword.return
+
 ; TODO
 [
-  ; "break"
   "config"
-  ; "continue"
   ; "let"
   ; "macro"
   ; "offsetof"
@@ -54,7 +56,6 @@
 ] @keyword.repeat
 
 ; TODO
-; "return" @keyword.return
 ; "import" @keyword.import
 
 ; Variables
