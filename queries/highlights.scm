@@ -1,5 +1,3 @@
-;; highlights.scm for tree-sitter-bpftrace grammar
-
 ; Comments
 (line_comment) @comment
 (block_comment) @comment
@@ -10,11 +8,64 @@
 (integer_literal) @number
 (escape_sequence) @string.escape
 
-; Probes
+; Types
 (probe
   provider: (probe_provider) @type.buildin
   module: (wildcard_identifier) @module
   event: (wildcard_identifier) @property)
+(probe
+  provider: (probe_provider) @type.buildin
+  event: (wildcard_identifier) @property)
+
+(type_specifier) @type
+(integer_type) @type.buildin
+
+[
+  "BEGIN"
+  "begin"
+  "END"
+  "end"
+] @type.buildin
+
+; Keywords
+(preproc_include) @keyword.import
+(preproc_define) @keyword.directive.define
+
+; TODO
+[
+  ; "break"
+  "config"
+  ; "continue"
+  ; "let"
+  ; "macro"
+  ; "offsetof"
+  ; "sizeof"
+] @keyword
+
+[
+  "if"
+  "else"
+] @keyword.conditional
+
+[
+  "for"
+  "unroll"
+  "while"
+] @keyword.repeat
+
+; TODO
+; "return" @keyword.return
+; "import" @keyword.import
+
+; Variables
+(identifier) @variable
+
+(args_keyword) @variable.builtin
+((identifier) @variable.builtin
+  (#match? @variable.builtin "^arg[0-9]+$"))
+
+(scratch_variable) @variable
+(map_variable) @variable
 
 (field_expression
   field: (identifier) @property)
@@ -22,21 +73,7 @@
 (call_expression
   function: (identifier) @function.call)
 
-; Types
-(type_specifier) @type
-
-; Keywords
-(preproc_include) @keyword.import
-(preproc_define) @keyword.directive.define
-
-(args_keyword) @keyword
-
-[
-  "config"
-  "BEGIN"
-  "END"
-] @keyword
-
+; Punctuations
 [
   "("
   ")"
@@ -51,6 +88,13 @@
   ";"
 ] @punctuation.delimiter
 
+; Operators
+[
+  "->"
+  "."
+  ":"
+] @operator
+
 [
   "="
   "<<="
@@ -63,6 +107,11 @@
   "&="
   "|="
   "^="
+] @operator
+
+[
+ "--"
+ "++"
 ] @operator
 
 [
@@ -85,10 +134,3 @@
   "||"
   "/"
 ] @operator
-
-[
-  "->"
-  "."
-  ":"
-] @operator
-
