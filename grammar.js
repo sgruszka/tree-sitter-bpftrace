@@ -384,6 +384,7 @@ module.exports = grammar({
         $.identifier,
         $.args_keyword,
         $.field_expression,
+        $.parenthesized_expression,
       )),
       choice('.', '->'),
       field('field', choice (
