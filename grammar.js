@@ -273,6 +273,7 @@ module.exports = grammar({
       $.field_expression,
       $.subscript_expression,
       $.sizeof_expression,
+      $.pointer_expression,
       $.tuple_expression,
       $.parenthesized_expression,
       $.update_expression,
@@ -414,6 +415,11 @@ module.exports = grammar({
         $._expression,
       ),
       ')',
+    )),
+
+    pointer_expression: $ => prec.left(PREC.cast, seq(
+      choice('*', '&'),
+      $._expression,
     )),
 
     tuple_expression: $ => seq(
