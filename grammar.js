@@ -407,7 +407,7 @@ module.exports = grammar({
       ']'
     )),
 
-    sizeof_expression: $ => prec(PREC.cast, seq(
+    sizeof_expression: $ => seq(
       'sizeof',
       '(',
       choice(
@@ -415,7 +415,7 @@ module.exports = grammar({
         $._expression,
       ),
       ')',
-    )),
+    ),
 
     pointer_expression: $ => prec.left(PREC.cast, seq(
       choice('*', '&'),
