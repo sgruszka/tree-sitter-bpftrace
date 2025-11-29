@@ -188,3 +188,129 @@ kfunc:vmlinux:timer_show { args.dev->kobj.sd->id }
               field: (identifier))
             field: (identifier))
           field: (identifier))))))
+
+============================================
+Offsetof expression
+============================================
+struct A {
+  int num;
+  struct B { int num; } bar;
+}
+
+begin {
+    offsetof(struct A, num);
+    offsetof(struct A, bar.num);
+}
+---
+(source_file
+  (preamble
+    (c_struct))
+  (action_block
+    (probes_list
+      (probe))
+    (action
+      (expression_statement
+        (offsetof_expression
+          type: (struct_type
+            (identifier))
+          member: (identifier)))
+      (expression_statement
+        (offsetof_expression
+          type: (struct_type
+            (identifier))
+          member: (identifier)
+          member: (identifier))))))
+
+============================================
+Sizeof expression for struct
+============================================
+struct Foo { int x; char c; }
+begin {
+  sizeof(struct Foo);
+  sizeof(struct Foo*);
+  sizeof((*(struct Foo*)0).c);
+}
+---
+(source_file
+  (preamble
+    (c_struct))
+  (action_block
+    (probes_list
+      (probe))
+    (action
+      (expression_statement
+        (sizeof_expression
+          type: (type_specifier
+            (struct_type
+              (identifier)))))
+      (expression_statement
+        (sizeof_expression
+          type: (type_specifier
+            (pointer_type
+              (struct_type
+                (identifier))))))
+      (expression_statement
+        (sizeof_expression
+          value: (field_expression
+            argument: (parenthesized_expression
+              (pointer_expression
+                argument: (cast_expression
+                  type: (type_specifier
+                    (pointer_type
+                      (struct_type
+                        (identifier))))
+                  value: (integer_literal))))
+            field: (identifier)))))))
+
+============================================
+Sizeof expression for integer types
+============================================
+begin {
+  sizeof(1 == 1);
+  sizeof(bool);
+  sizeof(uint8);
+  sizeof(int64);
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe))
+    (action
+      (expression_statement
+        (sizeof_expression
+          value: (binary_expression
+            left: (integer_literal)
+            right: (integer_literal))))
+      (expression_statement
+        (sizeof_expression
+          type: (type_specifier
+            (integer_type))))
+      (expression_statement
+        (sizeof_expression
+          type: (type_specifier
+            (integer_type))))
+      (expression_statement
+        (sizeof_expression
+          type: (type_specifier
+            (integer_type)))))))
+
+============================================
+Sizeof expression for variable
+============================================
+begin {
+  $x = 1;
+  sizeof($x);
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal))
+      (expression_statement
+        (sizeof_expression
+          value: (scratch_variable))))))
