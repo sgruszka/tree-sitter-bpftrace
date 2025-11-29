@@ -66,7 +66,11 @@ module.exports = grammar({
     config_assignment: $ => seq(
       field('name',  $.identifier),
       '=',
-      field('value', choice($.integer_literal, $.identifier)),
+      field('value', choice(
+        $.integer_literal,
+        $.identifier,
+        $.string_literal,
+      )),
     ),
 
     preproc_include: $ => seq(
