@@ -8,9 +8,10 @@
 // @ts-check
 
 const PREC = {
-  subscript: 17,
-  field: 16,
-  call: 15,
+  subscript: 18,
+  field: 17,
+  call: 16,
+  unary: 15,
   cast: 14,
   multiplicative: 10,
   additive: 9,
@@ -302,6 +303,7 @@ module.exports = grammar({
       $.offsetof_expression,
       $.pointer_expression,
       $.conditional_expression,
+      $.unary_expression,
       $.tuple_expression,
       $.parenthesized_expression,
       $.update_expression,
@@ -465,6 +467,11 @@ module.exports = grammar({
       field('consequence', $._expression),
       ':',
       field('alternative', $._expression),
+    )),
+
+    unary_expression: $ => prec.left(PREC.unary, seq(
+      field('operator', choice('!', "~", '-', '+')),
+      field('argument', $._expression),
     )),
 
     tuple_expression: $ => seq(
