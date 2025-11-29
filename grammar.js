@@ -273,6 +273,7 @@ module.exports = grammar({
       $.field_expression,
       $.subscript_expression,
       $.sizeof_expression,
+      $.offsetof_expression,
       $.pointer_expression,
       $.tuple_expression,
       $.parenthesized_expression,
@@ -414,6 +415,15 @@ module.exports = grammar({
         $.type_specifier,
         $._expression,
       ),
+      ')',
+    ),
+
+    offsetof_expression: $ => seq(
+      'offsetof',
+      '(',
+      $.struct_type,
+      ',',
+      sepBy1('.',$.identifier),
       ')',
     ),
 
