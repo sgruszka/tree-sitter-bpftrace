@@ -36,10 +36,12 @@ module.exports = grammar({
 
   rules: {
     // TODO: all grammar rules
-    source_file: $ => seq(optional($.preamble), repeat($.action_block)),
+    source_file: $ => seq(optional($.hashbang), optional($.preamble), repeat($.action_block)),
 
     line_comment: _ => token(seq('//', /.*/)),
     block_comment: _ => token(seq('/*', /[^*]*\*+([^/*][^*]*\*+)*/, '/')),
+
+    hashbang: $ => token.immediate(/[#][!].*/),
 
     preamble: $ => repeat1($._preamble_item),
     _preamble_item: $ => choice(
