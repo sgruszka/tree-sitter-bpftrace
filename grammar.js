@@ -428,7 +428,7 @@ module.exports = grammar({
     ),
 
     pointer_expression: $ => prec.left(PREC.cast, seq(
-      field('operator', choice('*', '&')),
+      '*',
       field('argument', $._expression),
     )),
 
