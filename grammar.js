@@ -22,7 +22,8 @@ const PREC = {
   bitwise_or: 3,
   logical_and: 3,
   logical_or: 2,
-  assignment: 1,
+  conditional: 1,
+  assignment: 0,
 };
 
 module.exports = grammar({
@@ -300,6 +301,7 @@ module.exports = grammar({
       $.sizeof_expression,
       $.offsetof_expression,
       $.pointer_expression,
+      $.conditional_expression,
       $.tuple_expression,
       $.parenthesized_expression,
       $.update_expression,
@@ -455,6 +457,14 @@ module.exports = grammar({
     pointer_expression: $ => prec.left(PREC.cast, seq(
       '*',
       field('argument', $._expression),
+    )),
+
+    conditional_expression: $ => prec.right(PREC.conditional, seq(
+      field('condition', $._expression),
+      '?',
+      field('consequence', $._expression),
+      ':',
+      field('alternative', $._expression),
     )),
 
     tuple_expression: $ => seq(
