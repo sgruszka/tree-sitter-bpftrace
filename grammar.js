@@ -112,12 +112,33 @@ module.exports = grammar({
       'BEGIN', 'begin',
       'END', 'end',
       /* Probes with provider e.g. kprobe */
-      seq(
+      $._kernel_probe,
+      $._user_probe,
+    ),
+
+    _kernel_probe: $ => seq(
         field('provider', $.probe_provider),
-        optional(seq( ':', field('module', $.wildcard_identifier))),
+        optional(seq(
+          ':',
+          field('module', $.wildcard_identifier),
+        )),
         ':',
         field('event', $.wildcard_identifier),
-    )),
+    ),
+
+    _user_probe: $ => seq(
+      field('provider',
+        alias(choice(
+          'uprobe',
+          'uretprobe',
+          'u',
+          'ur'),
+        $.probe_provider)),
+      ':',
+      field('binary', $.file_identifier),
+      ':',
+      field('event', $.identifier),
+    ),
 
     probe_provider: _ => choice(
       'bench',
@@ -135,8 +156,6 @@ module.exports = grammar({
       'rawtracepoint', 'rt',
       'software',	's',
       'tracepoint',	't',
-      'uprobe', 'u',
-      'uretprobe', 'ur',
       'usdt', 'U'	,
       'watchpoint', 'w',
       'asyncwatchpoint', 'aw',
@@ -510,6 +529,7 @@ module.exports = grammar({
     scratch_variable: _ => /\$[_a-zA-Z][_a-zA-Z0-9]*/,
     identifier: _ => /[_a-zA-Z][_a-zA-Z0-9]*/,
     wildcard_identifier: _ => /[_a-zA-Z*][_a-zA-Z0-9*]*/,
+    file_identifier: _ => token(/[./_a-zA-Z0-9]+/),
   }
 });
 
