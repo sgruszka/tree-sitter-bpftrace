@@ -412,8 +412,8 @@ module.exports = grammar({
       'sizeof',
       '(',
       choice(
-        $.type_specifier,
-        $._expression,
+        field('type', $.type_specifier),
+        field('value', $._expression),
       ),
       ')',
     ),
@@ -421,15 +421,15 @@ module.exports = grammar({
     offsetof_expression: $ => seq(
       'offsetof',
       '(',
-      $.struct_type,
+      field('type', $.struct_type),
       ',',
-      sepBy1('.',$.identifier),
+      field('member', sepBy1('.',$.identifier)),
       ')',
     ),
 
     pointer_expression: $ => prec.left(PREC.cast, seq(
-      choice('*', '&'),
-      $._expression,
+      field('operator', choice('*', '&')),
+      field('argument', $._expression),
     )),
 
     tuple_expression: $ => seq(
