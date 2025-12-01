@@ -10,11 +10,17 @@
 
 ; Types
 (probe
-  provider: (probe_provider) @type.buildin
+  provider: (_) @type.buildin
   module: (wildcard_identifier) @module
   function: (wildcard_identifier) @property)
+
 (probe
-  provider: (probe_provider) @type.buildin
+  provider: (_) @type.buildin
+  subsys: (wildcard_identifier) @module
+  event: (wildcard_identifier) @property)
+
+(probe
+  provider: (_) @type.buildin
   function: (wildcard_identifier) @property)
 
 (type_specifier) @type
