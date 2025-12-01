@@ -12,10 +12,10 @@
 (probe
   provider: (probe_provider) @type.buildin
   module: (wildcard_identifier) @module
-  event: (wildcard_identifier) @property)
+  function: (wildcard_identifier) @property)
 (probe
   provider: (probe_provider) @type.buildin
-  event: (wildcard_identifier) @property)
+  function: (wildcard_identifier) @property)
 
 (type_specifier) @type
 (integer_type) @type.buildin

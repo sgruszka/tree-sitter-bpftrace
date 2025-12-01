@@ -164,7 +164,7 @@ module.exports = grammar({
           field('module', $.wildcard_identifier),
         )),
         ':',
-        field('event', $.wildcard_identifier),
+        field('function', $.wildcard_identifier),
     ),
 
     probe_provider: _ => choice(

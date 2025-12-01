@@ -15,11 +15,11 @@ tracepoint:syscalls:sys_enter_openat {
       (probe
         provider: (probe_provider)
         module: (wildcard_identifier)
-        event: (wildcard_identifier))
+        function: (wildcard_identifier))
       (probe
         provider: (probe_provider)
         module: (wildcard_identifier)
-        event: (wildcard_identifier)))
+        function: (wildcard_identifier)))
     (action
       (expression_statement
         (call_expression
@@ -49,7 +49,7 @@ kprobe:*socket* { printf("%s\n", ksym(reg("ip"))) }
     (probes_list
       (probe
         provider: (probe_provider)
-        event: (wildcard_identifier)))
+        function: (wildcard_identifier)))
     (action
       (expression_statement
         (call_expression
@@ -82,7 +82,7 @@ kprobe:vfs_read /comm == "bash"/ {
     (probes_list
       (probe
         provider: (probe_provider)
-        event: (wildcard_identifier)))
+        function: (wildcard_identifier)))
     (predicate
       (binary_expression
         left: (identifier)

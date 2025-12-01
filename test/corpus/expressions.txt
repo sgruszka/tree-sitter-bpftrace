@@ -11,7 +11,7 @@ kprobe:do_nanosleep / pid / 10 == 0 / { $x = 4 / 2; }
     (probes_list
       (probe
         provider: (probe_provider)
-        event: (wildcard_identifier)))
+        function: (wildcard_identifier)))
     (predicate
       (binary_expression
         left: (binary_expression
@@ -38,7 +38,7 @@ software:dummy { $i = 10 }
     (probes_list
       (probe
         provider: (probe_provider)
-        event: (wildcard_identifier)))
+        function: (wildcard_identifier)))
     (action
       (assignment_statement
         left: (scratch_variable)
@@ -57,7 +57,7 @@ software:dummy { 10 % 2 }
     (probes_list
       (probe
         provider: (probe_provider)
-        event: (wildcard_identifier)))
+        function: (wildcard_identifier)))
     (action
       (expression_statement
         (binary_expression
@@ -74,7 +74,7 @@ kprobe:vfs_read /arg2 < 16/ {}
     (probes_list
       (probe
         provider: (probe_provider)
-        event: (wildcard_identifier)))
+        function: (wildcard_identifier)))
     (predicate
       (binary_expression
         left: (identifier)
@@ -91,7 +91,7 @@ kprobe:vfs_read /comm == "bash"/ {}
     (probes_list
       (probe
         provider: (probe_provider)
-        event: (wildcard_identifier)))
+        function: (wildcard_identifier)))
     (predicate
       (binary_expression
         left: (identifier)
@@ -109,7 +109,7 @@ kprobe:vfs_read { $a = (1,2,3,"hello") }
     (probes_list
       (probe
         provider: (probe_provider)
-        event: (wildcard_identifier)))
+        function: (wildcard_identifier)))
     (action
       (assignment_statement
         left: (scratch_variable)
@@ -130,7 +130,7 @@ software:dummy { $a = (1,"hello"); $b = $a.1; }
     (probes_list
       (probe
         provider: (probe_provider)
-        event: (wildcard_identifier)))
+        function: (wildcard_identifier)))
     (action
       (assignment_statement
         left: (scratch_variable)
@@ -154,7 +154,7 @@ kprobe:tcp_reset { $sk = (struct sock *) arg0; }
     (probes_list
       (probe
         provider: (probe_provider)
-        event: (wildcard_identifier)))
+        function: (wildcard_identifier)))
     (action
       (assignment_statement
         left: (scratch_variable)
