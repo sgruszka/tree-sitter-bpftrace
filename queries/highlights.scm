@@ -40,8 +40,8 @@
   "config"
   ; "let"
   ; "macro"
-  ; "offsetof"
-  ; "sizeof"
+  "offsetof"
+  "sizeof"
 ] @keyword
 
 [
