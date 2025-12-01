@@ -433,6 +433,7 @@ module.exports = grammar({
 
     binary_expression: $ => {
       const table = [
+        /* eslint-disable no-multi-spaces */
         ['%', PREC.multiplicative],
         // ['/',  PREC.multiplicative],
         ['*',  PREC.multiplicative],
@@ -451,6 +452,7 @@ module.exports = grammar({
         ['|',  PREC.bitwise_or],
         ['&&', PREC.logical_and],
         ['||', PREC.logical_or],
+        /* eslint-enable no-multi-spaces */
       ];
 
       return choice( ...table.map(([operator, precedence]) =>
