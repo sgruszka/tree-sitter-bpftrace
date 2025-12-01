@@ -117,6 +117,8 @@ module.exports = grammar({
       $._fentry_fexit,
       $._kprobe_kretprobe,
       $._uprobe_uretprobe,
+      $._tracepoint,
+      $._rawtracepoint,
       $._other_probe,
     ),
 
@@ -173,6 +175,27 @@ module.exports = grammar({
           'uretprobe', 'ur',
     ),
 
+    _tracepoint: $ => seq(
+      field('provider', $.tracepoint_provider),
+      ':',
+      field('subsys', $.wildcard_identifier),
+      ':',
+      field('event', $.wildcard_identifier),
+    ),
+
+    tracepoint_provider: _ => choice(
+      'tracepoint',	't',
+    ),
+
+    _rawtracepoint: $ => seq(
+      field('provider', $.rawtracepoint_provider),
+      $._probe_arguments__optional_module_and_function,
+    ),
+
+    rawtracepoint_provider: _ => choice(
+      'rawtracepoint', 'rt',
+    ),
+
     _other_probe: $ => seq(
         field('provider', $.probe_provider),
         optional(seq(
@@ -190,9 +213,7 @@ module.exports = grammar({
       'interval', 'i',
       'iter', 'it',
       'profile', 'p',
-      'rawtracepoint', 'rt',
       'software',	's',
-      'tracepoint',	't',
       'usdt', 'U'	,
       'watchpoint', 'w',
       'asyncwatchpoint', 'aw',

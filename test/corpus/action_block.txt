@@ -13,13 +13,13 @@ tracepoint:syscalls:sys_enter_openat {
   (action_block
     (probes_list
       (probe
-        provider: (probe_provider)
-        module: (wildcard_identifier)
-        function: (wildcard_identifier))
+        provider: (tracepoint_provider)
+        subsys: (wildcard_identifier)
+        event: (wildcard_identifier))
       (probe
-        provider: (probe_provider)
-        module: (wildcard_identifier)
-        function: (wildcard_identifier)))
+        provider: (tracepoint_provider)
+        subsys: (wildcard_identifier)
+        event: (wildcard_identifier)))
     (action
       (expression_statement
         (call_expression
