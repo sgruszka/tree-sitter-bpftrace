@@ -115,6 +115,7 @@ module.exports = grammar({
 
       /* Probes with diffrent arguments, i.e. fentry[:module]:function  */
       $._fentry_fexit,
+      $._kprobe_kretprobe,
       $._uprobe_uretprobe,
       $._other_probe,
     ),
@@ -127,14 +128,18 @@ module.exports = grammar({
     ),
 
     _fentry_fexit: $ => seq(
-        // TODO add BPF: fentry:bpf[:prog_id]:prog_name`
-        field('provider', $.fentry_fexit_provider),
-        optional(seq(
-          ':',
-          field('module', $.wildcard_identifier),
-        )),
+      // TODO add BPF: fentry:bpf[:prog_id]:prog_name`
+      field('provider', $.fentry_fexit_provider),
+      $._probe_arguments__optional_module_and_function,
+    ),
+
+    _probe_arguments__optional_module_and_function: $ => seq(
+      optional(seq(
         ':',
-        field('function', $.wildcard_identifier),
+        field('module', $.wildcard_identifier),
+      )),
+      ':',
+      field('function', $.wildcard_identifier),
     ),
 
     fentry_fexit_provider: _ => choice(
@@ -142,6 +147,17 @@ module.exports = grammar({
       'fexit', 'fr',
       'kfunc', // Deprecated alias of fentry
       'kretfunc', // Deprecated alias of fexit
+    ),
+
+    _kprobe_kretprobe: $ => seq(
+      // TODD add: kprobe[:module]:fn+offset
+      field('provider', $.kprobe_kretprobe_provider),
+      $._probe_arguments__optional_module_and_function,
+    ),
+
+    kprobe_kretprobe_provider: _ => choice(
+      'kprobe', 'k',
+      'kretprobe', 'kr',
     ),
 
     _uprobe_uretprobe: $ => seq(
@@ -173,8 +189,6 @@ module.exports = grammar({
       'hardware', 'h',
       'interval', 'i',
       'iter', 'it',
-      'kprobe', 'k',
-      'kretprobe', 'kr',
       'profile', 'p',
       'rawtracepoint', 'rt',
       'software',	's',

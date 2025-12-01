@@ -48,7 +48,7 @@ kprobe:*socket* { printf("%s\n", ksym(reg("ip"))) }
   (action_block
     (probes_list
       (probe
-        provider: (probe_provider)
+        provider: (kprobe_kretprobe_provider)
         function: (wildcard_identifier)))
     (action
       (expression_statement
@@ -81,7 +81,7 @@ kprobe:vfs_read /comm == "bash"/ {
   (action_block
     (probes_list
       (probe
-        provider: (probe_provider)
+        provider: (kprobe_kretprobe_provider)
         function: (wildcard_identifier)))
     (predicate
       (binary_expression

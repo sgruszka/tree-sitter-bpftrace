@@ -10,7 +10,7 @@ kprobe:do_nanosleep / pid / 10 == 0 / { $x = 4 / 2; }
   (action_block
     (probes_list
       (probe
-        provider: (probe_provider)
+        provider: (kprobe_kretprobe_provider)
         function: (wildcard_identifier)))
     (predicate
       (binary_expression
@@ -73,7 +73,7 @@ kprobe:vfs_read /arg2 < 16/ {}
   (action_block
     (probes_list
       (probe
-        provider: (probe_provider)
+        provider: (kprobe_kretprobe_provider)
         function: (wildcard_identifier)))
     (predicate
       (binary_expression
@@ -90,7 +90,7 @@ kprobe:vfs_read /comm == "bash"/ {}
   (action_block
     (probes_list
       (probe
-        provider: (probe_provider)
+        provider: (kprobe_kretprobe_provider)
         function: (wildcard_identifier)))
     (predicate
       (binary_expression
@@ -108,7 +108,7 @@ kprobe:vfs_read { $a = (1,2,3,"hello") }
   (action_block
     (probes_list
       (probe
-        provider: (probe_provider)
+        provider: (kprobe_kretprobe_provider)
         function: (wildcard_identifier)))
     (action
       (assignment_statement
@@ -153,7 +153,7 @@ kprobe:tcp_reset { $sk = (struct sock *) arg0; }
   (action_block
     (probes_list
       (probe
-        provider: (probe_provider)
+        provider: (kprobe_kretprobe_provider)
         function: (wildcard_identifier)))
     (action
       (assignment_statement
