@@ -51,7 +51,6 @@ module.exports = grammar({
       $.preproc_include,
       $.preproc_define,
       seq($.c_struct, optional(';')),
-      //TODO
     ),
 
     config_block: $ => seq(
@@ -59,7 +58,7 @@ module.exports = grammar({
       '=',
       '{',
       optional($._config_body),
-      '}'
+      '}',
     ),
 
     _config_body: $ => seq(
@@ -68,7 +67,7 @@ module.exports = grammar({
     ),
 
     config_assignment: $ => seq(
-      field('name',  $.identifier),
+      field('name', $.identifier),
       '=',
       field('value', choice(
         $.integer_literal,
@@ -175,8 +174,8 @@ module.exports = grammar({
     ),
 
     uprobe_uretprobe_provider: $ => choice(
-          'uprobe', 'u',
-          'uretprobe', 'ur',
+      'uprobe', 'u',
+      'uretprobe', 'ur',
     ),
 
     _tracepoint: $ => seq(
@@ -188,7 +187,7 @@ module.exports = grammar({
     ),
 
     tracepoint_provider: _ => choice(
-      'tracepoint',	't',
+      'tracepoint', 't',
     ),
 
     _rawtracepoint: $ => seq(
@@ -202,12 +201,12 @@ module.exports = grammar({
 
     _hardware_event: $ => seq(
       field('provider', $.hardware_event_provider),
-      $._probe_arguments__event_and_optional_count
+      $._probe_arguments__event_and_optional_count,
     ),
 
     _software_event: $ => seq(
       field('provider', $.software_event_provider),
-      $._probe_arguments__event_and_optional_count
+      $._probe_arguments__event_and_optional_count,
     ),
 
     hardware_event_provider: _ => choice(
@@ -242,7 +241,7 @@ module.exports = grammar({
       // TODO: interval:hz:rate
       field('provider', $.profile_interval_provider),
       optional(seq(
-       ':',
+        ':',
         field('unit', $.time_unit),
       )),
       ':',
@@ -259,18 +258,18 @@ module.exports = grammar({
     ),
 
     _other_probe: $ => seq(
-        field('provider', $.probe_provider),
-        optional(seq(
-          ':',
-          field('module', $.wildcard_identifier),
-        )),
+      field('provider', $.probe_provider),
+      optional(seq(
         ':',
-        field('function', $.wildcard_identifier),
+        field('module', $.wildcard_identifier),
+      )),
+      ':',
+      field('function', $.wildcard_identifier),
     ),
 
     probe_provider: _ => choice(
       'iter', 'it',
-      'usdt', 'U'	,
+      'usdt', 'U',
       'watchpoint', 'w',
       'asyncwatchpoint', 'aw',
     ),
@@ -279,7 +278,7 @@ module.exports = grammar({
     action: $ => seq(
       '{',
       optional($._action_body),
-      '}'
+      '}',
     ),
 
     _action_body: $ => seq(
@@ -297,7 +296,7 @@ module.exports = grammar({
     block: $ => seq(
       '{',
       optional($._block_body),
-      '}'
+      '}',
     ),
 
     _block_body: $ => seq(
@@ -353,7 +352,7 @@ module.exports = grammar({
       '(',
       field('condition', $._expression),
       ')',
-      field('body',$.block),
+      field('body', $.block),
     ),
 
     unroll_statement: $ => seq(
@@ -371,7 +370,7 @@ module.exports = grammar({
       ':',
       choice($.map_variable, $.range),
       ')',
-      field('body',$.block),
+      field('body', $.block),
     ),
 
     range: $ => seq(
@@ -430,11 +429,11 @@ module.exports = grammar({
       $._div_left_side,
       field('right', $._expression),
     )),
-    _div_left_side: $ => seq(field('left',$._expression), field('operator', '/')),
+    _div_left_side: $ => seq(field('left', $._expression), field('operator', '/')),
 
     binary_expression: $ => {
       const table = [
-        ['%',  PREC.multiplicative],
+        ['%', PREC.multiplicative],
         // ['/',  PREC.multiplicative],
         ['*',  PREC.multiplicative],
         ['+',  PREC.additive],
@@ -442,8 +441,8 @@ module.exports = grammar({
         ['<<', PREC.shift],
         ['>>', PREC.shift],
         ['<=', PREC.relational],
-        ['<',  PREC.relational],
         ['>=', PREC.relational],
+        ['<',  PREC.relational],
         ['>',  PREC.relational],
         ['==', PREC.equal],
         ['!=', PREC.equal],
@@ -455,13 +454,12 @@ module.exports = grammar({
       ];
 
       return choice( ...table.map(([operator, precedence]) =>
-          prec.left(precedence, seq(
-            field('left', $._expression),
-            field('operator', operator),
-            field('right', $._expression),
-          ))
-        )
-      );
+        prec.left(precedence, seq(
+          field('left', $._expression),
+          field('operator', operator),
+          field('right', $._expression),
+        )),
+      ));
     },
 
     call_expression: $ => prec(PREC.call,
@@ -474,7 +472,7 @@ module.exports = grammar({
     arguments: $ => seq(
       '(',
       sepBy(',', $._expression),
-      ')'
+      ')',
     ),
 
     cast_expression: $ => prec(PREC.cast,
@@ -495,7 +493,11 @@ module.exports = grammar({
 
     array_type: $ => seq(
       $.integer_type,
-      repeat1(seq( '[', optional($.integer_literal), ']',)),
+      repeat1(seq(
+        '[',
+        optional($.integer_literal),
+        ']',
+      )),
     ),
 
     pointer_type: $ => seq(
@@ -530,7 +532,7 @@ module.exports = grammar({
         $.parenthesized_expression,
       )),
       choice('.', '->'),
-      field('field', choice (
+      field('field', choice(
         $.identifier,
         $.integer_literal,
       )),
@@ -546,7 +548,7 @@ module.exports = grammar({
       )),
       '[',
       field('index', $.integer_literal),
-      ']'
+      ']',
     )),
 
     sizeof_expression: $ => seq(
@@ -564,7 +566,7 @@ module.exports = grammar({
       '(',
       field('type', $.struct_type),
       ',',
-      field('member', sepBy1('.',$.identifier)),
+      field('member', sepBy1('.', $.identifier)),
       ')',
     ),
 
@@ -582,7 +584,7 @@ module.exports = grammar({
     )),
 
     unary_expression: $ => prec.left(PREC.unary, seq(
-      field('operator', choice('!', "~", '-', '+')),
+      field('operator', choice('!', '~', '-', '+')),
       field('argument', $._expression),
     )),
 
@@ -620,7 +622,7 @@ module.exports = grammar({
         alias(/[^"\\\n]+/, $.string_content),
         alias(/\\[^\n]/, $.escape_sequence),
       )),
-      '"'
+      '"',
     ),
 
     /* TODO: bpfrace report errors on things like 0xffLL */
@@ -659,7 +661,7 @@ module.exports = grammar({
     identifier: _ => /[_a-zA-Z][_a-zA-Z0-9]*/,
     wildcard_identifier: _ => /[_a-zA-Z*][_a-zA-Z0-9*]*/,
     file_identifier: _ => token(/[./_a-zA-Z0-9]+/),
-  }
+  },
 });
 
 function sepBy1(sep, rule) {
