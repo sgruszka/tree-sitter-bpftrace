@@ -122,6 +122,7 @@ module.exports = grammar({
       $._software_event,
       $._bench_test,
       $._profile_interval,
+      $._iter,
       $._other_probe,
     ),
 
@@ -267,8 +268,17 @@ module.exports = grammar({
       field('function', $.wildcard_identifier),
     ),
 
-    probe_provider: _ => choice(
+    _iter: $ => seq(
+      field('provider', $.iter_provider),
+      field('object', $.identifier),
+      field('pin', $.file_identifier),
+    ),
+
+    iter_provider: _ => choice(
       'iter', 'it',
+    ),
+
+    probe_provider: _ => choice(
       'usdt', 'U',
       'watchpoint', 'w',
       'asyncwatchpoint', 'aw',
