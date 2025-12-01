@@ -121,6 +121,7 @@ module.exports = grammar({
       $._rawtracepoint,
       $._hardware_event,
       $._software_event,
+      $._bench_test,
       $._other_probe,
     ),
 
@@ -223,7 +224,17 @@ module.exports = grammar({
         ':',
         field('count', $.integer_literal),
       )),
+    ),
 
+    _bench_test: $ => seq(
+      field('provider', $.bench_test_provider),
+      ':',
+      field('function', $.identifier),
+    ),
+
+    bench_test_provider: _ => choice(
+      'bench',
+      'test',
     ),
 
     _other_probe: $ => seq(
@@ -237,8 +248,6 @@ module.exports = grammar({
     ),
 
     probe_provider: _ => choice(
-      'bench',
-      'self',
       'interval', 'i',
       'iter', 'it',
       'profile', 'p',
