@@ -6,7 +6,8 @@ begin { if (2 < 0) { } }
 (source_file
   (action_block
     (probes_list
-      (probe))
+      (probe
+        provider: (begin_end_provider)))
     (action
       (if_statement
         condition: (binary_expression
@@ -22,7 +23,8 @@ begin { if (2 < 0) {  } else if (1 > 0) {  } else { } }
 (source_file
   (action_block
     (probes_list
-      (probe))
+      (probe
+        provider: (begin_end_provider)))
     (action
       (if_statement
         condition: (binary_expression
@@ -51,7 +53,8 @@ begin {
 (source_file
   (action_block
     (probes_list
-      (probe))
+      (probe
+        provider: (begin_end_provider)))
     (action
       (assignment_statement
         left: (scratch_variable)
@@ -80,7 +83,8 @@ begin {
 (source_file
   (action_block
     (probes_list
-      (probe))
+      (probe
+        provider: (begin_end_provider)))
     (action
       (for_statement
         (scratch_variable)
@@ -107,7 +111,8 @@ begin {
 (source_file
   (action_block
     (probes_list
-      (probe))
+      (probe
+        provider: (begin_end_provider)))
     (action
       (assignment_statement
         left: (map_variable
@@ -136,7 +141,8 @@ begin {
 (source_file
   (action_block
     (probes_list
-      (probe))
+      (probe
+        provider: (begin_end_provider)))
     (action
       (unroll_statement
         (integer_literal)

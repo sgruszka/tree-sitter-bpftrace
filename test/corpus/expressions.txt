@@ -207,7 +207,8 @@ begin {
     (c_struct))
   (action_block
     (probes_list
-      (probe))
+      (probe
+        provider: (begin_end_provider)))
     (action
       (expression_statement
         (offsetof_expression
@@ -236,7 +237,8 @@ begin {
     (c_struct))
   (action_block
     (probes_list
-      (probe))
+      (probe
+        provider: (begin_end_provider)))
     (action
       (expression_statement
         (sizeof_expression
@@ -275,7 +277,8 @@ begin {
 (source_file
   (action_block
     (probes_list
-      (probe))
+      (probe
+        provider: (begin_end_provider)))
     (action
       (expression_statement
         (sizeof_expression
@@ -306,7 +309,8 @@ begin {
 (source_file
   (action_block
     (probes_list
-      (probe))
+      (probe
+        provider: (begin_end_provider)))
     (action
       (assignment_statement
         left: (scratch_variable)

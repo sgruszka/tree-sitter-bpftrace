@@ -111,11 +111,17 @@ module.exports = grammar({
 
     probe: $ => choice(
       /* Built-in probes with no arguments */
-      'BEGIN', 'begin',
-      'END', 'end',
+      field('provider', $.begin_end_provider),
       /* Probes with provider e.g. kprobe */
       $._kernel_probe,
       $._user_probe,
+    ),
+
+    begin_end_provider: _ => choice(
+      'BEGIN',
+      'END',
+      'begin',
+      'end',
     ),
 
     _kernel_probe: $ => seq(

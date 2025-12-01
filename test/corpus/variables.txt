@@ -6,7 +6,8 @@ BEGIN { @m[1,10] = 1; }
 (source_file
   (action_block
     (probes_list
-      (probe))
+      (probe
+        provider: (begin_end_provider)))
     (action
       (assignment_statement
         left: (map_variable
@@ -23,7 +24,8 @@ BEGIN { $a = 1; }
 (source_file
   (action_block
     (probes_list
-      (probe))
+      (probe
+        provider: (begin_end_provider)))
     (action
       (assignment_statement
         left: (scratch_variable)

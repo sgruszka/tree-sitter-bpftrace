@@ -6,7 +6,8 @@ BEGIN { "1"; "\n"; "\""; "dot't be stupid";  }
 (source_file
   (action_block
     (probes_list
-      (probe))
+      (probe
+        provider: (begin_end_provider)))
     (action
       (expression_statement
         (string_literal
@@ -29,7 +30,8 @@ BEGIN { 1; 0777; 0xffff0000; 1e3; }
 (source_file
   (action_block
     (probes_list
-      (probe))
+      (probe
+        provider: (begin_end_provider)))
     (action
       (expression_statement
         (integer_literal))
@@ -48,7 +50,8 @@ BEGIN { 1ULL; 0l; 10L; 2ul; 1e4ll }
 (source_file
   (action_block
     (probes_list
-      (probe))
+      (probe
+        provider: (begin_end_provider)))
     (action
       (expression_statement
         (integer_literal))
