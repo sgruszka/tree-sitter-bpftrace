@@ -40,8 +40,8 @@ software:dummy { $a = 3; @ = 4; @r = $a + @; }
   (action_block
     (probes_list
       (probe
-        provider: (probe_provider)
-        function: (wildcard_identifier)))
+        provider: (software_event_provider)
+        event: (identifier)))
     (action
       (assignment_statement
         left: (scratch_variable)

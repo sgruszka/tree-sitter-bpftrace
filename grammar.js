@@ -119,6 +119,8 @@ module.exports = grammar({
       $._uprobe_uretprobe,
       $._tracepoint,
       $._rawtracepoint,
+      $._hardware_event,
+      $._software_event,
       $._other_probe,
     ),
 
@@ -196,6 +198,34 @@ module.exports = grammar({
       'rawtracepoint', 'rt',
     ),
 
+    _hardware_event: $ => seq(
+      field('provider', $.hardware_event_provider),
+      $._probe_arguments__event_and_optional_count
+    ),
+
+    _software_event: $ => seq(
+      field('provider', $.software_event_provider),
+      $._probe_arguments__event_and_optional_count
+    ),
+
+    hardware_event_provider: _ => choice(
+      'hardware', 'h',
+    ),
+
+    software_event_provider: _ => choice(
+      'software', 's',
+    ),
+
+    _probe_arguments__event_and_optional_count: $ => seq(
+      ':',
+      field('event', $.identifier),
+      optional(seq(
+        ':',
+        field('count', $.integer_literal),
+      )),
+
+    ),
+
     _other_probe: $ => seq(
         field('provider', $.probe_provider),
         optional(seq(
@@ -209,11 +239,9 @@ module.exports = grammar({
     probe_provider: _ => choice(
       'bench',
       'self',
-      'hardware', 'h',
       'interval', 'i',
       'iter', 'it',
       'profile', 'p',
-      'software',	's',
       'usdt', 'U'	,
       'watchpoint', 'w',
       'asyncwatchpoint', 'aw',

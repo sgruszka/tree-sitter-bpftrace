@@ -37,8 +37,8 @@ software:dummy { $i = 10 }
   (action_block
     (probes_list
       (probe
-        provider: (probe_provider)
-        function: (wildcard_identifier)))
+        provider: (software_event_provider)
+        event: (identifier)))
     (action
       (assignment_statement
         left: (scratch_variable)
@@ -56,8 +56,8 @@ software:dummy { 10 % 2 }
   (action_block
     (probes_list
       (probe
-        provider: (probe_provider)
-        function: (wildcard_identifier)))
+        provider: (software_event_provider)
+        event: (identifier)))
     (action
       (expression_statement
         (binary_expression
@@ -129,8 +129,8 @@ software:dummy { $a = (1,"hello"); $b = $a.1; }
   (action_block
     (probes_list
       (probe
-        provider: (probe_provider)
-        function: (wildcard_identifier)))
+        provider: (software_event_provider)
+        event: (identifier)))
     (action
       (assignment_statement
         left: (scratch_variable)
