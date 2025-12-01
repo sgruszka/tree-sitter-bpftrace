@@ -122,6 +122,7 @@ module.exports = grammar({
       $._hardware_event,
       $._software_event,
       $._bench_test,
+      $._profile_interval,
       $._other_probe,
     ),
 
@@ -237,6 +238,26 @@ module.exports = grammar({
       'test',
     ),
 
+    _profile_interval: $ => seq(
+      // TODO: interval:hz:rate
+      field('provider', $.profile_interval_provider),
+      optional(seq(
+       ':',
+        field('unit', $.time_unit),
+      )),
+      ':',
+      field('count', $.integer_literal),
+    ),
+
+    time_unit: $ => choice(
+      'us', 'ms', 's',
+    ),
+
+    profile_interval_provider: _ => choice(
+      'profile', 'p',
+      'interval', 'i',
+    ),
+
     _other_probe: $ => seq(
         field('provider', $.probe_provider),
         optional(seq(
@@ -248,9 +269,7 @@ module.exports = grammar({
     ),
 
     probe_provider: _ => choice(
-      'interval', 'i',
       'iter', 'it',
-      'profile', 'p',
       'usdt', 'U'	,
       'watchpoint', 'w',
       'asyncwatchpoint', 'aw',
