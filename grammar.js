@@ -110,11 +110,13 @@ module.exports = grammar({
     _predicate_expression: $ => seq($._expression, '/'),
 
     probe: $ => choice(
-      /* Built-in probes with no arguments */
+      /* Built-in begin/end probes with no arguments */
       field('provider', $.begin_end_provider),
-      /* Probes with provider e.g. kprobe */
-      $._kernel_probe,
-      $._user_probe,
+
+      /* Probes with diffrent arguments, i.e. fentry[:module]:function  */
+      $._fentry_fexit,
+      $._uprobe_uretprobe,
+      $._other_probe,
     ),
 
     begin_end_provider: _ => choice(
@@ -124,7 +126,38 @@ module.exports = grammar({
       'end',
     ),
 
-    _kernel_probe: $ => seq(
+    _fentry_fexit: $ => seq(
+        // TODO add BPF: fentry:bpf[:prog_id]:prog_name`
+        field('provider', $.fentry_fexit_provider),
+        optional(seq(
+          ':',
+          field('module', $.wildcard_identifier),
+        )),
+        ':',
+        field('function', $.wildcard_identifier),
+    ),
+
+    fentry_fexit_provider: _ => choice(
+      'fentry', 'f',
+      'fexit', 'fr',
+      'kfunc', // Deprecated alias of fentry
+      'kretfunc', // Deprecated alias of fexit
+    ),
+
+    _uprobe_uretprobe: $ => seq(
+      field('provider', $.uprobe_uretprobe_provider),
+      ':',
+      field('binary', $.file_identifier),
+      ':',
+      field('function', $.identifier),
+    ),
+
+    uprobe_uretprobe_provider: $ => choice(
+          'uprobe', 'u',
+          'uretprobe', 'ur',
+    ),
+
+    _other_probe: $ => seq(
         field('provider', $.probe_provider),
         optional(seq(
           ':',
@@ -134,32 +167,14 @@ module.exports = grammar({
         field('event', $.wildcard_identifier),
     ),
 
-    _user_probe: $ => seq(
-      field('provider',
-        alias(choice(
-          'uprobe',
-          'uretprobe',
-          'u',
-          'ur'),
-        $.probe_provider)),
-      ':',
-      field('binary', $.file_identifier),
-      ':',
-      field('event', $.identifier),
-    ),
-
     probe_provider: _ => choice(
       'bench',
       'self',
       'hardware', 'h',
       'interval', 'i',
       'iter', 'it',
-      'fentry', 'f',
-      'fexit', 'fr',
       'kprobe', 'k',
       'kretprobe', 'kr',
-      'kfunc', // Deprecated by fentry
-      'kretfunc', // Deprecated by fexit
       'profile', 'p',
       'rawtracepoint', 'rt',
       'software',	's',

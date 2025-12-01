@@ -174,9 +174,9 @@ kfunc:vmlinux:timer_show { args.dev->kobj.sd->id }
   (action_block
     (probes_list
       (probe
-        provider: (probe_provider)
+        provider: (fentry_fexit_provider)
         module: (wildcard_identifier)
-        event: (wildcard_identifier)))
+        function: (wildcard_identifier)))
     (action
       (expression_statement
         (field_expression
