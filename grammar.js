@@ -237,8 +237,12 @@ module.exports = grammar({
 
     _iter: $ => seq(
       field('provider', $.iter_provider),
+      ':',
       field('object', $.identifier),
-      field('pin', $.file_identifier),
+      optional(seq(
+        ':',
+        field('pin', $.file_identifier),
+      )),
     ),
 
     iter_provider: _ => choice(
