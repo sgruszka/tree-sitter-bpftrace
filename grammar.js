@@ -123,6 +123,7 @@ module.exports = grammar({
       $._bench_test,
       $._profile_interval,
       $._iter,
+      $._usdt,
       $._other_probe,
     ),
 
@@ -278,8 +279,23 @@ module.exports = grammar({
       'iter', 'it',
     ),
 
-    probe_provider: _ => choice(
+    _usdt: $ => seq(
+      field('provider', $.ustd_provider),
+      ':',
+      field('binary', $.file_identifier),
+      optional(seq(
+        ':',
+        field('namespace', $.identifier),
+      )),
+      ':',
+      field('function', $.identifier),
+    ),
+
+    ustd_provider: $ => choice(
       'usdt', 'U',
+    ),
+
+    probe_provider: _ => choice(
       'watchpoint', 'w',
       'asyncwatchpoint', 'aw',
     ),
