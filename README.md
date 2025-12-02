@@ -40,3 +40,12 @@ ln -s ~/tree-sitter-bpftrace/libtree-sitter-bpftrace.so parser/bpftrace.so
 ln -s ~/tree-sitter-bpftrace/queries/highlights.scm  queries/bpftrace/highlights.scm
 ln -s ~/tree-sitter-bpftrace/queries/injections.scm  queries/bpftrace/injections.scm
 ```
+After setting the `filetype` to *bpftrace* using vim command, you can verify that the parser is correctly attached to the buffer:
+```vim
+set ft=bpftrace
+lua print(vim.treesitter.get_parser(0)._lang) -- should print "bpftrace"
+```
+If this does not work, try registering the language manually:
+```vim
+lua vim.treesitter.language.add("bpftrace")
+```
