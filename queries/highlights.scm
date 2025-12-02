@@ -4,7 +4,6 @@
 
 ; String and numeric literals
 (string_literal) @string
-(header_literal) @string
 (integer_literal) @number
 (escape_sequence) @string.escape
 
@@ -34,9 +33,6 @@
 ] @type.buildin
 
 ; Keywords
-(preproc_include) @keyword.import
-(preproc_define) @keyword.directive.define
-
 (break_statement) @keyword
 (continue_statement) @keyword
 (return_statement) @keyword.return

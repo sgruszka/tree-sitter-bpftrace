@@ -31,14 +31,9 @@ Simple definitions
 
 (source_file
   (preamble
-    (preproc_define
-      name: (identifier))
-    (preproc_define
-      name: (identifier)
-      value: (preproc_arg))
-    (preproc_define
-      name: (identifier)
-      value: (preproc_arg))))
+     (c_preproc)
+     (c_preproc)
+     (c_preproc)))
 
 ============================================
 Simple includes
@@ -51,8 +46,5 @@ Simple includes
 
 (source_file
   (preamble
-    (preproc_include
-      path: (string_literal
-        (string_content)))
-    (preproc_include
-      path: (header_literal))))
+    (c_preproc)
+    (c_preproc)))

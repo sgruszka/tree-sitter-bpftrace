@@ -48,8 +48,7 @@ module.exports = grammar({
     preamble: $ => repeat1($._preamble_item),
     _preamble_item: $ => choice(
       $.config_block,
-      $.preproc_include,
-      $.preproc_define,
+      $.c_preproc,
       seq($.c_struct, optional(';')),
     ),
 
@@ -76,31 +75,8 @@ module.exports = grammar({
       )),
     ),
 
-    preproc_include: $ => seq(
-      '#',
-      'include',
-      field('path', choice(
-        $.string_literal,
-        $.header_literal,
-        token.immediate('\n'),
-      )),
-    ),
-
-    header_literal: $ => token(seq(
-      '<',
-      repeat(/[^>\n]*/),
-      '>',
-    )),
-
-    preproc_define: $ => seq(
-      '#',
-      'define',
-      field('name', $.identifier),
-      field('value', optional($.preproc_arg)),
-      token.immediate('\n'),
-    ),
-
-    preproc_arg: _ => token(/\S[^\n]*/),
+    // TODO multiline defines with backslash at the end
+    c_preproc: _ => /[#]\s*(ifdef|ifndef|if|else|elif|endif|define|include)[^\n]*/,
 
     action_block: $ => seq($.probes_list, optional($.predicate), $.action),
 
