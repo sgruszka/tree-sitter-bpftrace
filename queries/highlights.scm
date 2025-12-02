@@ -7,21 +7,80 @@
 (integer_literal) @number
 (escape_sequence) @string.escape
 
-; Types
+; Probes
+
+; fentry/fexit, kprobe/kretprobe, rawtracepoint
 (probe
   provider: (_) @type.buildin
   module: (wildcard_identifier) @module
   function: (wildcard_identifier) @property)
+(probe
+  provider: (_) @type.buildin
+  function: (wildcard_identifier) @property)
 
+; uprobe/uretprobe
+(probe
+  provider: (uprobe_uretprobe_provider) @type.buildin
+  binary: (file_identifier) @string.special.path
+  function: (identifier) @property)
+
+; tracepoint
 (probe
   provider: (_) @type.buildin
   subsys: (wildcard_identifier) @module
   event: (wildcard_identifier) @property)
 
+; software/hardware
 (probe
   provider: (_) @type.buildin
-  function: (wildcard_identifier) @property)
+  event: (identifier) @property
+  count: (integer_literal) @number)
+(probe
+  provider: (_) @type.buildin
+  event: (identifier) @property)
 
+; bench/test
+(probe
+  provider: (bench_test_provider) @type.buildin
+  function: (identifier) @property)
+
+; profile/interval
+(probe
+  provider: (profile_interval_provider) @type.buildin
+  unit: (time_unit) @string.special
+  count: (integer_literal) @property)
+(probe
+  provider: (profile_interval_provider) @type.buildin
+  count: (integer_literal) @number)
+
+; iter
+(probe
+  provider: (iter_provider) @type.buildin
+  object: (identifier) @module
+  pin: (file_identifier) @property)
+(probe
+  provider: (iter_provider) @type.buildin
+  object: (identifier) @module)
+
+; ustd
+(probe
+  provider: (ustd_provider) @type.buildin
+  binary: (file_identifier) @string.special.path
+  namespace: (identifier) @variable
+  function: (identifier) @property)
+(probe
+  provider: (ustd_provider) @type.buildin
+  binary: (file_identifier) @string.special.path
+  function: (identifier) @property)
+
+; watchpoint/asyncwatchpoint
+(probe
+  provider: (watchpoint_provider) @type.buildin
+  address: (integer_literal) @number
+  length: (integer_literal) @number
+  mode: (watchpoint_mode) @property)
+
+; Types
 (type_specifier) @type
 (integer_type) @type.buildin
 
