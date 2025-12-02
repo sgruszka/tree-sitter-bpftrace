@@ -3,7 +3,7 @@
 A [tree-sitter](https://tree-sitter.github.io/tree-sitter) grammar for [bpftrace](https://github.com/bpftrace/bpftrace).
 
 ## Building
-### Build from `build-{DATE}` branch 
+### Build from `build-{DATE}` branch
 The build-{DATE} branches contain pre-generated parser sources.
 To build from one of these branches you only need a C compiler toolchain and make.
 
@@ -23,10 +23,10 @@ tree-sitter gen
 tree-sitter build
 ```
 
-### Installing parser and queries in Neovim 
+### Installing parser and queries in Neovim
 Neovim must be able to find the parser and query files in `runtimepath` subdirectories.
 A common setup is to place them under `~/.config/nvim/`.
-For example: 
+For example:
 ```bash
 cd ~/.config/nvim
 
@@ -48,4 +48,26 @@ lua print(vim.treesitter.get_parser(0)._lang) -- should print "bpftrace"
 If this does not work, try registering the language manually:
 ```vim
 lua vim.treesitter.language.add("bpftrace")
+```
+
+### Filetype detection
+Vim/Neovim does not currently provide built-in filetype detection for `bpftrace`.
+To enable automatic detection of `bpftrace` files, based on the `*.bt` extension or a proper shebang, you can add the following to your init.lua:
+```lua
+vim.filetype.add({
+  extension = {
+    bt = "bpftrace"
+  },
+  pattern = {
+    [".*"] = {
+      function(path, bufnr)
+        local first_line = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)[1] or ''
+        if vim.regex([[^#!.*bpftrace]]):match_str(first_line) ~= nil then
+          return "bpftrace"
+        end
+      end,
+      { priority = -math.huge }
+    }
+  }
+})
 ```
