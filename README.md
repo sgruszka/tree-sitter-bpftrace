@@ -5,9 +5,7 @@ A [tree-sitter](https://tree-sitter.github.io/tree-sitter) grammar for [bpftrace
 ## Building
 ### Build from `build-{DATE}` branch 
 The build-{DATE} branches contain pre-generated parser sources.
-To build from one of these branches you only need a C compiler and make.
-
-Check for latest `build-{DATE}` branch. Need to have c compiler installed to build the parser.
+To build from one of these branches you only need a C compiler toolchain and make.
 
 ```bash
 git clone --branch build-2025-11-28 --depth 1 https://github.com/sgruszka/tree-sitter-bpftrace.git
