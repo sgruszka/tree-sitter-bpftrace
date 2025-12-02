@@ -124,7 +124,7 @@ module.exports = grammar({
       $._profile_interval,
       $._iter,
       $._usdt,
-      $._other_probe,
+      $._watchpoint,
     ),
 
     begin_end_provider: _ => choice(
@@ -259,16 +259,6 @@ module.exports = grammar({
       'interval', 'i',
     ),
 
-    _other_probe: $ => seq(
-      field('provider', $.probe_provider),
-      optional(seq(
-        ':',
-        field('module', $.wildcard_identifier),
-      )),
-      ':',
-      field('function', $.wildcard_identifier),
-    ),
-
     _iter: $ => seq(
       field('provider', $.iter_provider),
       field('object', $.identifier),
@@ -295,9 +285,24 @@ module.exports = grammar({
       'usdt', 'U',
     ),
 
-    probe_provider: _ => choice(
+    _watchpoint: $ => seq(
+      // TODO watchpoint:function+argN:length:mode
+      field('provider', $.watchpoint_provider),
+      ':',
+      field('address', $.integer_literal),
+      ':',
+      field('length', $.integer_literal),
+      ':',
+      field('mode', $.watchpoint_mode),
+    ),
+
+    watchpoint_provider: _ => choice(
       'watchpoint', 'w',
       'asyncwatchpoint', 'aw',
+    ),
+
+    watchpoint_mode: _ => choice(
+      'r', 'w', 'x',
     ),
 
     /* Main action block (no continue or break) */
