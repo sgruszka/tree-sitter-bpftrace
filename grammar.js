@@ -431,6 +431,7 @@ module.exports = grammar({
       $.update_expression,
       $.string_literal,
       $.integer_literal,
+      $.boolean_literal,
       $._variable,
       $.identifier,
       // TODO
@@ -656,6 +657,8 @@ module.exports = grammar({
         ),
       ),
     )),
+
+    boolean_literal: _ => choice('true', 'false'),
 
     _variable: $ => choice(
       $.scratch_variable,

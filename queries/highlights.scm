@@ -4,8 +4,9 @@
 
 ; String and numeric literals
 (string_literal) @string
-(integer_literal) @number
 (escape_sequence) @string.escape
+(integer_literal) @number
+(boolean_literal) @boolean
 
 ; Probes
 
