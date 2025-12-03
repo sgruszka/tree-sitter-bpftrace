@@ -41,7 +41,7 @@ software:dummy { $a = 3; @ = 4; @r = $a + @; }
     (probes_list
       (probe
         provider: (software_event_provider)
-        event: (identifier)))
+        event: (identifier_with_dash)))
     (action
       (assignment_statement
         left: (scratch_variable)

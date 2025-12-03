@@ -197,7 +197,7 @@ module.exports = grammar({
 
     _probe_arguments__event_and_optional_count: $ => seq(
       ':',
-      field('event', $.identifier),
+      field('event', $.identifier_with_dash),
       optional(seq(
         ':',
         field('count', $.integer_literal),
@@ -677,6 +677,7 @@ module.exports = grammar({
     identifier: _ => /[_a-zA-Z][_a-zA-Z0-9]*/,
     wildcard_identifier: _ => /[_a-zA-Z*][_a-zA-Z0-9*]*/,
     file_identifier: _ => token(/[./_a-zA-Z0-9]+/),
+    identifier_with_dash: _ => /[_a-zA-Z][_a-zA-Z0-9\-]*/
   },
 });
 

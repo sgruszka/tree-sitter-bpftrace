@@ -34,11 +34,11 @@
 ; software/hardware
 (probe
   provider: (_) @type.buildin
-  event: (identifier) @property
+  event: (identifier_with_dash) @property
   count: (integer_literal) @number)
 (probe
   provider: (_) @type.buildin
-  event: (identifier) @property)
+  event: (identifier_with_dash) @property)
 
 ; bench/test
 (probe

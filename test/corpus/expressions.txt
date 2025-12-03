@@ -38,7 +38,7 @@ software:dummy { $i = 10 }
     (probes_list
       (probe
         provider: (software_event_provider)
-        event: (identifier)))
+        event: (identifier_with_dash)))
     (action
       (assignment_statement
         left: (scratch_variable)
@@ -57,7 +57,7 @@ software:dummy { 10 % 2 }
     (probes_list
       (probe
         provider: (software_event_provider)
-        event: (identifier)))
+        event: (identifier_with_dash)))
     (action
       (expression_statement
         (binary_expression
@@ -130,7 +130,7 @@ software:dummy { $a = (1,"hello"); $b = $a.1; }
     (probes_list
       (probe
         provider: (software_event_provider)
-        event: (identifier)))
+        event: (identifier_with_dash)))
     (action
       (assignment_statement
         left: (scratch_variable)
