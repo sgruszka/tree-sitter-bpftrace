@@ -152,3 +152,33 @@ fexit:fget {}
         provider: (fentry_fexit_provider)
         function: (wildcard_identifier)))
     (action)))
+
+============================================
+Watchpoint function
+============================================
+watchpoint:increment+arg1:4:w { }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (watchpoint_provider)
+        function_argn: (identifier)
+        length: (integer_literal)
+        mode: (watchpoint_mode)))
+    (action)))
+
+============================================
+Watchpoint address
+============================================
+watchpoint:0x10000000:4:x {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (watchpoint_provider)
+        address: (integer_literal)
+        length: (integer_literal)
+        mode: (watchpoint_mode)))
+    (action)))
