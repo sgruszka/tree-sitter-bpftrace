@@ -163,7 +163,8 @@ watchpoint:increment+arg1:4:w { }
     (probes_list
       (probe
         provider: (watchpoint_provider)
-        function_argn: (identifier)
+        function: (identifier)
+        argn: (argn_identifier)
         length: (integer_literal)
         mode: (watchpoint_mode)))
     (action)))

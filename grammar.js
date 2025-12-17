@@ -296,9 +296,9 @@ module.exports = grammar({
       choice(
         field('address', $.integer_literal),
         seq(
-          field('function_argn',$.identifier),
+          field('function', $.identifier),
           '+',
-          token(seq('arg', /\d+/)),
+          field('argn', $.argn_identifier),
         ),
       ),
       ':',
@@ -710,6 +710,7 @@ module.exports = grammar({
     file_identifier: _ => token(/[./_a-zA-Z0-9]+/),
     identifier_with_dash: _ => /[_a-zA-Z][_a-zA-Z0-9\-]*/,
     bpf_identifier: _ => 'bpf',
+    argn_identifier: _ => token(seq('arg', /\d+/)),
     decimal_number: _ => /\d+/,
 
   },
