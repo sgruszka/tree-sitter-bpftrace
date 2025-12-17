@@ -279,10 +279,16 @@ module.exports = grammar({
     ),
 
     _watchpoint: $ => seq(
-      // TODO watchpoint:function+argN:length:mode
       field('provider', $.watchpoint_provider),
       ':',
-      field('address', $.integer_literal),
+      choice(
+        field('address', $.integer_literal),
+        seq(
+          field('function_argn',$.identifier),
+          '+',
+          token(seq('arg', /\d+/)),
+        ),
+      ),
       ':',
       field('length', $.integer_literal),
       ':',
