@@ -65,7 +65,7 @@ tracepoint:skb:kfree_skb {}
     (action)))
 
 ============================================
-Profile
+Profile with time
 ============================================
 profile:ms:100 {}
 ---
@@ -76,6 +76,19 @@ profile:ms:100 {}
         provider: (profile_interval_provider)
         unit: (time_unit)
         count: (integer_literal)))
+    (action)))
+
+============================================
+Profile with rate
+============================================
+profile:hz:99 {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (profile_interval_provider)
+        rate: (integer_literal)))
     (action)))
 
 ============================================

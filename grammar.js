@@ -216,7 +216,6 @@ module.exports = grammar({
     ),
 
     _profile_interval: $ => seq(
-      // TODO: interval:hz:rate
       field('provider', $.profile_interval_provider),
       choice(
         $._profile_interval_time,
