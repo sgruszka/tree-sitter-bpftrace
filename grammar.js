@@ -218,6 +218,13 @@ module.exports = grammar({
     _profile_interval: $ => seq(
       // TODO: interval:hz:rate
       field('provider', $.profile_interval_provider),
+      choice(
+        $._profile_interval_time,
+        $._profile_interval_hz,
+      ),
+    ),
+
+    _profile_interval_time: $ => seq(
       optional(seq(
         ':',
         field('unit', $.time_unit),
@@ -228,6 +235,13 @@ module.exports = grammar({
 
     time_unit: $ => choice(
       'us', 'ms', 's',
+    ),
+
+    _profile_interval_hz: $ => seq(
+      ':',
+      'hz',
+      ':',
+      field('rate', $.integer_literal),
     ),
 
     profile_interval_provider: _ => choice(
@@ -677,7 +691,7 @@ module.exports = grammar({
     identifier: _ => /[_a-zA-Z][_a-zA-Z0-9]*/,
     wildcard_identifier: _ => /[_a-zA-Z*][_a-zA-Z0-9*]*/,
     file_identifier: _ => token(/[./_a-zA-Z0-9]+/),
-    identifier_with_dash: _ => /[_a-zA-Z][_a-zA-Z0-9\-]*/
+    identifier_with_dash: _ => /[_a-zA-Z][_a-zA-Z0-9\-]*/,
   },
 });
 
