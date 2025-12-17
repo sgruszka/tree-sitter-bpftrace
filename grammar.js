@@ -706,7 +706,7 @@ module.exports = grammar({
 
     scratch_variable: _ => /\$[_a-zA-Z][_a-zA-Z0-9]*/,
     identifier: _ => /[_a-zA-Z][_a-zA-Z0-9]*/,
-    wildcard_identifier: _ => /[_a-zA-Z*][_a-zA-Z0-9*]*/,
+    wildcard_identifier: _ => /[_a-zA-Z*][_a-zA-Z0-9.*]*/,
     file_identifier: _ => token(/[./_a-zA-Z0-9]+/),
     identifier_with_dash: _ => /[_a-zA-Z][_a-zA-Z0-9\-]*/,
     bpf_identifier: _ => 'bpf',
