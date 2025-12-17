@@ -90,6 +90,7 @@ module.exports = grammar({
 
       /* Probes with diffrent arguments, i.e. fentry[:module]:function  */
       $._fentry_fexit,
+      $._fentry_fexit_bpf,
       $._kprobe_kretprobe,
       $._uprobe_uretprobe,
       $._tracepoint,
@@ -111,7 +112,6 @@ module.exports = grammar({
     ),
 
     _fentry_fexit: $ => seq(
-      // TODO add BPF: fentry:bpf[:prog_id]:prog_name`
       field('provider', $.fentry_fexit_provider),
       $._probe_arguments__optional_module_and_function,
     ),
@@ -123,6 +123,18 @@ module.exports = grammar({
       )),
       ':',
       field('function', $.wildcard_identifier),
+    ),
+
+    _fentry_fexit_bpf: $ => seq(
+      field('provider', $.fentry_fexit_provider),
+      ':',
+      field('subprovider', $.bpf_identifier),
+      optional(seq(
+        ':',
+        field('program_id', $.decimal_number),
+      )),
+      ':',
+      field('program_name', $.wildcard_identifier),
     ),
 
     fentry_fexit_provider: _ => choice(
@@ -697,6 +709,9 @@ module.exports = grammar({
     wildcard_identifier: _ => /[_a-zA-Z*][_a-zA-Z0-9*]*/,
     file_identifier: _ => token(/[./_a-zA-Z0-9]+/),
     identifier_with_dash: _ => /[_a-zA-Z][_a-zA-Z0-9\-]*/,
+    bpf_identifier: _ => 'bpf',
+    decimal_number: _ => /\d+/,
+
   },
 });
 
