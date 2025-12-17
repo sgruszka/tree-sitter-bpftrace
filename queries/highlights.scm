@@ -8,6 +8,9 @@
 (integer_literal) @number
 (boolean_literal) @boolean
 
+; Macro
+(macro_definition (identifier) @function.macro)
+
 ; Probes
 
 ; fentry/fexit, kprobe/kretprobe, rawtracepoint
@@ -101,7 +104,7 @@
 [
   "config"
   ; "let"
-  ; "macro"
+  "macro"
   "offsetof"
   "sizeof"
 ] @keyword
