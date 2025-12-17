@@ -183,3 +183,32 @@ watchpoint:0x10000000:4:x {}
         length: (integer_literal)
         mode: (watchpoint_mode)))
     (action)))
+
+============================================
+Fentry BPF program name
+============================================
+fentry:bpf:interval_us_* {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (fentry_fexit_provider)
+        subprovider: (bpf_identifier)
+        program_name: (wildcard_identifier)))
+    (action)))
+
+============================================
+Fentry BPF program id
+============================================
+fentry:bpf:123:* {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (fentry_fexit_provider)
+        subprovider: (bpf_identifier)
+        program_id: (decimal_number)
+        program_name: (wildcard_identifier)))
+    (action)))
