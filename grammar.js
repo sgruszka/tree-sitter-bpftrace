@@ -377,6 +377,7 @@ module.exports = grammar({
     _statement: $ => choice(
       alias($._expression, $.expression_statement),
       alias($._assignment, $.assignment_statement),
+      alias($._let_declaration, $.declaration_statement),
       alias('return', $.return_statement),
     ),
 
@@ -464,6 +465,19 @@ module.exports = grammar({
       )),
       field('right', $._expression),
     )),
+
+    _let_declaration: $ => seq(
+      'let',
+      field('name', $.scratch_variable),
+      optional(seq(
+        ':',
+        field('type', $.type_specifier),
+      )),
+      optional(seq(
+        '=',
+        field('value', $._expression),
+      )),
+    ),
 
     _expression: $ => choice(
       $.binary_expression,

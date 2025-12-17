@@ -100,10 +100,9 @@
 (continue_statement) @keyword
 (return_statement) @keyword.return
 
-; TODO
 [
   "config"
-  ; "let"
+  "let"
   "macro"
   "offsetof"
   "sizeof"
