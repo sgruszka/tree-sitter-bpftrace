@@ -38,7 +38,14 @@ module.exports = grammar({
 
   rules: {
     // TODO: all grammar rules
-    source_file: $ => seq(optional($.hashbang), optional($.preamble), repeat($.action_block)),
+    source_file: $ => seq(
+      optional($.hashbang),
+      optional($.preamble),
+      repeat(choice(
+        $.action_block,
+        $.macro_definition,
+      )),
+    ),
 
     line_comment: _ => token(seq('//', /.*/)),
     block_comment: _ => token(seq('/*', /[^*]*\*+([^/*][^*]*\*+)*/, '/')),
@@ -77,6 +84,19 @@ module.exports = grammar({
 
     // TODO multiline defines with backslash at the end
     c_preproc: _ => /[#]\s*(ifdef|ifndef|if|else|elif|endif|define|include)[^\n]*/,
+
+    macro_definition: $ => seq(
+      'macro',
+      field('name', $.identifier),
+      field('parameters', $.macro_parameters),
+      field('body', $.block),
+    ),
+
+    macro_parameters: $ => seq(
+      '(',
+      sepBy(',', choice($.identifier, $._variable)),
+      ')',
+    ),
 
     action_block: $ => seq($.probes_list, optional($.predicate), $.action),
 
