@@ -37,7 +37,6 @@ module.exports = grammar({
   ],
 
   rules: {
-    // TODO: all grammar rules
     source_file: $ => seq(
       optional($.hashbang),
       optional($.preamble),
@@ -165,7 +164,7 @@ module.exports = grammar({
     ),
 
     _kprobe_kretprobe: $ => seq(
-      // TODD add: kprobe[:module]:fn+offset
+      // TODO add: kprobe[:module]:fn+offset
       field('provider', $.kprobe_kretprobe_provider),
       $._probe_arguments__optional_module_and_function,
     ),
@@ -516,7 +515,6 @@ module.exports = grammar({
       $.boolean_literal,
       $._variable,
       $.identifier,
-      // TODO
     ),
 
     _div_expression: $ => prec.left(PREC.multiplicative, seq(
@@ -633,8 +631,6 @@ module.exports = grammar({
         $.integer_literal,
       )),
     )),
-
-    args_keyword: _ => 'args',
 
     subscript_expression: $ => prec(PREC.subscript, seq(
       field('argument', choice(
@@ -763,6 +759,7 @@ module.exports = grammar({
     identifier_with_dash: _ => /[_a-zA-Z][_a-zA-Z0-9\-]*/,
     bpf_identifier: _ => 'bpf',
     argn_identifier: _ => token(seq('arg', /\d+/)),
+    args_keyword: _ => 'args',
     decimal_number: _ => /\d+/,
 
   },
