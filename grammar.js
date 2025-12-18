@@ -56,6 +56,7 @@ module.exports = grammar({
       $.config_block,
       $.c_preproc,
       seq($.c_struct, optional(';')),
+      $.map_declaration,
     ),
 
     config_block: $ => seq(
@@ -83,6 +84,14 @@ module.exports = grammar({
 
     // TODO multiline defines with backslash at the end
     c_preproc: _ => /[#]\s*(ifdef|ifndef|if|else|elif|endif|define|include)[^\n]*/,
+
+    map_declaration: $ => seq(
+      'let',
+      $.map_variable,
+      '=',
+      $.call_expression,
+      ';'
+    ),
 
     macro_definition: $ => seq(
       'macro',
