@@ -55,6 +55,7 @@ module.exports = grammar({
     _preamble_item: $ => choice(
       $.config_block,
       $.c_preproc,
+      $.c_preproc_block,
       seq($.c_struct, optional(';')),
       $.map_declaration,
     ),
@@ -82,7 +83,11 @@ module.exports = grammar({
       )),
     ),
 
-    c_preproc: _ => /#\s*(ifdef|ifndef|if|else|elif|endif|define|include)([^/\n]|\/[^*]|\\\n)*/,
+    c_preproc: _ => /#\s*(define|include)([^/\n]|\/[^*]|\\\n)*/,
+
+    // TODO: why ungreedy/lazy does not work, RustRegex does not work too:
+    // c_preproc_block: _ => token(new RustRegex('#\s*(ifndef|ifdef|if)(?s:.*?)#\s*endif'))
+    c_preproc_block: _ => /#\s*(if|ifdef|ifndef)([^\n]|\n)*?#\s*endif/,
 
     map_declaration: $ => seq(
       'let',
