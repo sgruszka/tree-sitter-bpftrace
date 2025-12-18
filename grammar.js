@@ -447,16 +447,21 @@ module.exports = grammar({
       field('body', $.block),
     ),
 
-    range: $ => seq(
-      field('left', $._range_limit),
-      '..',
-      field('right', $._range_limit),
+    range: $ => choice(
+      $._range,
+      $._parenthesized_range,
     ),
 
-    _range_limit: $ => choice(
-      $.identifier,
-      $.scratch_variable,
-      $.integer_literal,
+    _range: $ => seq(
+      field('left', $._expression),
+      '..',
+      field('right', $._expression),
+    ),
+
+    _parenthesized_range: $ => seq(
+      '(',
+      $._range,
+      ')',
     ),
 
     _assignment: $ => prec(PREC.assignment, seq(
