@@ -82,8 +82,7 @@ module.exports = grammar({
       )),
     ),
 
-    // TODO multiline defines with backslash at the end
-    c_preproc: _ => /[#]\s*(ifdef|ifndef|if|else|elif|endif|define|include)[^\n]*/,
+    c_preproc: _ => /#\s*(ifdef|ifndef|if|else|elif|endif|define|include)([^/\n]|\/[^*]|\\\n)*/,
 
     map_declaration: $ => seq(
       'let',
