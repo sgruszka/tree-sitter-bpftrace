@@ -346,11 +346,11 @@ module.exports = grammar({
     _action_body: $ => seq(
       repeat(choice(
         seq($._statement, ';'),
-        $._block_statement,
+        $._loop_or_if_statement,
       )),
       choice(
         seq($._statement, optional(';')),
-        $._block_statement,
+        $._loop_or_if_statement,
       ),
     ),
 
@@ -365,12 +365,12 @@ module.exports = grammar({
       repeat(choice(
         seq($._statement, ';'),
         seq($._flow_statement, ';'),
-        $._block_statement,
+        $._loop_or_if_statement,
       )),
       choice(
         seq($._statement, optional(';')),
         seq($._flow_statement, optional(';')),
-        $._block_statement,
+        $._loop_or_if_statement,
       ),
     ),
 
@@ -386,7 +386,7 @@ module.exports = grammar({
       alias('continue', $.continue_statement),
     ),
 
-    _block_statement: $ => choice(
+    _loop_or_if_statement: $ => choice(
       $.if_statement,
       $.while_statement,
       $.unroll_statement,
