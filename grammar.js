@@ -374,6 +374,17 @@ module.exports = grammar({
       ),
     ),
 
+    block_expression: $ => seq(
+      '{',
+      repeat(choice(
+        seq($._statement, ';'),
+        seq($._flow_statement, ';'),
+        $._loop_or_if_statement,
+      )),
+      $._expression,
+      '}',
+    ),
+
     _statement: $ => choice(
       alias($._expression, $.expression_statement),
       alias($._assignment, $.assignment_statement),
@@ -480,6 +491,7 @@ module.exports = grammar({
     ),
 
     _expression: $ => choice(
+      $.block_expression,
       $.binary_expression,
       alias($._div_expression, $.binary_expression),
       $.call_expression,
