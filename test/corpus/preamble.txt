@@ -48,3 +48,17 @@ Simple includes
   (preamble
     (c_preproc)
     (c_preproc)))
+
+============================================
+Map declaration
+============================================
+let @a = percpulruhash(2);
+---
+(source_file
+  (preamble
+    (map_declaration
+      (map_variable)
+      (call_expression
+        function: (identifier)
+        arguments: (arguments
+          (integer_literal))))))
