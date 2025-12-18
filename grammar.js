@@ -641,6 +641,7 @@ module.exports = grammar({
         $.scratch_variable,
         $.identifier,
         $.field_expression,
+        $.string_literal,
       )),
       '[',
       field('index', $.integer_literal),
