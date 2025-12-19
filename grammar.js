@@ -57,6 +57,7 @@ module.exports = grammar({
       $.c_preproc,
       $.c_preproc_block,
       seq($.c_struct, optional(';')),
+      $.import_statement,
       $.map_declaration,
     ),
 
@@ -88,6 +89,12 @@ module.exports = grammar({
     // TODO: why ungreedy/lazy does not work, RustRegex does not work too:
     // c_preproc_block: _ => token(new RustRegex('#\s*(ifndef|ifdef|if)(?s:.*?)#\s*endif'))
     c_preproc_block: _ => /#\s*(if|ifdef|ifndef)([^\n]|\n)*?#\s*endif/,
+
+    import_statement: $ => seq(
+      'import',
+      $.string_literal,
+      ';',
+    ),
 
     map_declaration: $ => seq(
       'let',
@@ -418,6 +425,7 @@ module.exports = grammar({
 
     if_statement: $ => seq(
       'if',
+      optional('comptime'),
       '(',
       field('condition', $._expression),
       ')',
@@ -513,6 +521,7 @@ module.exports = grammar({
       alias($._div_expression, $.binary_expression),
       $.call_expression,
       $.cast_expression,
+      $.comptime_expression,
       $.field_expression,
       $.subscript_expression,
       $.map_subscript_expression,
@@ -591,6 +600,11 @@ module.exports = grammar({
         field('value', $._expression),
       ),
     ),
+
+    comptime_expression: $ => prec.right(seq(
+      'comptime',
+      $._expression,
+    )),
 
     type_specifier: $ => choice(
       $.integer_type,

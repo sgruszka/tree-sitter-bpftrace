@@ -119,8 +119,7 @@
   "while"
 ] @keyword.repeat
 
-; TODO
-; "import" @keyword.import
+"import" @keyword.import
 
 ; Variables
 (identifier) @variable
