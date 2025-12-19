@@ -101,7 +101,7 @@ module.exports = grammar({
       $.map_variable,
       '=',
       $.call_expression,
-      ';'
+      ';',
     ),
 
     macro_definition: $ => seq(
