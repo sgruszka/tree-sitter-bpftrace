@@ -461,12 +461,17 @@ module.exports = grammar({
 
     for_statement: $ => seq(
       'for',
-      '(',
+      choice(
+        seq('(', $._for_statement_range, ')'),
+        $._for_statement_range,
+      ),
+      field('body', $.block),
+    ),
+
+    _for_statement_range: $ => seq(
       $.scratch_variable,
       ':',
       choice($.map_variable, $.range),
-      ')',
-      field('body', $.block),
     ),
 
     range: $ => choice(
