@@ -318,3 +318,19 @@ begin {
       (expression_statement
         (sizeof_expression
           value: (scratch_variable))))))
+
+============================================
+If comptime expression
+============================================
+begin { if (comptime false) {} }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (if_statement
+        condition: (comptime_expression
+          (boolean_literal))
+        consequence: (block)))))
