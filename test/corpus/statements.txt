@@ -155,3 +155,18 @@ begin {
               arguments: (arguments
                 (string_literal
                   (string_content))))))))))
+
+============================================
+If without parentheses
+============================================
+begin { if 1 {} }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (if_statement
+        (integer_literal)
+        consequence: (block)))))
