@@ -39,6 +39,8 @@ jobs:
         with:
           test-rust: true
           test-node: true
+          with:
+            node-version: "22"
           test-python: true
           test-go: false
           test-swift: false
