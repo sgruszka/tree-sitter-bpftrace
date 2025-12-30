@@ -334,3 +334,18 @@ begin { if (comptime false) {} }
         condition: (comptime_expression
           (boolean_literal))
         consequence: (block)))))
+
+============================================
+If comptime before expression
+============================================
+begin { if comptime (false) {  } }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (if_statement
+        condition: (boolean_literal)
+        consequence: (block)))))
