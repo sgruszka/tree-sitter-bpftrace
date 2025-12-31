@@ -36,7 +36,7 @@ jobs:
             ${{ runner.os }}-node22-
 
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps --prefer-offline --no-audit --no-fund
+        run: npm install --legacy-peer-deps --prefer-offline --no-audit --no-fund
 
       - name: Run ESLint
         run: npm run lint
