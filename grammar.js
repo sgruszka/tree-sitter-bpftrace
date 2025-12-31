@@ -27,7 +27,7 @@ const PREC = {
   assignment: 0,
 };
 
-module.exports  = grammar({
+module.exports = grammar({
   name: 'bpftrace',
   extras: $ => [/\s/, $.line_comment, $.block_comment],
   externals: $ => [$.c_struct],
