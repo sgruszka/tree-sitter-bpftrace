@@ -12,15 +12,31 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    container:
+      image: node:22-bookworm
+
     steps:
+      - name: Print OS version
+        run: |
+          uname -a
+          cat /etc/os-release
+
       - name: Checkout repository
         uses: actions/checkout@v5
-      - name: Set up Node.js
-        uses: actions/setup-node@v5
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
         with:
-          cache: npm
-          node-version: ${{vars.NODE_VERSION}}
-      - name: Install modules
-        run: npm ci --legacy-peer-deps
+          path: |
+            node_modules
+            ~/.npm
+            ~/.cache/node-gyp
+          key: ${{ runner.os }}-node22-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node22-
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps --prefer-offline --no-audit --no-fund
+
       - name: Run ESLint
         run: npm run lint
