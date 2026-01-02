@@ -130,6 +130,7 @@
 
 (scratch_variable) @variable
 (map_variable) @variable
+(script_parameter) @variable.parameter
 
 (field_expression
   field: (identifier) @property)

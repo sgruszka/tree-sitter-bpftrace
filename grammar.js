@@ -280,7 +280,7 @@ module.exports = grammar({
         field('unit', $.time_unit),
       )),
       ':',
-      field('count', $.integer_literal),
+      field('count', choice($.integer_literal, $.script_parameter)),
     ),
 
     time_unit: $ => choice(
@@ -291,7 +291,7 @@ module.exports = grammar({
       ':',
       'hz',
       ':',
-      field('rate', $.integer_literal),
+      field('rate', choice($.integer_literal, $.script_parameter)),
     ),
 
     profile_interval_provider: _ => choice(
@@ -545,6 +545,7 @@ module.exports = grammar({
       $.boolean_literal,
       $._variable,
       $.identifier,
+      $.script_parameter,
     ),
 
     _div_expression: $ => prec.left(PREC.multiplicative, seq(
@@ -794,6 +795,9 @@ module.exports = grammar({
       '@',
       optional(/[_a-zA-Z][_a-zA-Z0-9]*/),
     )),
+
+    // TOOD: $N can replace probes names and possible other things
+    script_parameter: _ => /[$]\d+/,
 
     scratch_variable: _ => /[$][_a-zA-Z][_a-zA-Z0-9]*/,
     identifier: _ => /[_a-zA-Z][_a-zA-Z0-9]*/,
