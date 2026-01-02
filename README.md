@@ -4,7 +4,7 @@ A [tree-sitter](https://tree-sitter.github.io/tree-sitter) grammar for [bpftrace
 
 ## Building
 ### Using pre-generated parser
-Main branch contain pre-generated parser sources for tree-sitter [abi](https://tree-sitter.github.io/tree-sitter/using-parsers/7-abi-versions.html) version 14.
+Main branch contain pre-generated parser sources for tree-sitter [abi](https://tree-sitter.github.io/tree-sitter/using-parsers/7-abi-versions.html) version 15.
 You only need a C compiler toolchain and *make* to build it.
 
 ```bash
@@ -15,11 +15,10 @@ make
 
 ## Regenerate parser
 If you need different abi, you have to regenerate the parser. For this you need to have *node.js* and *tree-sitter-cli* installed.
-For example:
 ```bash
 git clone --depth 1 https://github.com/sgruszka/tree-sitter-bpftrace.git
 cd tree-sitter-bpftrace
-tree-sitter gen --abi 15
+tree-sitter gen --abi 14
 tree-sitter build
 ```
 
