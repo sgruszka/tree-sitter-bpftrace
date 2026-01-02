@@ -1093,8 +1093,17 @@
           "type": "FIELD",
           "name": "count",
           "content": {
-            "type": "SYMBOL",
-            "name": "integer_literal"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "integer_literal"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "script_parameter"
+              }
+            ]
           }
         }
       ]
@@ -1135,8 +1144,17 @@
           "type": "FIELD",
           "name": "rate",
           "content": {
-            "type": "SYMBOL",
-            "name": "integer_literal"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "integer_literal"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "script_parameter"
+              }
+            ]
           }
         }
       ]
@@ -2297,6 +2315,10 @@
         {
           "type": "SYMBOL",
           "name": "identifier"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "script_parameter"
         }
       ]
     },
@@ -3939,6 +3961,10 @@
           }
         ]
       }
+    },
+    "script_parameter": {
+      "type": "PATTERN",
+      "value": "[$]\\d+"
     },
     "scratch_variable": {
       "type": "PATTERN",
