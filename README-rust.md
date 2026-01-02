@@ -13,7 +13,7 @@ tree-sitter = "0.26.3"
 tree-sitter-bpftrace = "0.1.1"
 ```
 
-# Example
+## Example
 ```rust
 fn main() {
     let mut parser = tree_sitter::Parser::new();
