@@ -223,3 +223,6 @@
     "?"
     ":"
   ] @keyword.conditional.ternary)
+
+(predicate
+  "/" @punctuation.delimiter)
