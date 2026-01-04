@@ -167,16 +167,17 @@
 [
   ","
   ";"
+  ":"
+  "."
 ] @punctuation.delimiter
 
 ; Operators
 [
+  ; Field access
   "->"
-  "."
-  ":"
-] @operator
-
-[
+  ; Range
+  ".."
+  ; Assignment
   "="
   "<<="
   ">>="
@@ -188,30 +189,31 @@
   "&="
   "|="
   "^="
-] @operator
-
-[
+  ; Update
   "--"
   "++"
-] @operator
-
-[
+  ; Arithmetic
   "%"
   "+"
   "-"
   "*"
-  "<<"
-  ">>"
+  "/"
+  ; Relational
   "<="
   "<"
   ">="
   ">"
   "=="
   "!="
+  ; Bitwise
   "&"
   "^"
   "|"
+  "~"
+  "<<"
+  ">>"
+  ; Logical
   "&&"
   "||"
-  "/"
+  "!"
 ] @operator
