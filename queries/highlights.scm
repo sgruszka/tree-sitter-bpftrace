@@ -13,6 +13,20 @@
 
 (boolean_literal) @boolean
 
+; Variables
+(identifier) @variable
+
+(args_keyword) @variable.builtin
+
+((identifier) @variable.builtin
+  (#lua-match? @variable.builtin "^arg[0-9]+$"))
+
+(scratch_variable) @variable
+
+(map_variable) @variable
+
+(script_parameter) @variable.parameter
+
 ; Macro
 (macro_definition
   (identifier) @function.macro)
@@ -134,19 +148,6 @@
 
 "import" @keyword.import
 
-; Variables
-(identifier) @variable
-
-(args_keyword) @variable.builtin
-
-((identifier) @variable.builtin
-  (#lua-match? @variable.builtin "^arg[0-9]+$"))
-
-(scratch_variable) @variable
-
-(map_variable) @variable
-
-(script_parameter) @variable.parameter
 
 (field_expression
   field: (identifier) @property)
