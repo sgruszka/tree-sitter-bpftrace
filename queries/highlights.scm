@@ -217,3 +217,9 @@
   "||"
   "!"
 ] @operator
+
+(conditional_expression
+  [
+    "?"
+    ":"
+  ] @keyword.conditional.ternary)
