@@ -121,9 +121,7 @@
 ] @type.builtin
 
 ; Keywords
-(break_statement) @keyword
-
-(continue_statement) @keyword
+(hashbang) @keyword.directive
 
 (return_statement) @keyword.return
 
@@ -144,10 +142,11 @@
   "for"
   "unroll"
   "while"
+  (break_statement)
+  (continue_statement)
 ] @keyword.repeat
 
 "import" @keyword.import
-
 
 (field_expression
   field: (identifier) @property)
