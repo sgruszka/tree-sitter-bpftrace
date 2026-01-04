@@ -1,23 +1,29 @@
 ; Comments
-(line_comment) @comment
-(block_comment) @comment
+[
+  (line_comment)
+  (block_comment)
+] @comment @spell
 
 ; String and numeric literals
 (string_literal) @string
+
 (escape_sequence) @string.escape
+
 (integer_literal) @number
+
 (boolean_literal) @boolean
 
 ; Macro
-(macro_definition (identifier) @function.macro)
+(macro_definition
+  (identifier) @function.macro)
 
 ; Probes
-
 ; fentry/fexit, kprobe/kretprobe, rawtracepoint
 (probe
   provider: (_) @type.builtin
   module: (wildcard_identifier) @module
   function: (wildcard_identifier) @property)
+
 (probe
   provider: (_) @type.builtin
   function: (wildcard_identifier) @property)
@@ -39,6 +45,7 @@
   provider: (_) @type.builtin
   event: (identifier_with_dash) @property
   count: (integer_literal) @number)
+
 (probe
   provider: (_) @type.builtin
   event: (identifier_with_dash) @property)
@@ -53,6 +60,7 @@
   provider: (profile_interval_provider) @type.builtin
   unit: (time_unit) @string.special
   count: (integer_literal) @property)
+
 (probe
   provider: (profile_interval_provider) @type.builtin
   count: (integer_literal) @number)
@@ -62,6 +70,7 @@
   provider: (iter_provider) @type.builtin
   object: (identifier) @module
   pin: (file_identifier) @property)
+
 (probe
   provider: (iter_provider) @type.builtin
   object: (identifier) @module)
@@ -72,6 +81,7 @@
   binary: (file_identifier) @string.special.path
   namespace: (identifier) @variable
   function: (identifier) @property)
+
 (probe
   provider: (ustd_provider) @type.builtin
   binary: (file_identifier) @string.special.path
@@ -86,6 +96,7 @@
 
 ; Types
 (type_specifier) @type
+
 (integer_type) @type.builtin
 
 [
@@ -97,7 +108,9 @@
 
 ; Keywords
 (break_statement) @keyword
+
 (continue_statement) @keyword
+
 (return_statement) @keyword.return
 
 [
@@ -125,11 +138,14 @@
 (identifier) @variable
 
 (args_keyword) @variable.builtin
+
 ((identifier) @variable.builtin
-  (#match? @variable.builtin "^arg[0-9]+$"))
+  (#lua-match? @variable.builtin "^arg[0-9]+$"))
 
 (scratch_variable) @variable
+
 (map_variable) @variable
+
 (script_parameter) @variable.parameter
 
 (field_expression
@@ -175,8 +191,8 @@
 ] @operator
 
 [
- "--"
- "++"
+  "--"
+  "++"
 ] @operator
 
 [
