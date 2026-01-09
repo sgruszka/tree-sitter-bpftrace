@@ -119,7 +119,11 @@ module.exports = grammar({
 
     action_block: $ => seq($.probes_list, optional($.predicate), $.action),
 
-    probes_list: $ => sepBy1(',', $.probe),
+    probes_list: $ => seq(
+      sepBy1(',', $.probe),
+      optional(','),
+    ),
+
     predicate: $ => seq('/', $._predicate_expression),
     _predicate_expression: $ => seq($._expression, '/'),
 
