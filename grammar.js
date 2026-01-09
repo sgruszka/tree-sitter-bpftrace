@@ -496,7 +496,7 @@ module.exports = grammar({
     ),
 
     _assignment: $ => prec(PREC.assignment, seq(
-      field('left', choice($._variable, $.map_subscript_expression)),
+      field('left', $._variable),
       field('operator', choice(
         '=',
         '<<=',
@@ -535,7 +535,6 @@ module.exports = grammar({
       $.comptime_expression,
       $.field_expression,
       $.subscript_expression,
-      $.map_subscript_expression,
       $.sizeof_expression,
       $.offsetof_expression,
       $.pointer_expression,
@@ -684,17 +683,6 @@ module.exports = grammar({
       ']',
     )),
 
-    map_subscript_expression: $ => prec(PREC.subscript, seq(
-      field('argument', $.map_variable),
-      field('indexes', $.indexes_list),
-    )),
-
-    indexes_list: $ => seq(
-      '[',
-      sepBy1(',', $._expression),
-      ']',
-    ),
-
     sizeof_expression: $ => seq(
       'sizeof',
       '(',
@@ -795,10 +783,19 @@ module.exports = grammar({
       $.map_variable,
     ),
 
-    map_variable: $ => token(seq(
-      '@',
-      optional(/[_a-zA-Z][_a-zA-Z0-9]*/),
-    )),
+    map_variable: $ => seq(
+      token(seq(
+        '@',
+        optional(/[_a-zA-Z][_a-zA-Z0-9]*/),
+      )),
+      optional($.indexes_list),
+    ),
+
+    indexes_list: $ => seq(
+      '[',
+      sepBy1(',', $._expression),
+      ']',
+    ),
 
     // TOOD: $N can replace probes names and possible other things
     script_parameter: _ => /[$]\d+/,

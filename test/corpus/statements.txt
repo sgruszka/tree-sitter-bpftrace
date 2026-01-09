@@ -115,9 +115,8 @@ begin {
         provider: (begin_end_provider)))
     (action
       (assignment_statement
-        left: (map_subscript_expression
-          argument: (map_variable)
-          indexes: (indexes_list
+        left: (map_variable
+          (indexes_list
             (integer_literal)
             (integer_literal)))
         right: (integer_literal))
