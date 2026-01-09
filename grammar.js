@@ -714,9 +714,9 @@ module.exports = grammar({
       ')',
     ),
 
-    pointer_expression: $ => prec.left(PREC.cast, seq(
-      '*',
-      field('argument', $._expression),
+    pointer_expression: $ => prec.left(PREC.cast, choice(
+      seq('*', field('argument', $._expression)),
+      seq('&', field('argument', $.scratch_variable)),
     )),
 
     conditional_expression: $ => prec.right(PREC.conditional, seq(
