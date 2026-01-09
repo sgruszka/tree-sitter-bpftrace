@@ -659,6 +659,7 @@ module.exports = grammar({
     field_expression: $ => prec.left(PREC.field, seq(
       field('argument', choice(
         $.scratch_variable,
+        $.map_variable,
         $.identifier,
         $.args_keyword,
         $.field_expression,
