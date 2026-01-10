@@ -618,20 +618,37 @@ module.exports = grammar({
       $._expression,
     )),
 
+    // Some types are allowed only in let declaration and not in casting,
+    // but add them here anyway to avoid complication.
+    // Would make sence to bpftrace to allow those in casting.
     type_specifier: $ => choice(
       $.integer_type,
       $.array_type,
       $.pointer_type,
       $.struct_type,
+      $.string_type,
+      $.typeof_expression,
     ),
 
     array_type: $ => seq(
-      $.integer_type,
+      choice(
+        $.integer_type,
+        // Only for 'let'
+        $.struct_type,
+        $.string_type,
+      ),
       repeat1(seq(
         '[',
         optional($.integer_literal),
         ']',
       )),
+    ),
+
+    typeof_expression: $ => seq(
+      'typeof',
+      '(',
+      $._expression,
+      ')',
     ),
 
     pointer_type: $ => seq(
@@ -656,6 +673,8 @@ module.exports = grammar({
     ),
 
     struct_type: $ => seq('struct', $.identifier),
+
+    string_type: $ => 'string',
 
     field_expression: $ => prec.left(PREC.field, seq(
       field('argument', choice(
