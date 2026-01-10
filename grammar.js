@@ -255,7 +255,7 @@ module.exports = grammar({
       field('event', $.identifier_with_dash),
       optional(seq(
         ':',
-        field('count', $.integer_literal),
+        field('count', $._integer_literal),
       )),
     ),
 
@@ -284,7 +284,7 @@ module.exports = grammar({
         field('unit', $.time_unit),
       )),
       ':',
-      field('count', choice($.integer_literal, $.script_parameter)),
+      field('count', $._integer_literal),
     ),
 
     time_unit: $ => choice(
@@ -295,7 +295,7 @@ module.exports = grammar({
       ':',
       'hz',
       ':',
-      field('rate', choice($.integer_literal, $.script_parameter)),
+      field('rate', $._integer_literal),
     ),
 
     profile_interval_provider: _ => choice(
@@ -433,7 +433,7 @@ module.exports = grammar({
       choice(
         seq('(', field('condition', $._expression), ')'),
         $._variable,
-        $.integer_literal,
+        $._integer_literal,
       ),
       field('consequence', $.block),
       optional(field('alternative', $.else_clause)),
@@ -458,7 +458,7 @@ module.exports = grammar({
     unroll_statement: $ => seq(
       'unroll',
       '(',
-      $.integer_literal,
+      $._integer_literal,
       ')',
       field('body', $.block),
     ),
@@ -679,10 +679,10 @@ module.exports = grammar({
         $.scratch_variable,
         $.identifier,
         $.field_expression,
-        $.string_literal,
+        $._string_literal,
       )),
       '[',
-      field('index', $.integer_literal),
+      field('index', $._integer_literal),
       ']',
     )),
 
@@ -751,6 +751,11 @@ module.exports = grammar({
     _prefix_increment: $ => prec.right(PREC.cast, seq('++', $._variable)),
     _prefix_decrement: $ => prec.right(PREC.cast, seq('--', $._variable)),
 
+    _string_literal: $ => choice(
+      $.string_literal,
+      $.script_parameter,
+    ),
+
     string_literal: $ => seq(
       '"',
       repeat(choice(
@@ -758,6 +763,11 @@ module.exports = grammar({
         alias(/\\[^\n]/, $.escape_sequence),
       )),
       '"',
+    ),
+
+    _integer_literal: $ => choice(
+      $.integer_literal,
+      $.script_parameter,
     ),
 
     /* TODO: bpfrace report errors on things like 0xffLL */
