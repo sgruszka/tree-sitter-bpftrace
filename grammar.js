@@ -549,6 +549,7 @@ module.exports = grammar({
       $._variable,
       $.identifier,
       $.script_parameter,
+      $.retval_identifier,
     ),
 
     _div_expression: $ => prec.left(PREC.multiplicative, seq(
@@ -662,6 +663,7 @@ module.exports = grammar({
         $.map_variable,
         $.identifier,
         $.args_keyword,
+        $.retval_identifier,
         $.field_expression,
         $.parenthesized_expression,
       )),
@@ -808,6 +810,7 @@ module.exports = grammar({
     identifier_with_dash: _ => /[_a-zA-Z][_a-zA-Z0-9\-]*/,
     bpf_identifier: _ => 'bpf',
     argn_identifier: _ => token(seq('arg', /\d+/)),
+    retval_identifier: _ => 'retval',
     args_keyword: _ => 'args',
     decimal_number: _ => /\d+/,
 
