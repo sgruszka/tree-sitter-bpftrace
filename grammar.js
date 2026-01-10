@@ -34,6 +34,8 @@ module.exports = grammar({
 
   conflicts: $ => [
     [$._div_left_side, $._predicate_expression],
+    [$._expression, $.pointer_type],
+    [$._expression, $._type_specifier],
   ],
 
   rules: {
@@ -620,14 +622,19 @@ module.exports = grammar({
 
     // Some types are allowed only in let declaration and not in casting,
     // but add them here anyway to avoid complication.
-    // Would make sence to bpftrace to allow those in casting.
+    // Would make sence to bpftrace to allow more types in casting.
     type_specifier: $ => choice(
+      $._type_specifier,
+      $.typeof_expression,
+    ),
+
+    _type_specifier: $=> choice(
       $.integer_type,
       $.array_type,
       $.pointer_type,
       $.struct_type,
       $.string_type,
-      $.typeof_expression,
+      $.identifier,
     ),
 
     array_type: $ => seq(
@@ -647,7 +654,10 @@ module.exports = grammar({
     typeof_expression: $ => seq(
       'typeof',
       '(',
-      $._expression,
+      choice(
+        $._expression,
+        $._type_specifier,
+      ),
       ')',
     ),
 
@@ -656,6 +666,7 @@ module.exports = grammar({
         $.integer_type,
         $.array_type,
         $.struct_type,
+        $.identifier,
       ),
       repeat1('*'),
     ),
