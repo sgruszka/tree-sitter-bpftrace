@@ -162,10 +162,10 @@ module.exports = grammar({
     _probe_arguments__optional_module_and_function: $ => seq(
       optional(seq(
         ':',
-        field('module', $.wildcard_identifier),
+        field('module', $._wildcard_identifier),
       )),
       ':',
-      field('function', $.wildcard_identifier),
+      field('function', $._wildcard_identifier),
     ),
 
     _fentry_fexit_bpf: $ => seq(
@@ -214,9 +214,9 @@ module.exports = grammar({
     _tracepoint: $ => seq(
       field('provider', $.tracepoint_provider),
       ':',
-      field('subsys', $.wildcard_identifier),
+      field('subsys', $._wildcard_identifier),
       ':',
-      field('event', $.wildcard_identifier),
+      field('event', $._wildcard_identifier),
     ),
 
     tracepoint_provider: _ => choice(
@@ -810,9 +810,12 @@ module.exports = grammar({
       ']',
     ),
 
-    // TOOD: $N can replace probes names and possible other things
-    script_parameter: _ => /[$]\d+/,
+    _wildcard_identifier: $ => choice(
+      $.wildcard_identifier,
+      $.script_parameter,
+    ),
 
+    script_parameter: _ => /[$]\d+/,
     scratch_variable: _ => /[$][_a-zA-Z][_a-zA-Z0-9]*/,
     identifier: _ => /[_a-zA-Z][_a-zA-Z0-9]*/,
     wildcard_identifier: _ => /[_a-zA-Z*][_a-zA-Z0-9.*]*/,
