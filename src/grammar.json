@@ -1406,14 +1406,6 @@
         {
           "type": "STRING",
           "value": "w"
-        },
-        {
-          "type": "STRING",
-          "value": "asyncwatchpoint"
-        },
-        {
-          "type": "STRING",
-          "value": "aw"
         }
       ]
     },

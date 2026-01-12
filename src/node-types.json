@@ -4598,14 +4598,6 @@
     "named": true
   },
   {
-    "type": "asyncwatchpoint",
-    "named": false
-  },
-  {
-    "type": "aw",
-    "named": false
-  },
-  {
     "type": "begin",
     "named": false
   },
