@@ -349,3 +349,49 @@ begin { if comptime (false) {  } }
       (if_statement
         condition: (boolean_literal)
         consequence: (block)))))
+
+============================================
+If expression
+============================================
+kprobe:tcp_reset { $x = if ((uint64) arg0 > 0) { 10 } else { 20 }; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (kprobe_kretprobe_provider)
+        function: (wildcard_identifier)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (if_expression
+          condition: (binary_expression
+            left: (cast_expression
+              type: (type_specifier
+                (integer_type))
+              value: (identifier))
+            right: (integer_literal))
+          consequence: (integer_literal)
+          alternative: (else_expression
+            (integer_literal)))))))
+
+============================================
+Block expression
+============================================
+begin { $x = {$a = 10;  1 << $a} }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (block_expression
+          (assignment_statement
+            left: (scratch_variable)
+            right: (integer_literal))
+          (binary_expression
+            left: (integer_literal)
+            right: (scratch_variable)))))))
