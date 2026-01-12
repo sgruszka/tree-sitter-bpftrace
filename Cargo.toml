@@ -1,7 +1,7 @@
 [package]
 name = "tree-sitter-bpftrace"
 description = "tree-sitter parser for bpftrace"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Stanislaw Gruszka <stf_xl@wp.pl>"]
 license = "MIT"
 readme = "README-rust.md"
