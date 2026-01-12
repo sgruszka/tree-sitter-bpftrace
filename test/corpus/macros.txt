@@ -1,0 +1,17 @@
+============================================
+Macro declaration
+============================================
+macro add($x) {
+  $x += 1
+}
+---
+(source_file
+  (macro_definition
+    name: (identifier)
+    parameters: (macro_parameters
+      (scratch_variable))
+    body: (block
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal)))))
+
