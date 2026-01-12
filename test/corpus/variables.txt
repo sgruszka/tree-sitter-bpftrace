@@ -33,6 +33,20 @@ BEGIN { $a = 1; }
         right: (integer_literal)))))
 
 ============================================
+Variable declaration
+============================================
+begin { let $a; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (declaration_statement
+        name: (scratch_variable)))))
+
+============================================
 Referencing variables
 ============================================
 software:dummy { $a = 3; @ = 4; @r = $a + @; }
@@ -56,5 +70,78 @@ software:dummy { $a = 3; @ = 4; @r = $a + @; }
           left: (scratch_variable)
           right: (map_variable))))))
 
+============================================
+Variable declaration with struct array type
+============================================
+begin { let $my_foo: struct Foo[10]; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (declaration_statement
+        name: (scratch_variable)
+        type: (type_specifier
+          (array_type
+            (struct_type
+              (identifier))
+            (integer_literal)))))))
 
+============================================
+Variables declaration with struct pointer type
+============================================
+struct Foo { int a; }
+begin { let $my_foo: struct Foo *; }
+---
+(source_file
+  (preamble
+    (c_struct))
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (declaration_statement
+        name: (scratch_variable)
+        type: (type_specifier
+          (pointer_type
+            (struct_type
+              (identifier))))))))
 
+============================================
+Variable declaration with struct type
+============================================
+struct Foo { int a; }
+begin { let $my_foo: struct Foo; }
+---
+(source_file
+  (preamble
+    (c_struct))
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (declaration_statement
+        name: (scratch_variable)
+        type: (type_specifier
+          (struct_type
+            (identifier)))))))
+
+============================================
+Variable declaration with integer type
+============================================
+begin { let $a: uint8; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (declaration_statement
+        name: (scratch_variable)
+        type: (type_specifier
+          (integer_type))))))
