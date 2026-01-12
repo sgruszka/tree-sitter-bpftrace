@@ -355,7 +355,6 @@ module.exports = grammar({
 
     watchpoint_provider: _ => choice(
       'watchpoint', 'w',
-      'asyncwatchpoint', 'aw',
     ),
 
     watchpoint_mode: _ => choice(
