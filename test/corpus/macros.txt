@@ -15,3 +15,23 @@ macro add($x) {
         left: (scratch_variable)
         right: (integer_literal)))))
 
+============================================
+Script parameters
+============================================
+kprobe:$1 { $x = $2; print($x) }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (kprobe_kretprobe_provider)
+        function: (script_parameter)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (script_parameter))
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (scratch_variable)))))))
