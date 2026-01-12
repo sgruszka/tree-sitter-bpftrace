@@ -395,3 +395,69 @@ begin { $x = {$a = 10;  1 << $a} }
           (binary_expression
             left: (integer_literal)
             right: (scratch_variable)))))))
+
+============================================
+Typeof expression for variable
+============================================
+begin { $x = (uint8)1; $y = (typeof($x))10; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (cast_expression
+          type: (type_specifier
+            (integer_type))
+          value: (integer_literal)))
+      (assignment_statement
+        left: (scratch_variable)
+        right: (cast_expression
+          type: (type_specifier
+            (typeof_expression
+              (scratch_variable)))
+          value: (integer_literal))))))
+
+============================================
+Typeof expression for C type
+============================================
+begin { let $a: typeof(size_t) = 1 }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (declaration_statement
+        name: (scratch_variable)
+        type: (type_specifier
+          (typeof_expression
+            (identifier)))
+        value: (integer_literal)))))
+
+============================================
+Typeof expression for pointer
+============================================
+begin { let $b: typeof(size_t*) = (size_t *) 0; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (declaration_statement
+        name: (scratch_variable)
+        type: (type_specifier
+          (typeof_expression
+            (pointer_type
+              (identifier))))
+        value: (cast_expression
+          type: (type_specifier
+            (pointer_type
+              (identifier)))
+          value: (integer_literal))))))
