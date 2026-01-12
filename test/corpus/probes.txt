@@ -212,3 +212,43 @@ fentry:bpf:123:* {}
         program_id: (decimal_number)
         program_name: (wildcard_identifier)))
     (action)))
+
+============================================
+Probes list
+============================================
+fentry:mac80211:minstrel_ht_alloc_sta,
+fentry:rt2800lib:rt2800_sta_add
+{ }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (fentry_fexit_provider)
+        module: (wildcard_identifier)
+        function: (wildcard_identifier))
+      (probe
+        provider: (fentry_fexit_provider)
+        module: (wildcard_identifier)
+        function: (wildcard_identifier)))
+    (action)))
+
+============================================
+Probes list with comma
+============================================
+fentry:mac80211:minstrel_ht_alloc_sta,
+fentry:rt2800lib:rt2800_sta_add,
+{ }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (fentry_fexit_provider)
+        module: (wildcard_identifier)
+        function: (wildcard_identifier))
+      (probe
+        provider: (fentry_fexit_provider)
+        module: (wildcard_identifier)
+        function: (wildcard_identifier)))
+    (action)))
