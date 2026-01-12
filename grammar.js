@@ -36,6 +36,7 @@ module.exports = grammar({
     [$._div_left_side, $._predicate_expression],
     [$._expression, $.pointer_type],
     [$._expression, $._type_specifier],
+    [$._block_expression, $._statement],
   ],
 
   rules: {
@@ -399,7 +400,7 @@ module.exports = grammar({
       ),
     ),
 
-    block_expression: $ => seq(
+    _block_expression: $ => seq(
       '{',
       repeat(choice(
         seq($._statement, ';'),
@@ -446,6 +447,28 @@ module.exports = grammar({
       choice(
         $.if_statement,
         $.block,
+      ),
+    ),
+
+    // Similar like Block, 'if (Cond) Block' can be both: expression and statement,
+    // depending on if last line it the block ends with '; or not.
+    if_expression: $ => seq(
+      'if',
+      optional('comptime'),
+      choice(
+        seq('(', field('condition', $._expression), ')'),
+        $._variable,
+        $._integer_literal,
+      ),
+      field('consequence', $._block_expression),
+      optional(field('alternative', $.else_expression)),
+    ),
+
+    else_expression: $ => seq(
+      'else',
+      choice(
+        $.if_expression,
+        $._block_expression,
       ),
     ),
 
@@ -529,7 +552,6 @@ module.exports = grammar({
     ),
 
     _expression: $ => choice(
-      $.block_expression,
       $.binary_expression,
       alias($._div_expression, $.binary_expression),
       $.call_expression,
@@ -552,6 +574,8 @@ module.exports = grammar({
       $.identifier,
       $.script_parameter,
       $.retval_identifier,
+      alias($._block_expression, $.block_expression),
+      $.if_expression,
     ),
 
     _div_expression: $ => prec.left(PREC.multiplicative, seq(
