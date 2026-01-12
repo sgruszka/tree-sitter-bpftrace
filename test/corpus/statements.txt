@@ -99,6 +99,45 @@ begin {
                 (scratch_variable)))))))))
 
 ============================================
+For loop with range expressions
+============================================
+begin {
+  let $x: uint64 = 5;
+  for $i : ($x+2)..($x+10) {
+    print($i)
+  }
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (declaration_statement
+        name: (scratch_variable)
+        type: (type_specifier
+          (integer_type))
+        value: (integer_literal))
+      (for_statement
+        (scratch_variable)
+        (range
+          left: (parenthesized_expression
+            (binary_expression
+              left: (scratch_variable)
+              right: (integer_literal)))
+          right: (parenthesized_expression
+            (binary_expression
+              left: (scratch_variable)
+              right: (integer_literal))))
+        body: (block
+          (expression_statement
+            (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (scratch_variable)))))))))
+
+============================================
 For loop with map
 ============================================
 begin {
