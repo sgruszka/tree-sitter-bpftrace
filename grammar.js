@@ -572,7 +572,7 @@ module.exports = grammar({
       $._variable,
       $.identifier,
       $.script_parameter,
-      $.retval_identifier,
+      $._retval_builtin,
       alias($._block_expression, $.block_expression),
       $.if_expression,
     ),
@@ -716,7 +716,7 @@ module.exports = grammar({
         $.map_variable,
         $.identifier,
         $.args_keyword,
-        $.retval_identifier,
+        $._retval_builtin,
         $.call_expression,
         $.field_expression,
         $.parenthesized_expression,
@@ -867,6 +867,11 @@ module.exports = grammar({
     _wildcard_identifier: $ => choice(
       $.wildcard_identifier,
       $.script_parameter,
+    ),
+
+    _retval_builtin: $ => seq(
+      $.retval_identifier,
+      optional(seq('(', ')')),
     ),
 
     script_parameter: _ => /[$]\d+/,
