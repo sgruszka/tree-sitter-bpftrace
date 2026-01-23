@@ -717,6 +717,7 @@ module.exports = grammar({
         $.identifier,
         $.args_keyword,
         $.retval_identifier,
+        $.call_expression,
         $.field_expression,
         $.parenthesized_expression,
       )),
