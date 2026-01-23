@@ -2397,7 +2397,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "retval_identifier"
+          "name": "_retval_builtin"
         },
         {
           "type": "ALIAS",
@@ -3386,7 +3386,11 @@
                 },
                 {
                   "type": "SYMBOL",
-                  "name": "retval_identifier"
+                  "name": "_retval_builtin"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "call_expression"
                 },
                 {
                   "type": "SYMBOL",
@@ -4184,6 +4188,36 @@
         {
           "type": "SYMBOL",
           "name": "script_parameter"
+        }
+      ]
+    },
+    "_retval_builtin": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "retval_identifier"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "("
+                },
+                {
+                  "type": "STRING",
+                  "value": ")"
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         }
       ]
     },
