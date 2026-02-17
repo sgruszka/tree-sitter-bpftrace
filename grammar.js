@@ -435,6 +435,8 @@ module.exports = grammar({
       choice(
         seq('(', field('condition', $._expression), ')'),
         $._variable,
+        $.identifier,
+        $.call_expression,
         $._integer_literal,
       ),
       field('consequence', $.block),
@@ -457,6 +459,8 @@ module.exports = grammar({
       choice(
         seq('(', field('condition', $._expression), ')'),
         $._variable,
+        $.identifier,
+        $.call_expression,
         $._integer_literal,
       ),
       field('consequence', $._block_expression),
