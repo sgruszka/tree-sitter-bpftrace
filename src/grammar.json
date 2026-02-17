@@ -1819,6 +1819,14 @@
             },
             {
               "type": "SYMBOL",
+              "name": "identifier"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "call_expression"
+            },
+            {
+              "type": "SYMBOL",
               "name": "_integer_literal"
             }
           ]
@@ -1917,6 +1925,14 @@
             {
               "type": "SYMBOL",
               "name": "_variable"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "identifier"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "call_expression"
             },
             {
               "type": "SYMBOL",
@@ -3476,7 +3492,7 @@
             "name": "index",
             "content": {
               "type": "SYMBOL",
-              "name": "_integer_literal"
+              "name": "_expression"
             }
           },
           {
