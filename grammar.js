@@ -574,6 +574,7 @@ module.exports = grammar({
       $.conditional_expression,
       $.unary_expression,
       $.tuple_expression,
+      $.record_expression,
       $.parenthesized_expression,
       $.update_expression,
       $.string_literal,
@@ -793,6 +794,18 @@ module.exports = grammar({
       seq($._expression, ','),
       sepBy1(',', $._expression),
       ')',
+    ),
+
+    record_expression: $ => seq(
+      '(',
+      sepBy1(',', $.record),
+      ')',
+    ),
+
+    record: $ => seq(
+      $.identifier,
+      '=',
+      $._expression,
     ),
 
     parenthesized_expression: $ => seq(
