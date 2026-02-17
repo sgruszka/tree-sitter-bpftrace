@@ -736,7 +736,7 @@ module.exports = grammar({
         $._string_literal,
       )),
       '[',
-      field('index', $._integer_literal),
+      field('index', $._expression),
       ']',
     )),
 
