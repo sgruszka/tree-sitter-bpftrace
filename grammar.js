@@ -579,6 +579,7 @@ module.exports = grammar({
       $._retval_builtin,
       alias($._block_expression, $.block_expression),
       $.if_expression,
+      $.args_keyword,
     ),
 
     _div_expression: $ => prec.left(PREC.multiplicative, seq(
