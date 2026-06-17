@@ -2427,6 +2427,10 @@
         {
           "type": "SYMBOL",
           "name": "if_expression"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "args_keyword"
         }
       ]
     },

@@ -74,6 +74,10 @@
       "required": false,
       "types": [
         {
+          "type": "args_keyword",
+          "named": true
+        },
+        {
           "type": "binary_expression",
           "named": true
         },
@@ -280,6 +284,10 @@
             "named": false
           },
           {
+            "type": "args_keyword",
+            "named": true
+          },
+          {
             "type": "binary_expression",
             "named": true
           },
@@ -404,6 +412,10 @@
           {
             "type": ")",
             "named": false
+          },
+          {
+            "type": "args_keyword",
+            "named": true
           },
           {
             "type": "binary_expression",
@@ -594,6 +606,10 @@
             "named": false
           },
           {
+            "type": "args_keyword",
+            "named": true
+          },
+          {
             "type": "binary_expression",
             "named": true
           },
@@ -752,6 +768,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "args_keyword",
+          "named": true
+        },
         {
           "type": "assignment_statement",
           "named": true
@@ -949,6 +969,10 @@
             "named": false
           },
           {
+            "type": "args_keyword",
+            "named": true
+          },
+          {
             "type": "binary_expression",
             "named": true
           },
@@ -1056,6 +1080,10 @@
       "multiple": false,
       "required": true,
       "types": [
+        {
+          "type": "args_keyword",
+          "named": true
+        },
         {
           "type": "binary_expression",
           "named": true
@@ -1172,6 +1200,10 @@
             "named": false
           },
           {
+            "type": "args_keyword",
+            "named": true
+          },
+          {
             "type": "binary_expression",
             "named": true
           },
@@ -1282,6 +1314,10 @@
             "named": false
           },
           {
+            "type": "args_keyword",
+            "named": true
+          },
+          {
             "type": "binary_expression",
             "named": true
           },
@@ -1390,6 +1426,10 @@
           {
             "type": ")",
             "named": false
+          },
+          {
+            "type": "args_keyword",
+            "named": true
           },
           {
             "type": "binary_expression",
@@ -1577,6 +1617,10 @@
             "named": false
           },
           {
+            "type": "args_keyword",
+            "named": true
+          },
+          {
             "type": "binary_expression",
             "named": true
           },
@@ -1703,6 +1747,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "args_keyword",
+          "named": true
+        },
         {
           "type": "assignment_statement",
           "named": true
@@ -1850,6 +1898,10 @@
       "multiple": false,
       "required": true,
       "types": [
+        {
+          "type": "args_keyword",
+          "named": true
+        },
         {
           "type": "binary_expression",
           "named": true
@@ -2086,6 +2138,10 @@
             "named": false
           },
           {
+            "type": "args_keyword",
+            "named": true
+          },
+          {
             "type": "binary_expression",
             "named": true
           },
@@ -2198,6 +2254,10 @@
           {
             "type": ";",
             "named": false
+          },
+          {
+            "type": "args_keyword",
+            "named": true
           },
           {
             "type": "assignment_statement",
@@ -2404,6 +2464,10 @@
             "named": false
           },
           {
+            "type": "args_keyword",
+            "named": true
+          },
+          {
             "type": "binary_expression",
             "named": true
           },
@@ -2566,6 +2630,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "args_keyword",
+          "named": true
+        },
         {
           "type": "binary_expression",
           "named": true
@@ -2812,6 +2880,10 @@
       "required": true,
       "types": [
         {
+          "type": "args_keyword",
+          "named": true
+        },
+        {
           "type": "binary_expression",
           "named": true
         },
@@ -2925,6 +2997,10 @@
           {
             "type": ")",
             "named": false
+          },
+          {
+            "type": "args_keyword",
+            "named": true
           },
           {
             "type": "binary_expression",
@@ -3096,6 +3172,10 @@
       "multiple": false,
       "required": false,
       "types": [
+        {
+          "type": "args_keyword",
+          "named": true
+        },
         {
           "type": "binary_expression",
           "named": true
@@ -3508,6 +3588,10 @@
             "named": false
           },
           {
+            "type": "args_keyword",
+            "named": true
+          },
+          {
             "type": "binary_expression",
             "named": true
           },
@@ -3616,6 +3700,10 @@
           {
             "type": ")",
             "named": false
+          },
+          {
+            "type": "args_keyword",
+            "named": true
           },
           {
             "type": "binary_expression",
@@ -3747,6 +3835,10 @@
           {
             "type": ")",
             "named": false
+          },
+          {
+            "type": "args_keyword",
+            "named": true
           },
           {
             "type": "binary_expression",
@@ -3958,6 +4050,10 @@
             "named": false
           },
           {
+            "type": "args_keyword",
+            "named": true
+          },
+          {
             "type": "binary_expression",
             "named": true
           },
@@ -4075,6 +4171,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "args_keyword",
+          "named": true
+        },
         {
           "type": "binary_expression",
           "named": true
@@ -4222,6 +4322,10 @@
       "required": true,
       "types": [
         {
+          "type": "args_keyword",
+          "named": true
+        },
+        {
           "type": "array_type",
           "named": true
         },
@@ -4355,6 +4459,10 @@
           {
             "type": ")",
             "named": false
+          },
+          {
+            "type": "args_keyword",
+            "named": true
           },
           {
             "type": "binary_expression",
@@ -4572,6 +4680,10 @@
           {
             "type": ")",
             "named": false
+          },
+          {
+            "type": "args_keyword",
+            "named": true
           },
           {
             "type": "binary_expression",
