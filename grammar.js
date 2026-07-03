@@ -120,7 +120,7 @@ module.exports = grammar({
       ')',
     ),
 
-    action_block: $ => seq($.probes_list, optional($.predicate), $.action),
+    action_block: $ => seq($.probes_list, optional($.predicate), alias($.block, $.action)),
 
     probes_list: $ => seq(
       sepBy1(',', $.probe),
@@ -359,24 +359,6 @@ module.exports = grammar({
 
     watchpoint_mode: _ => choice(
       'r', 'w', 'x',
-    ),
-
-    /* Main action block (no continue or break) */
-    action: $ => seq(
-      '{',
-      optional($._action_body),
-      '}',
-    ),
-
-    _action_body: $ => seq(
-      repeat(choice(
-        seq($._statement, ';'),
-        $._loop_or_if_statement,
-      )),
-      choice(
-        seq($._statement, optional(';')),
-        $._loop_or_if_statement,
-      ),
     ),
 
     /* Internal block */
