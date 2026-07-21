@@ -414,7 +414,13 @@ module.exports = grammar({
       alias($._expression, $.expression_statement),
       alias($._assignment, $.assignment_statement),
       alias($._let_declaration, $.declaration_statement),
-      alias('return', $.return_statement),
+      $.return_statement,
+    ),
+
+    return_statement: $ => seq(
+      'return',
+      optional($._expression),
+      ';',
     ),
 
     _flow_statement: $ => choice(
