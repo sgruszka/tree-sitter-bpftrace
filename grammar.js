@@ -518,7 +518,7 @@ module.exports = grammar({
     ),
 
     _assignment: $ => prec(PREC.assignment, seq(
-      field('left', $._variable),
+      field('left', choice($._variable, $.discard_identifier)),
       field('operator', choice(
         '=',
         '<<=',
@@ -896,8 +896,8 @@ module.exports = grammar({
     argn_identifier: _ => token(seq('arg', /\d+/)),
     retval_identifier: _ => 'retval',
     args_keyword: _ => 'args',
+    discard_identifier: _ => '_',
     decimal_number: _ => /\d+/,
-
   },
 });
 
