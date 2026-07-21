@@ -438,13 +438,7 @@ module.exports = grammar({
     if_statement: $ => seq(
       'if',
       optional('comptime'),
-      choice(
-        seq('(', field('condition', $._expression), ')'),
-        $._variable,
-        $.identifier,
-        $.call_expression,
-        $._integer_literal,
-      ),
+      field('condition', $._expression),
       field('consequence', $.block),
       optional(field('alternative', $.else_clause)),
     ),
@@ -462,13 +456,7 @@ module.exports = grammar({
     if_expression: $ => seq(
       'if',
       optional('comptime'),
-      choice(
-        seq('(', field('condition', $._expression), ')'),
-        $._variable,
-        $.identifier,
-        $.call_expression,
-        $._integer_literal,
-      ),
+      field('condition', $._expression),
       field('consequence', $._block_expression),
       optional(field('alternative', $.else_expression)),
     ),

@@ -331,8 +331,9 @@ begin { if (comptime false) {} }
         provider: (begin_end_provider)))
     (action
       (if_statement
-        condition: (comptime_expression
-          (boolean_literal))
+        condition: (parenthesized_expression
+          (comptime_expression
+            (boolean_literal)))
         consequence: (block)))))
 
 ============================================
@@ -347,7 +348,8 @@ begin { if comptime (false) {  } }
         provider: (begin_end_provider)))
     (action
       (if_statement
-        condition: (boolean_literal)
+        condition: (parenthesized_expression
+         (boolean_literal))
         consequence: (block)))))
 
 ============================================
@@ -365,12 +367,13 @@ kprobe:tcp_reset { $x = if ((uint64) arg0 > 0) { 10 } else { 20 }; }
       (assignment_statement
         left: (scratch_variable)
         right: (if_expression
-          condition: (binary_expression
-            left: (cast_expression
-              type: (type_specifier
-                (integer_type))
-              value: (identifier))
-            right: (integer_literal))
+          condition: (parenthesized_expression
+            (binary_expression
+              left: (cast_expression
+                type: (type_specifier
+                  (integer_type))
+                value: (identifier))
+              right: (integer_literal)))
           consequence: (integer_literal)
           alternative: (else_expression
             (integer_literal)))))))
