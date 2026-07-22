@@ -37,6 +37,7 @@ module.exports = grammar({
     [$._expression, $.pointer_type],
     [$._expression, $._type_specifier],
     [$._block_expression, $._statement],
+    [$.map_variable],
   ],
 
   rules: {
@@ -714,6 +715,7 @@ module.exports = grammar({
     subscript_expression: $ => prec(PREC.subscript, seq(
       field('argument', choice(
         $.scratch_variable,
+        $.map_variable,
         $.identifier,
         $.field_expression,
         $._string_literal,
