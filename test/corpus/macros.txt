@@ -16,6 +16,29 @@ macro add($x) {
         right: (integer_literal)))))
 
 ============================================
+Macro declaration with diffrent paremeters
+============================================
+macro foo(@a, $b, m) {
+  @a[1] = $b * m
+} 
+---
+(source_file
+  (macro_definition
+    name: (identifier)
+    parameters: (macro_parameters
+      (map_variable)
+      (scratch_variable)
+      (identifier))
+    body: (block
+      (assignment_statement
+        left: (map_variable
+          (indexes_list
+            (integer_literal)))
+        right: (binary_expression
+          left: (scratch_variable)
+          right: (identifier))))))
+
+============================================
 Script parameters
 ============================================
 kprobe:$1 { $x = $2; print($x) }
