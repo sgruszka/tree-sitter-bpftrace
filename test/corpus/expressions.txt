@@ -464,3 +464,22 @@ begin { let $b: typeof(size_t*) = (size_t *) 0; }
             (pointer_type
               (identifier)))
           value: (integer_literal))))))
+
+============================================
+Pointer expression
+============================================
+begin { $a = 1; $p = &$a; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal))
+      (assignment_statement
+        left: (scratch_variable)
+        right: (pointer_expression
+          argument: (scratch_variable))))))
