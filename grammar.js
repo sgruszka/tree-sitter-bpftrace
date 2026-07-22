@@ -702,6 +702,7 @@ module.exports = grammar({
         $.call_expression,
         $.field_expression,
         $.parenthesized_expression,
+        $.subscript_expression,
       )),
       choice('.', '->'),
       field('field', choice(
