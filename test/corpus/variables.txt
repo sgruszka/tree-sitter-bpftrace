@@ -145,3 +145,27 @@ begin { let $a: uint8; }
         name: (scratch_variable)
         type: (type_specifier
           (integer_type))))))
+
+============================================
+Map declaration
+============================================
+let @a = hash(100); begin { @a[0] = 0; }
+---
+(source_file
+  (preamble
+    (map_declaration
+      (map_variable)
+      (call_expression
+        function: (identifier)
+        arguments: (arguments
+          (integer_literal)))))
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (map_variable
+          (indexes_list
+            (integer_literal)))
+        right: (integer_literal)))))
