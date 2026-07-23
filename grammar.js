@@ -719,6 +719,7 @@ module.exports = grammar({
         $.identifier,
         $.field_expression,
         $._string_literal,
+        $.parenthesized_expression,
         $.subscript_expression,
       )),
       '[',
