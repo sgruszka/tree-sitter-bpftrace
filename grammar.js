@@ -207,7 +207,7 @@ module.exports = grammar({
       ':',
       field('binary', $.file_identifier),
       ':',
-      field('function', $.identifier),
+      field('function', $.wildcard_identifier),
     ),
 
     uprobe_uretprobe_provider: $ => choice(
@@ -327,10 +327,10 @@ module.exports = grammar({
       field('binary', $.file_identifier),
       optional(seq(
         ':',
-        field('namespace', $.identifier),
+        field('namespace', $.wildcard_identifier),
       )),
       ':',
-      field('function', $.identifier),
+      field('function', $.wildcard_identifier),
     ),
 
     ustd_provider: $ => choice(

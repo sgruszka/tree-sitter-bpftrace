@@ -102,7 +102,7 @@ uprobe:/bin/bash:readline {}
       (probe
         provider: (uprobe_uretprobe_provider)
         binary: (file_identifier)
-        function: (identifier)))
+        function: (wildcard_identifier)))
     (action)))
 
 ============================================
@@ -116,8 +116,8 @@ usdt:/usr/bin/nvim:neovim:eval__call_func__entry {}
       (probe
         provider: (ustd_provider)
         binary: (file_identifier)
-        namespace: (identifier)
-        function: (identifier)))
+        namespace: (wildcard_identifier)
+        function: (wildcard_identifier)))
     (action)))
 
 ============================================
