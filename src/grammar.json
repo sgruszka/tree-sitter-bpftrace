@@ -807,7 +807,7 @@
           "name": "function",
           "content": {
             "type": "SYMBOL",
-            "name": "identifier"
+            "name": "wildcard_identifier"
           }
         }
       ]
@@ -1285,7 +1285,7 @@
                   "name": "namespace",
                   "content": {
                     "type": "SYMBOL",
-                    "name": "identifier"
+                    "name": "wildcard_identifier"
                   }
                 }
               ]
@@ -1304,7 +1304,7 @@
           "name": "function",
           "content": {
             "type": "SYMBOL",
-            "name": "identifier"
+            "name": "wildcard_identifier"
           }
         }
       ]
@@ -3304,6 +3304,10 @@
                 {
                   "type": "SYMBOL",
                   "name": "parenthesized_expression"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "subscript_expression"
                 }
               ]
             }
@@ -3359,6 +3363,10 @@
                 },
                 {
                   "type": "SYMBOL",
+                  "name": "map_variable"
+                },
+                {
+                  "type": "SYMBOL",
                   "name": "identifier"
                 },
                 {
@@ -3368,6 +3376,14 @@
                 {
                   "type": "SYMBOL",
                   "name": "_string_literal"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "parenthesized_expression"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "subscript_expression"
                 }
               ]
             }
@@ -3444,8 +3460,17 @@
           "type": "FIELD",
           "name": "type",
           "content": {
-            "type": "SYMBOL",
-            "name": "struct_type"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "struct_type"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "identifier"
+              }
+            ]
           }
         },
         {
@@ -3549,12 +3574,20 @@
             "value": "?"
           },
           {
-            "type": "FIELD",
-            "name": "consequence",
-            "content": {
-              "type": "SYMBOL",
-              "name": "_expression"
-            }
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "FIELD",
+                "name": "consequence",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_expression"
+                }
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
           },
           {
             "type": "STRING",
@@ -4275,6 +4308,9 @@
     [
       "_block_expression",
       "_statement"
+    ],
+    [
+      "map_variable"
     ]
   ],
   "precedences": [],

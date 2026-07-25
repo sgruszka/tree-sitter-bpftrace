@@ -1465,7 +1465,7 @@
       },
       "consequence": {
         "multiple": true,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "(",
@@ -2116,6 +2116,10 @@
           },
           {
             "type": "scratch_variable",
+            "named": true
+          },
+          {
+            "type": "subscript_expression",
             "named": true
           }
         ]
@@ -2884,6 +2888,10 @@
         "required": true,
         "types": [
           {
+            "type": "identifier",
+            "named": true
+          },
+          {
             "type": "struct_type",
             "named": true
           }
@@ -3430,7 +3438,7 @@
         "required": false,
         "types": [
           {
-            "type": "identifier",
+            "type": "wildcard_identifier",
             "named": true
           }
         ]
@@ -4313,6 +4321,14 @@
             "named": true
           },
           {
+            "type": "map_variable",
+            "named": true
+          },
+          {
+            "type": "parenthesized_expression",
+            "named": true
+          },
+          {
             "type": "scratch_variable",
             "named": true
           },
@@ -4322,6 +4338,10 @@
           },
           {
             "type": "string_literal",
+            "named": true
+          },
+          {
+            "type": "subscript_expression",
             "named": true
           }
         ]
