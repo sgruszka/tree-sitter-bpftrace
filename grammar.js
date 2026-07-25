@@ -740,7 +740,8 @@ module.exports = grammar({
     offsetof_expression: $ => seq(
       'offsetof',
       '(',
-      field('type', $.struct_type),
+      // We could use type_specifier, but bpftrace does not support all types for offsetof
+      field('type', choice($.struct_type, $.identifier)),
       ',',
       field('member', sepBy1('.', $.identifier)),
       ')',
