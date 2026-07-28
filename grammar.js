@@ -373,6 +373,7 @@ module.exports = grammar({
       repeat(choice(
         seq($._statement, ';'),
         seq($._flow_statement, ';'),
+        $.import_statement,
         $._loop_or_if_statement,
       )),
       choice(
@@ -387,6 +388,7 @@ module.exports = grammar({
       repeat(choice(
         seq($._statement, ';'),
         seq($._flow_statement, ';'),
+        $.import_statement,
         $._loop_or_if_statement,
       )),
       $._expression,
