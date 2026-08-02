@@ -61,6 +61,7 @@ module.exports = grammar({
       $.c_preproc,
       $.c_preproc_block,
       seq($.c_struct, optional(';')),
+      seq($.c_enum, optional(';')),
       $.import_statement,
       $.map_declaration,
     ),
@@ -113,6 +114,14 @@ module.exports = grammar({
       )),
       ')',
       ')',
+    ),
+
+    c_enum: $ => seq(
+      'enum',
+      optional($._identifier),
+      '{',
+      /[^{}]*/,
+      '}',
     ),
 
     import_statement: $ => seq(
@@ -663,6 +672,7 @@ module.exports = grammar({
       $.pointer_type,
       $.struct_type,
       $.string_type,
+      $.enum_type,
       $.identifier,
     ),
 
@@ -695,6 +705,7 @@ module.exports = grammar({
         $.integer_type,
         $.array_type,
         $.struct_type,
+        $.enum_type,
         $.identifier,
       ),
       repeat1('*'),
@@ -713,6 +724,8 @@ module.exports = grammar({
     ),
 
     struct_type: $ => seq('struct', $.identifier),
+
+    enum_type: $ => seq('enum', $.identifier),
 
     string_type: $ => 'string',
 
