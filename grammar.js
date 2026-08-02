@@ -899,7 +899,7 @@ module.exports = grammar({
 
     identifier: $ => $._identifier,
 
-    script_parameter: _ => /[$]\d+/,
+    script_parameter: _ => /[$](#|\d+)/,
     scratch_variable: _ => /[$][_a-zA-Z][_a-zA-Z0-9]*/,
     _identifier: _ => /[_a-zA-Z][_a-zA-Z0-9]*/,
     wildcard_identifier: _ => /[_a-zA-Z*][_a-zA-Z0-9.*\-]*/,
