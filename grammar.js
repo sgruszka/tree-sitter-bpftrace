@@ -640,7 +640,7 @@ module.exports = grammar({
 
     arguments: $ => seq(
       '(',
-      sepBy(',', $._expression),
+      sepBy(',', choice($._expression, $.typeof_expression)),
       ')',
     ),
 
