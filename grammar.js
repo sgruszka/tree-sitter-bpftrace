@@ -30,7 +30,7 @@ const PREC = {
 module.exports = grammar({
   name: 'bpftrace',
   extras: $ => [/\s/, $.line_comment, $.block_comment],
-  externals: $ => [$.c_struct, $.error_sentiel],
+  externals: $ => [$._c_struct, $.error_sentiel],
 
   conflicts: $ => [
     [$._div_left_side, $._predicate_expression],
@@ -93,6 +93,27 @@ module.exports = grammar({
     // TODO: why ungreedy/lazy does not work, RustRegex does not work too:
     // c_preproc_block: _ => token(new RustRegex('#\s*(ifndef|ifdef|if)(?s:.*?)#\s*endif'))
     c_preproc_block: _ => /#\s*(if|ifdef|ifndef)([^\n]|\n)*?#\s*endif/,
+
+    c_struct: $ => seq(
+      $._c_struct,
+      optional(repeat1(
+        $._c_attribute_specifier,
+      )),
+    ),
+
+    _c_attribute_specifier: $ => seq(
+      choice('__attribute__', '__attribute'),
+      '(',
+      '(',
+      $._identifier,
+      optional(seq(
+        '(',
+        /[a-zA-Z0-9]*/,
+        ')',
+      )),
+      ')',
+      ')',
+    ),
 
     import_statement: $ => seq(
       'import',
@@ -876,9 +897,11 @@ module.exports = grammar({
       optional(seq('(', ')')),
     ),
 
+    identifier: $ => $._identifier,
+
     script_parameter: _ => /[$]\d+/,
     scratch_variable: _ => /[$][_a-zA-Z][_a-zA-Z0-9]*/,
-    identifier: _ => /[_a-zA-Z][_a-zA-Z0-9]*/,
+    _identifier: _ => /[_a-zA-Z][_a-zA-Z0-9]*/,
     wildcard_identifier: _ => /[_a-zA-Z*][_a-zA-Z0-9.*\-]*/,
     file_identifier: _ => token(/[./_a-zA-Z0-9]+/),
     identifier_with_dash: _ => /[_a-zA-Z][_a-zA-Z0-9\-]*/,
