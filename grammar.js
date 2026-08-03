@@ -682,6 +682,7 @@ module.exports = grammar({
         // Only for 'let'
         $.struct_type,
         $.string_type,
+        $.pointer_type,
       ),
       repeat1(seq(
         '[',
@@ -707,8 +708,9 @@ module.exports = grammar({
         $.struct_type,
         $.enum_type,
         $.identifier,
+        $.pointer_type,
       ),
-      repeat1('*'),
+      '*',
     ),
 
     integer_type: _ => choice(
