@@ -355,9 +355,9 @@ module.exports = grammar({
       field('provider', $.ustd_provider),
       ':',
       field('binary', $.file_identifier),
-      optional(seq(
+      optional(choice(
         ':',
-        field('namespace', $.wildcard_identifier),
+        seq(':', field('namespace', $.wildcard_identifier)),
       )),
       ':',
       field('function', $.wildcard_identifier),
