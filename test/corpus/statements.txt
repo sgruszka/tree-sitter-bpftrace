@@ -44,6 +44,39 @@ begin { if (2 < 0) {  } else if (1 > 0) {  } else { } }
               (block))))))))
 
 ============================================
+If comptime statement
+============================================
+begin { if (comptime false) {} }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (if_statement
+        condition: (parenthesized_expression
+          (comptime_expression
+            (boolean_literal)))
+        consequence: (block)))))
+
+============================================
+If comptime before parentheses statement
+============================================
+begin { if comptime (false) {  } }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (if_statement
+        condition: (parenthesized_expression
+         (boolean_literal))
+        consequence: (block)))))
+
+============================================
 While loop
 ============================================
 begin {
