@@ -670,6 +670,8 @@ module.exports = grammar({
         $.struct_type,
         $.string_type,
         $.pointer_type,
+        'buffer',
+        'inet',
       ),
       repeat1(seq(
         '[',
