@@ -374,9 +374,13 @@ kprobe:tcp_reset { $x = if ((uint64) arg0 > 0) { 10 } else { 20 }; }
                   (integer_type))
                 value: (identifier))
               right: (integer_literal)))
-          consequence: (integer_literal)
-          alternative: (else_expression
-            (integer_literal)))))))
+          consequence: (block
+            (expression_statement
+              (integer_literal)))
+          alternative: (else_clause
+            (block
+              (expression_statement
+                (integer_literal)))))))))
 
 ============================================
 Block expression

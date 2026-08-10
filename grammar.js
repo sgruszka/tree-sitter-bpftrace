@@ -36,7 +36,6 @@ module.exports = grammar({
     [$._div_left_side, $._predicate_expression],
     [$._expression, $.pointer_type],
     [$._expression, $._type_specifier],
-    [$._block_expression, $._statement],
     [$.map_variable],
   ],
 
@@ -450,7 +449,13 @@ module.exports = grammar({
       $.for_statement,
     ),
 
-    if_statement: $ => seq(
+    // Similar like Block, 'if (Cond) Block' can be both: expression and statement,
+    // depending on if last line it the block ends with '; or not.
+    // In grammer we make distinction based on place where the 'if' is.
+    if_statement: $ => prec(50, $._if_statement),
+    if_expression: $ => $._if_statement,
+
+    _if_statement: $ => seq(
       'if',
       optional('comptime'),
       field('condition', $._expression),
@@ -463,24 +468,6 @@ module.exports = grammar({
       choice(
         $.if_statement,
         $.block,
-      ),
-    ),
-
-    // Similar like Block, 'if (Cond) Block' can be both: expression and statement,
-    // depending on if last line it the block ends with '; or not.
-    if_expression: $ => seq(
-      'if',
-      optional('comptime'),
-      field('condition', $._expression),
-      field('consequence', $._block_expression),
-      optional(field('alternative', $.else_expression)),
-    ),
-
-    else_expression: $ => seq(
-      'else',
-      choice(
-        $.if_expression,
-        $._block_expression,
       ),
     ),
 
