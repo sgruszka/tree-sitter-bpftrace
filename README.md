@@ -1,6 +1,6 @@
 # tree-sitter-bpftrace
 
-A [tree-sitter](https://tree-sitter.github.io/tree-sitter) grammar for [bpftrace](https://github.com/bpftrace/bpftrace).
+ [bpftrace](https://bpftrace.org) grammar for [tree-sitter](https://tree-sitter.github.io/tree-sitter) .
 
 ## Building
 ### Using pre-generated parser
@@ -50,7 +50,7 @@ ln -s ~/tree-sitter-bpftrace/queries/injections.scm  queries/bpftrace/injections
 ```
 
 ### File type detection
-Latest Neovim from *master* branch provides built-in file type detection for bpftrace files. You can check that using below command, it should print *bpftrace*. 
+Since Neovim v0.12 there is built-in file type detection for bpftrace files. You can check that using below command, it should print *bpftrace*. 
 ```vim
 echo &ft
 ```
