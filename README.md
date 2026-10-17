@@ -47,10 +47,11 @@ ln -s ~/tree-sitter-bpftrace/libtree-sitter-bpftrace.so parser/bpftrace.so
 # Link query files
 ln -s ~/tree-sitter-bpftrace/queries/highlights.scm  queries/bpftrace/highlights.scm
 ln -s ~/tree-sitter-bpftrace/queries/injections.scm  queries/bpftrace/injections.scm
+ln -s ~/tree-sitter-bpftrace/queries/folds.scm  queries/bpftrace/folds.scm
 ```
 
 ### File type detection
-Since Neovim v0.12 there is built-in file type detection for bpftrace files. You can check that using below command, it should print *bpftrace*. 
+Latest Neovim from *master* branch provides built-in file type detection for bpftrace files. You can check that using below command, it should print *bpftrace*.
 ```vim
 echo &ft
 ```
@@ -75,7 +76,7 @@ vim.filetype.add({
 })
 ```
 
-## Troubleshooting 
+### Troubleshooting
 You can verify that the parser is correctly attached to the buffer:
 ```vim
 lua print(vim.treesitter.get_parser(0)._lang) -- should print "bpftrace"
@@ -93,5 +94,18 @@ And add below to your init lua file:
 vim.api.nvim_create_autocmd('FileType', {
   pattern = { 'bpftrace' },
   callback = function() vim.treesitter.start() end,
+})
+```
+
+### Folding support
+To enable Tree-sitter folding for bpftrace files, add the following to your init.lua:
+```lua
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'bpftrace',
+  callback = function()
+    vim.opt_local.foldmethod = 'expr'
+    vim.opt_local.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+    vim.opt_local.foldlevel = 99 -- Set to 0 to start with folds closed
+  end,
 })
 ```
