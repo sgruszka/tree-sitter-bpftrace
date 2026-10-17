@@ -1,0 +1,25 @@
+[
+  (config_block)
+  (c_preproc)
+  (c_preproc_block)
+  (c_enum)
+  (c_struct)
+  (macro_definition)
+  (action_block)
+  (if_statement)
+  (if_expression)
+  (while_statement)
+  (unroll_statement)
+  (for_statement)
+  (block_expression)
+  (arguments)
+  (macro_parameters)
+  (tuple_expression)
+  (record_expression)
+  (indexes_list)
+  (block_comment)
+] @fold
+
+((line_comment)+ @fold)
+
+((import_statement)+ @fold)
