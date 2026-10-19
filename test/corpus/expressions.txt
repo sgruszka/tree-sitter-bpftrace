@@ -637,3 +637,40 @@ BEGIN { $c.w[0].t.b[1]; }
               field: (identifier))
             field: (identifier))
           index: (integer_literal))))))
+
+============================================
+Subscripts on a map expression
+============================================
+BEGIN { @w[0][1]; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (subscript_expression
+          argument: (subscript_expression
+            argument: (map_variable)
+            index: (integer_literal))
+          index: (integer_literal))))))
+
+============================================
+Subscript on a map value with composite key
+============================================
+BEGIN { @w[0, 1][2]; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (subscript_expression
+          argument: (map_variable
+            (indexes_list
+              (integer_literal)
+              (integer_literal)))
+          index: (integer_literal))))))
