@@ -613,3 +613,27 @@ BEGIN { $r = (first = (value = 1), second = "name"); }
             (identifier)
             (string_literal
               (string_content))))))))
+
+============================================
+Intermixed field and subscript expressions
+============================================
+BEGIN { $c.w[0].t.b[1]; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (subscript_expression
+          argument: (field_expression
+            argument: (field_expression
+              argument: (subscript_expression
+                argument: (field_expression
+                  argument: (scratch_variable)
+                  field: (identifier))
+                index: (integer_literal))
+              field: (identifier))
+            field: (identifier))
+          index: (integer_literal))))))
