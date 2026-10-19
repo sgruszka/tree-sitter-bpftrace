@@ -187,3 +187,26 @@ BEGIN { _ = delete(@map); }
           function: (identifier)
           arguments: (arguments
             (map_variable)))))))
+
+============================================
+Variable declarations with enum types
+============================================
+BEGIN { let $state: enum Status; let $pointer: enum Status *; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (declaration_statement
+        name: (scratch_variable)
+        type: (type_specifier
+          (enum_type
+            (identifier))))
+      (declaration_statement
+        name: (scratch_variable)
+        type: (type_specifier
+          (pointer_type
+            (enum_type
+              (identifier))))))))
