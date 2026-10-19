@@ -208,6 +208,65 @@ BEGIN { foo().field; }
           field: (identifier))))))
 
 ============================================
+Retval builtin
+============================================
+kretprobe:foo { retval; retval(); }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (kprobe_kretprobe_provider)
+        function: (wildcard_identifier)))
+    (action
+      (expression_statement
+        (retval_identifier))
+      (expression_statement
+        (retval_identifier)))))
+
+============================================
+Field access on retval
+============================================
+kretprobe:foo { retval.field; retval().field; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (kprobe_kretprobe_provider)
+        function: (wildcard_identifier)))
+    (action
+      (expression_statement
+        (field_expression
+          argument: (retval_identifier)
+          field: (identifier)))
+      (expression_statement
+        (field_expression
+          argument: (retval_identifier)
+          field: (identifier))))))
+
+============================================
+Pointer field access on retval
+============================================
+kretprobe:foo { retval->field; retval()->field; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (kprobe_kretprobe_provider)
+        function: (wildcard_identifier)))
+    (action
+      (expression_statement
+        (field_expression
+          argument: (retval_identifier)
+          field: (identifier)))
+      (expression_statement
+        (field_expression
+          argument: (retval_identifier)
+          field: (identifier))))))
+
+============================================
 Offsetof expression
 ============================================
 struct A {
