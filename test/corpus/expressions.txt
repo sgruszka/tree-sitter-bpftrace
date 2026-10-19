@@ -810,3 +810,26 @@ BEGIN { $x = { import "helpers.bt"; $y = 1; $y }; }
             left: (scratch_variable)
             right: (integer_literal))
           (scratch_variable))))))
+
+============================================
+Address of named anonymous and indexed maps
+============================================
+BEGIN { &@map; &@; &@map[1]; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (pointer_expression
+          argument: (map_variable)))
+      (expression_statement
+        (pointer_expression
+          argument: (map_variable)))
+      (expression_statement
+        (pointer_expression
+          argument: (map_variable
+            (indexes_list
+              (integer_literal))))))))
