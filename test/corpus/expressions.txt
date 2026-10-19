@@ -567,3 +567,49 @@ BEGIN { print(args); }
           function: (identifier)
           arguments: (arguments
             (args_keyword)))))))
+
+============================================
+Record expression with named fields
+============================================
+BEGIN { $r = (first = 1, second = 2); }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (record_expression
+          (record
+            (identifier)
+            (integer_literal))
+          (record
+            (identifier)
+            (integer_literal)))))))
+
+============================================
+Nested record expression
+============================================
+BEGIN { $r = (first = (value = 1), second = "name"); }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (record_expression
+          (record
+            (identifier)
+            (record_expression
+              (record
+                (identifier)
+                (integer_literal))))
+          (record
+            (identifier)
+            (string_literal
+              (string_content))))))))
