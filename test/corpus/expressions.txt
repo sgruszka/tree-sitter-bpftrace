@@ -752,3 +752,39 @@ BEGIN { offsetof(qspinlock, tail); offsetof(qspinlock, tail.next); }
           type: (identifier)
           member: (identifier)
           member: (identifier))))))
+
+============================================
+Conditional expression without a consequence
+============================================
+BEGIN { $a = $x ?: 0; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (conditional_expression
+          condition: (scratch_variable)
+          alternative: (integer_literal))))))
+
+============================================
+Nested conditional expressions without consequences
+============================================
+BEGIN { $a = $x ?: $y ?: 0; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (conditional_expression
+          condition: (scratch_variable)
+          alternative: (conditional_expression
+            condition: (scratch_variable)
+            alternative: (integer_literal)))))))
