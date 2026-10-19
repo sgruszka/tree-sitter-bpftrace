@@ -276,3 +276,46 @@ begin { if ready() {} }
           function: (identifier)
           arguments: (arguments))
         consequence: (block)))))
+
+============================================
+Return without a value
+============================================
+BEGIN { return; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (return_statement))))
+
+============================================
+Return an integer value
+============================================
+BEGIN { return 1; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (return_statement
+        (integer_literal)))))
+
+============================================
+Return an expression value
+============================================
+BEGIN { return pid + 1; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (return_statement
+        (binary_expression
+          left: (identifier)
+          right: (integer_literal))))))
