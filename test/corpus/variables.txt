@@ -169,3 +169,21 @@ let @a = hash(100); begin { @a[0] = 0; }
           (indexes_list
             (integer_literal)))
         right: (integer_literal)))))
+
+============================================
+Discard assignment
+============================================
+BEGIN { _ = delete(@map); }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (discard_identifier)
+        right: (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (map_variable)))))))
