@@ -243,3 +243,26 @@ BEGIN { let $pp: int32 **; let $ap: struct Foo *[2]; let $pa: int32[4]*; }
             (array_type
               (integer_type)
               (integer_literal))))))))
+
+============================================
+Buffer and inet array declarations
+============================================
+BEGIN { let $buffer: buffer[8]; let $inet: inet[2][4]; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (declaration_statement
+        name: (scratch_variable)
+        type: (type_specifier
+          (array_type
+            (integer_literal))))
+      (declaration_statement
+        name: (scratch_variable)
+        type: (type_specifier
+          (array_type
+            (integer_literal)
+            (integer_literal)))))))
