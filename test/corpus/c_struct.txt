@@ -82,3 +82,30 @@ BEGIN { print(1); }
           function: (identifier)
           arguments: (arguments
             (integer_literal)))))))
+
+============================================
+Structure with packed attribute
+============================================
+struct Packed { int x; } __attribute__((packed));
+---
+(source_file
+  (preamble
+    (c_struct)))
+
+============================================
+Structure with alignment attribute
+============================================
+struct Aligned { int x; } __attribute__((aligned(8)));
+---
+(source_file
+  (preamble
+    (c_struct)))
+
+============================================
+Structure with multiple attributes
+============================================
+struct Both { int x; } __attribute((packed)) __attribute__((aligned(16)));
+---
+(source_file
+  (preamble
+    (c_struct)))
