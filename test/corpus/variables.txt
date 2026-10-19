@@ -210,3 +210,36 @@ BEGIN { let $state: enum Status; let $pointer: enum Status *; }
           (pointer_type
             (enum_type
               (identifier))))))))
+
+============================================
+Nested pointer and array declarations
+============================================
+BEGIN { let $pp: int32 **; let $ap: struct Foo *[2]; let $pa: int32[4]*; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (declaration_statement
+        name: (scratch_variable)
+        type: (type_specifier
+          (pointer_type
+            (pointer_type
+              (integer_type)))))
+      (declaration_statement
+        name: (scratch_variable)
+        type: (type_specifier
+          (array_type
+            (pointer_type
+              (struct_type
+                (identifier)))
+            (integer_literal))))
+      (declaration_statement
+        name: (scratch_variable)
+        type: (type_specifier
+          (pointer_type
+            (array_type
+              (integer_type)
+              (integer_literal))))))))
