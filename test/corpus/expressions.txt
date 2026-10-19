@@ -190,6 +190,24 @@ kfunc:vmlinux:timer_show { args.dev->kobj.sd->id }
           field: (identifier))))))
 
 ============================================
+Field access on function result
+============================================
+BEGIN { foo().field; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (field_expression
+          argument: (call_expression
+            function: (identifier)
+            arguments: (arguments))
+          field: (identifier))))))
+
+============================================
 Offsetof expression
 ============================================
 struct A {
