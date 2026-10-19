@@ -97,3 +97,79 @@ kprobe:vfs_read /comm == "bash"/ {
               (string_content)
               (escape_sequence))
             (identifier)))))))
+
+============================================
+Action block with imports
+============================================
+
+BEGIN {
+  import "helpers.bt";
+  $value = 1;
+  import "extra.bt";
+  print($value);
+}
+
+---
+
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (import_statement
+        (string_literal
+          (string_content)))
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal))
+      (import_statement
+        (string_literal
+          (string_content)))
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (scratch_variable)))))))
+
+============================================
+Action block with imports in nested blocks
+============================================
+
+BEGIN {
+  if (pid) {
+    import "conditional.bt";
+    while (pid) {
+      import "loop.bt";
+      print(pid);
+    }
+  }
+}
+
+---
+
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (if_statement
+        condition: (parenthesized_expression
+          (identifier))
+        consequence: (block
+          (import_statement
+            (string_literal
+              (string_content)))
+          (while_statement
+            condition: (identifier)
+            body: (block
+              (import_statement
+                (string_literal
+                  (string_content)))
+              (expression_statement
+                (call_expression
+                  function: (identifier)
+                  arguments: (arguments
+                    (identifier)))))))))))
+
