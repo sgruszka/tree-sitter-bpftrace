@@ -788,3 +788,25 @@ BEGIN { $a = $x ?: $y ?: 0; }
           alternative: (conditional_expression
             condition: (scratch_variable)
             alternative: (integer_literal)))))))
+
+============================================
+Import inside a block expression
+============================================
+BEGIN { $x = { import "helpers.bt"; $y = 1; $y }; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (block_expression
+          (import_statement
+            (string_literal
+              (string_content)))
+          (assignment_statement
+            left: (scratch_variable)
+            right: (integer_literal))
+          (scratch_variable))))))
