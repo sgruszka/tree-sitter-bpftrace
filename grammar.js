@@ -234,7 +234,7 @@ module.exports = grammar({
     _uprobe_uretprobe: $ => seq(
       field('provider', $.uprobe_uretprobe_provider),
       ':',
-      field('binary', $.file_identifier),
+      field('binary', $._file_identifier),
       ':',
       field('function', $.wildcard_identifier),
     ),
@@ -342,7 +342,7 @@ module.exports = grammar({
       field('object', $.identifier),
       optional(seq(
         ':',
-        field('pin', $.file_identifier),
+        field('pin', $._file_identifier),
       )),
     ),
 
@@ -353,7 +353,7 @@ module.exports = grammar({
     _usdt: $ => seq(
       field('provider', $.ustd_provider),
       ':',
-      field('binary', $.file_identifier),
+      field('binary', $._file_identifier),
       optional(choice(
         ':',
         seq(':', field('namespace', $.wildcard_identifier)),
@@ -890,6 +890,11 @@ module.exports = grammar({
       '[',
       sepBy1(',', $._expression),
       ']',
+    ),
+
+    _file_identifier: $ => choice(
+      $.file_identifier,
+      $.script_parameter,
     ),
 
     _wildcard_identifier: $ => choice(
