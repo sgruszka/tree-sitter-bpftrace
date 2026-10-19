@@ -58,3 +58,23 @@ kprobe:$1 { $x = $2; print($x) }
           function: (identifier)
           arguments: (arguments
             (scratch_variable)))))))
+
+============================================
+Script parameter count
+============================================
+BEGIN { print($#); $count = $#; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (script_parameter))))
+      (assignment_statement
+        left: (scratch_variable)
+        right: (script_parameter)))))
