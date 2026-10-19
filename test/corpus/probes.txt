@@ -252,3 +252,31 @@ fentry:rt2800lib:rt2800_sta_add,
         module: (wildcard_identifier)
         function: (wildcard_identifier)))
     (action)))
+
+============================================
+Tracepoint with dashes in subsystem and event
+============================================
+tracepoint:xhci-hcd:my-event {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (tracepoint_provider)
+        subsys: (wildcard_identifier)
+        event: (wildcard_identifier)))
+    (action)))
+
+============================================
+Fentry BPF program name with dashes
+============================================
+fentry:bpf:my-program {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (fentry_fexit_provider)
+        subprovider: (bpf_identifier)
+        program_name: (wildcard_identifier)))
+    (action)))
