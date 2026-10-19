@@ -280,3 +280,17 @@ fentry:bpf:my-program {}
         subprovider: (bpf_identifier)
         program_name: (wildcard_identifier)))
     (action)))
+
+============================================
+USDT probe with an empty namespace
+============================================
+usdt:/path/app::probe {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (ustd_provider)
+        binary: (file_identifier)
+        function: (wildcard_identifier)))
+    (action)))
