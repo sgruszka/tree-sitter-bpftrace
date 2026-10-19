@@ -145,6 +145,24 @@ software:dummy { $a = (1,"hello"); $b = $a.1; }
             field: (integer_literal))))))
 
 ============================================
+Subscript with expression index
+============================================
+BEGIN { $a[$i + 1]; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (subscript_expression
+          argument: (scratch_variable)
+          index: (binary_expression
+            left: (scratch_variable)
+            right: (integer_literal)))))))
+
+============================================
 Cast expression
 ============================================
 kprobe:tcp_reset { $sk = (struct sock *) arg0; }
