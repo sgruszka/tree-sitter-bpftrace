@@ -674,3 +674,21 @@ BEGIN { @w[0, 1][2]; }
               (integer_literal)
               (integer_literal)))
           index: (integer_literal))))))
+
+============================================
+Subscript of a subscript expression
+============================================
+BEGIN { $a[0][1]; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (subscript_expression
+          argument: (subscript_expression
+            argument: (scratch_variable)
+            index: (integer_literal))
+          index: (integer_literal))))))
