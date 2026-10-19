@@ -692,3 +692,42 @@ BEGIN { $a[0][1]; }
             argument: (scratch_variable)
             index: (integer_literal))
           index: (integer_literal))))))
+
+============================================
+Subscript of a parenthesized variable
+============================================
+BEGIN { ($a)[0]; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (subscript_expression
+          argument: (parenthesized_expression
+            (scratch_variable))
+          index: (integer_literal))))))
+
+============================================
+Subscript of a parenthesized array cast
+============================================
+BEGIN { ((int8[8])12345)[0]; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (subscript_expression
+          argument: (parenthesized_expression
+            (cast_expression
+              type: (type_specifier
+                (array_type
+                  (integer_type)
+                  (integer_literal)))
+              value: (integer_literal)))
+          index: (integer_literal))))))
