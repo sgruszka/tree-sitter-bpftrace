@@ -294,3 +294,26 @@ usdt:/path/app::probe {}
         binary: (file_identifier)
         function: (wildcard_identifier)))
     (action)))
+
+============================================
+Uprobe and USDT probes with wildcard binary paths
+============================================
+uprobe:/bin/app*:fn {}
+usdt:/bin/app*:namespace:probe {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (uprobe_uretprobe_provider)
+        binary: (file_identifier)
+        function: (wildcard_identifier)))
+    (action))
+  (action_block
+    (probes_list
+      (probe
+        provider: (ustd_provider)
+        binary: (file_identifier)
+        namespace: (wildcard_identifier)
+        function: (wildcard_identifier)))
+    (action)))
