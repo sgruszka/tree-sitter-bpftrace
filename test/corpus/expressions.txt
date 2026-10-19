@@ -894,3 +894,24 @@ BEGIN { $y = (int32*[4]*) arg0; }
                   (integer_type))
                 (integer_literal))))
           value: (identifier))))))
+
+============================================
+Field access on a tuple literal
+============================================
+BEGIN { $z = (1, "aaa", true).1; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (field_expression
+          argument: (tuple_expression
+            (integer_literal)
+            (string_literal
+              (string_content))
+            (boolean_literal))
+          field: (integer_literal))))))
