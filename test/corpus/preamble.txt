@@ -62,3 +62,21 @@ let @a = percpulruhash(2);
         function: (identifier)
         arguments: (arguments
           (integer_literal))))))
+
+============================================
+Named enum declaration
+============================================
+enum Status { OFF, ON = 1 };
+---
+(source_file
+  (preamble
+    (c_enum)))
+
+============================================
+Anonymous enum declaration without semicolon
+============================================
+enum { ZERO, ONE }
+---
+(source_file
+  (preamble
+    (c_enum)))
