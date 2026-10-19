@@ -244,3 +244,35 @@ begin { if 1 {} }
       (if_statement
         condition: (integer_literal)
         consequence: (block)))))
+
+============================================
+If with identifier condition without parentheses
+============================================
+begin { if pid {} }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (if_statement
+        condition: (identifier)
+        consequence: (block)))))
+
+============================================
+If with call condition without parentheses
+============================================
+begin { if ready() {} }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (if_statement
+        condition: (call_expression
+          function: (identifier)
+          arguments: (arguments))
+        consequence: (block)))))
