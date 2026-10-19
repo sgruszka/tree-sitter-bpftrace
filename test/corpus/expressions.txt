@@ -833,3 +833,42 @@ BEGIN { &@map; &@; &@map[1]; }
           argument: (map_variable
             (indexes_list
               (integer_literal))))))))
+
+============================================
+Typeof type as a call argument
+============================================
+BEGIN { container_of($n, typeof(struct Foo), n); }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (scratch_variable)
+            (typeof_expression
+              (struct_type
+                (identifier)))
+            (identifier)))))))
+
+============================================
+Typeof variable as a call argument
+============================================
+BEGIN { print(typeof($n)); }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (typeof_expression
+              (scratch_variable))))))))
