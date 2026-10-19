@@ -731,3 +731,24 @@ BEGIN { ((int8[8])12345)[0]; }
                   (integer_literal)))
               value: (integer_literal)))
           index: (integer_literal))))))
+
+============================================
+Offsetof with a typedef name
+============================================
+BEGIN { offsetof(qspinlock, tail); offsetof(qspinlock, tail.next); }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (offsetof_expression
+          type: (identifier)
+          member: (identifier)))
+      (expression_statement
+        (offsetof_expression
+          type: (identifier)
+          member: (identifier)
+          member: (identifier))))))
