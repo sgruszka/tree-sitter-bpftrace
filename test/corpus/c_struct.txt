@@ -61,3 +61,24 @@ No open brace
 ============================================
 struct Name }
 ---
+
+============================================
+Struct scanner stays disabled during error recovery
+============================================
+!
+struct S {}
+BEGIN { print(1); }
+---
+(source_file
+  (ERROR
+    (UNEXPECTED 'S'))
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (integer_literal)))))))
