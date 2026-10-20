@@ -266,3 +266,139 @@ BEGIN { let $buffer: buffer[8]; let $inet: inet[2][4]; }
           (array_type
             (integer_literal)
             (integer_literal)))))))
+
+============================================
+Compound assignments to a scratch variable
+============================================
+BEGIN {
+  $x = 16;
+  $x += 1;
+  $x -= 1;
+  $x *= 1;
+  $x /= 1;
+  $x %= 1;
+  $x <<= 1;
+  $x >>= 1;
+  $x &= 1;
+  $x ^= 1;
+  $x |= 1;
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal))
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal))
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal))
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal))
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal))
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal))
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal))
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal))
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal))
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal))
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal)))))
+
+============================================
+Compound assignments to an indexed map
+============================================
+BEGIN {
+  @m[0] = 16;
+  @m[0] += 1;
+  @m[0] -= 1;
+  @m[0] *= 1;
+  @m[0] /= 1;
+  @m[0] %= 1;
+  @m[0] <<= 1;
+  @m[0] >>= 1;
+  @m[0] &= 1;
+  @m[0] ^= 1;
+  @m[0] |= 1;
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (map_variable
+          (indexes_list
+            (integer_literal)))
+        right: (integer_literal))
+      (assignment_statement
+        left: (map_variable
+          (indexes_list
+            (integer_literal)))
+        right: (integer_literal))
+      (assignment_statement
+        left: (map_variable
+          (indexes_list
+            (integer_literal)))
+        right: (integer_literal))
+      (assignment_statement
+        left: (map_variable
+          (indexes_list
+            (integer_literal)))
+        right: (integer_literal))
+      (assignment_statement
+        left: (map_variable
+          (indexes_list
+            (integer_literal)))
+        right: (integer_literal))
+      (assignment_statement
+        left: (map_variable
+          (indexes_list
+            (integer_literal)))
+        right: (integer_literal))
+      (assignment_statement
+        left: (map_variable
+          (indexes_list
+            (integer_literal)))
+        right: (integer_literal))
+      (assignment_statement
+        left: (map_variable
+          (indexes_list
+            (integer_literal)))
+        right: (integer_literal))
+      (assignment_statement
+        left: (map_variable
+          (indexes_list
+            (integer_literal)))
+        right: (integer_literal))
+      (assignment_statement
+        left: (map_variable
+          (indexes_list
+            (integer_literal)))
+        right: (integer_literal))
+      (assignment_statement
+        left: (map_variable
+          (indexes_list
+            (integer_literal)))
+        right: (integer_literal)))))
