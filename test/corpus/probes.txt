@@ -485,3 +485,43 @@ usdt:/bin/app:*probe* {}
         binary: (file_identifier)
         function: (wildcard_identifier)))
     (action)))
+
+============================================
+Raw tracepoint without a module
+============================================
+rawtracepoint:sys_enter {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (rawtracepoint_provider)
+        function: (wildcard_identifier)))
+    (action)))
+
+============================================
+Raw tracepoint with a module
+============================================
+rawtracepoint:vmlinux:sys_enter {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (rawtracepoint_provider)
+        module: (wildcard_identifier)
+        function: (wildcard_identifier)))
+    (action)))
+
+============================================
+Raw tracepoint short alias
+============================================
+rt:sys_exit {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (rawtracepoint_provider)
+        function: (wildcard_identifier)))
+    (action)))
