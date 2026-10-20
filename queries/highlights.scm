@@ -33,80 +33,44 @@
   (identifier) @function.macro)
 
 ; Probes
-; fentry/fexit, kprobe/kretprobe, rawtracepoint
+; Match fields independently so script parameters use their global capture.
 (probe
-  provider: (_) @type.builtin
-  module: (wildcard_identifier) @module
-  function: (wildcard_identifier) @property)
+  provider: (_) @type.builtin)
 
 (probe
-  provider: (_) @type.builtin
-  function: (wildcard_identifier) @property)
-
-; uprobe/uretprobe
-(probe
-  provider: (uprobe_uretprobe_provider) @type.builtin
-  binary: (file_identifier) @string.special.path
-  function: (wildcard_identifier) @property)
-
-; tracepoint
-(probe
-  provider: (_) @type.builtin
-  subsys: (wildcard_identifier) @module
-  event: (wildcard_identifier) @property)
-
-; software/hardware
-(probe
-  provider: (_) @type.builtin
-  event: (identifier_with_dash) @property
-  count: (integer_literal) @number)
+  module: (wildcard_identifier) @module)
 
 (probe
-  provider: (_) @type.builtin
-  event: (identifier_with_dash) @property)
-
-; bench/test
-(probe
-  provider: (bench_test_provider) @type.builtin
-  function: (identifier) @property)
-
-; profile/interval
-(probe
-  provider: (profile_interval_provider) @type.builtin
-  unit: (time_unit) @string.special
-  count: (integer_literal) @property)
+  function: [
+    (wildcard_identifier)
+    (identifier)
+  ] @property)
 
 (probe
-  provider: (profile_interval_provider) @type.builtin
-  count: (integer_literal) @number)
+  binary: (file_identifier) @string.special.path)
 
-; iter
 (probe
-  provider: (iter_provider) @type.builtin
-  object: (identifier) @module
+  subsys: (wildcard_identifier) @module)
+
+(probe
+  event: [
+    (wildcard_identifier)
+    (identifier_with_dash)
+  ] @property)
+
+(probe
+  unit: (time_unit) @string.special)
+
+(probe
+  object: (identifier) @module)
+
+(probe
   pin: (file_identifier) @property)
 
 (probe
-  provider: (iter_provider) @type.builtin
-  object: (identifier) @module)
-
-; ustd
-(probe
-  provider: (ustd_provider) @type.builtin
-  binary: (file_identifier) @string.special.path
-  namespace: (wildcard_identifier) @variable
-  function: (wildcard_identifier) @property)
+  namespace: (wildcard_identifier) @variable)
 
 (probe
-  provider: (ustd_provider) @type.builtin
-  binary: (file_identifier) @string.special.path
-  function: (wildcard_identifier) @property)
-
-; watchpoint/asyncwatchpoint
-(probe
-  provider: (watchpoint_provider) @type.builtin
-  address: (integer_literal) @number
-  length: (integer_literal) @number
   mode: (watchpoint_mode) @property)
 
 ; Types
