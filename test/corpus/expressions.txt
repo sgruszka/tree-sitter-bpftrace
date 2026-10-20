@@ -1180,3 +1180,199 @@ BEGIN { !$x == $y; -$x * $y; !~$x; }
         (unary_expression
           argument: (unary_expression
             argument: (scratch_variable)))))))
+
+============================================
+Binary subtraction
+============================================
+BEGIN { $x - $y; $x-1; $x - $y - $z; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (binary_expression
+          left: (scratch_variable)
+          right: (scratch_variable)))
+      (expression_statement
+        (binary_expression
+          left: (scratch_variable)
+          right: (integer_literal)))
+      (expression_statement
+        (binary_expression
+          left: (binary_expression
+            left: (scratch_variable)
+            right: (scratch_variable))
+          right: (scratch_variable))))))
+
+============================================
+Binary right shift
+============================================
+BEGIN { $x >> 2; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (binary_expression
+          left: (scratch_variable)
+          right: (integer_literal))))))
+
+============================================
+Relational greater than or equal
+============================================
+BEGIN { $x >= $y; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (binary_expression
+          left: (scratch_variable)
+          right: (scratch_variable))))))
+
+============================================
+Relational not equal
+============================================
+BEGIN { $x != $y; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (binary_expression
+          left: (scratch_variable)
+          right: (scratch_variable))))))
+
+============================================
+Bitwise AND
+============================================
+BEGIN { $x & $y; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (binary_expression
+          left: (scratch_variable)
+          right: (scratch_variable))))))
+
+============================================
+Bitwise XOR
+============================================
+BEGIN { $x ^ $y; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (binary_expression
+          left: (scratch_variable)
+          right: (scratch_variable))))))
+
+============================================
+Bitwise OR
+============================================
+BEGIN { $x | $y; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (binary_expression
+          left: (scratch_variable)
+          right: (scratch_variable))))))
+
+============================================
+Logical AND
+============================================
+BEGIN { $x && $y; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (binary_expression
+          left: (scratch_variable)
+          right: (scratch_variable))))))
+
+============================================
+Logical OR
+============================================
+BEGIN { $x || $y; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (binary_expression
+          left: (scratch_variable)
+          right: (scratch_variable))))))
+
+============================================
+Shift and addition precedence
+============================================
+BEGIN { $x + 1 >> 2; $x >> 1 + 2; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (binary_expression
+          left: (binary_expression
+            left: (scratch_variable)
+            right: (integer_literal))
+          right: (integer_literal)))
+      (expression_statement
+        (binary_expression
+          left: (scratch_variable)
+          right: (binary_expression
+            left: (integer_literal)
+            right: (integer_literal)))))))
+
+============================================
+Logical AND and OR precedence
+============================================
+BEGIN { $x || $y && $z; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (binary_expression
+          left: (scratch_variable)
+          right: (binary_expression
+            left: (scratch_variable)
+            right: (scratch_variable)))))))
