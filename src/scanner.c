@@ -106,6 +106,7 @@ static bool scan_struct_start(Scanner *scanner, TSLexer *lexer)
 static bool scan_struct_end(Scanner *scanner, TSLexer *lexer)
 {
     enum ScannerState main_state = STRUCT_NAME;
+    bool line_cont = false;
 
     for ( ; !lexer->eof(lexer); lexer->advance(lexer, false)) {
         /*
@@ -152,9 +153,14 @@ static bool scan_struct_end(Scanner *scanner, TSLexer *lexer)
                 scanner->state = main_state;
         break;
         case LINE_COMMENT:
-            if (lexer->lookahead == '\n')
-                scanner->state = main_state;
-        break;
+          if (lexer->lookahead == '\n') {
+            if (!line_cont)
+              scanner->state = main_state;
+            line_cont = false;
+          } else {
+            line_cont = lexer->lookahead == '\\';
+          }
+          break;
         case BLOCK_COMMENT:
             if (lexer->lookahead == '*')
                 scanner->state = BLOCK_COMMENT_END;

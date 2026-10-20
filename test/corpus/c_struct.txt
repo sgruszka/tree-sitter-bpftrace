@@ -85,6 +85,74 @@ BEGIN {}
     (action)))
 
 ============================================
+Structure with a continued line comment
+============================================
+struct Continued {
+  int x; // continued comment \
+  }
+  int y; // a backslash \ followed by ordinary text
+};
+BEGIN {}
+---
+(source_file
+  (preamble
+    (c_struct))
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action)))
+
+============================================
+Structure with chained line comment continuations
+============================================
+struct Chained {
+  int x; // repeated backslashes \\
+  } \
+  { \
+  }
+  int y;
+};
+BEGIN {}
+---
+(source_file
+  (preamble
+    (c_struct))
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action)))
+
+============================================
+Structure with a continued line comment before its name
+============================================
+struct// continued header comment \
+  } { ;
+ContinuedHeader {
+  int x;
+};
+BEGIN {}
+---
+(source_file
+  (preamble
+    (c_struct))
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action)))
+
+============================================
+Unterminated structure with a continued line comment
+:error
+============================================
+struct S {
+  int x; // continued comment \
+}
+---
+
+============================================
 No space before name
 :error
 ============================================
