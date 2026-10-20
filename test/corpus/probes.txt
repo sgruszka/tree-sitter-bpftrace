@@ -106,6 +106,37 @@ uprobe:/bin/bash:readline {}
     (action)))
 
 ============================================
+Uprobe at a source line
+============================================
+uprobe:/bin/bash@readline.c:362 {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (uprobe_uretprobe_provider)
+        binary: (file_identifier)
+        file: (file_identifier)
+        line: (decimal_number)))
+    (action)))
+
+============================================
+Uprobe at a source line and column
+============================================
+u:./app@/src/main.c:42:7 {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (uprobe_uretprobe_provider)
+        binary: (file_identifier)
+        file: (file_identifier)
+        line: (decimal_number)
+        column: (decimal_number)))
+    (action)))
+
+============================================
 User-level statically defined tracepoints
 ============================================
 usdt:/usr/bin/nvim:neovim:eval__call_func__entry {}
