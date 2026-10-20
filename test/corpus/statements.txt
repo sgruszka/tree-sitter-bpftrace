@@ -17,6 +17,23 @@ begin { if (2 < 0) { } }
         consequence: (block)))))
 
 ============================================
+Single if statement without parentheses
+============================================
+begin { if $x > 0 {} }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (if_statement
+        condition: (binary_expression
+          left: (scratch_variable)
+          right: (integer_literal))
+        consequence: (block)))))
+
+============================================
 If else statement 
 ============================================
 begin { if (2 < 0) {  } else if (1 > 0) {  } else { } }
