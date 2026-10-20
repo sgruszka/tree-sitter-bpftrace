@@ -1094,3 +1094,89 @@ Whitespace before the kernel call namespace separator
 ============================================
 BEGIN { kfunc ::bpf_task_release($task); }
 ---
+
+============================================
+Logical negation
+============================================
+BEGIN { !$x; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (unary_expression
+          argument: (scratch_variable))))))
+
+============================================
+Bitwise negation
+============================================
+BEGIN { ~$x; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (unary_expression
+          argument: (scratch_variable))))))
+
+============================================
+Unary minus
+============================================
+BEGIN { -$x; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (unary_expression
+          argument: (scratch_variable))))))
+
+============================================
+Unary plus
+============================================
+BEGIN { +$x; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (unary_expression
+          argument: (scratch_variable))))))
+
+============================================
+Unary operator precedence
+============================================
+BEGIN { !$x == $y; -$x * $y; !~$x; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (binary_expression
+          left: (unary_expression
+            argument: (scratch_variable))
+          right: (scratch_variable)))
+      (expression_statement
+        (binary_expression
+          left: (unary_expression
+            argument: (scratch_variable))
+          right: (scratch_variable)))
+      (expression_statement
+        (unary_expression
+          argument: (unary_expression
+            argument: (scratch_variable)))))))
