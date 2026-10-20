@@ -340,3 +340,148 @@ usdt:/usr/bin/my-app:namespace:probe {}
         namespace: (wildcard_identifier)
         function: (wildcard_identifier)))
     (action)))
+
+============================================
+Uprobe with a script-parameter binary path
+============================================
+uprobe:$1:func {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (uprobe_uretprobe_provider)
+        binary: (script_parameter)
+        function: (wildcard_identifier)))
+    (action)))
+
+============================================
+Uretprobe with a script-parameter binary path
+============================================
+uretprobe:$2:func {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (uprobe_uretprobe_provider)
+        binary: (script_parameter)
+        function: (wildcard_identifier)))
+    (action)))
+
+============================================
+USDT script-parameter binary path with a namespace
+============================================
+usdt:$1:ns:probe {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (ustd_provider)
+        binary: (script_parameter)
+        namespace: (wildcard_identifier)
+        function: (wildcard_identifier)))
+    (action)))
+
+============================================
+USDT script-parameter binary path with an empty namespace
+============================================
+usdt:$1::probe {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (ustd_provider)
+        binary: (script_parameter)
+        function: (wildcard_identifier)))
+    (action)))
+
+============================================
+USDT script-parameter binary path without a namespace
+============================================
+usdt:$1:probe {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (ustd_provider)
+        binary: (script_parameter)
+        function: (wildcard_identifier)))
+    (action)))
+
+============================================
+Iterator with a script-parameter pin path
+============================================
+iter:task:$1 {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (iter_provider)
+        object: (identifier)
+        pin: (script_parameter)))
+    (action)))
+
+============================================
+Uprobe and uretprobe with wildcard function names
+============================================
+uprobe:/bin/app:func* {}
+uretprobe:/bin/app:*return* {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (uprobe_uretprobe_provider)
+        binary: (file_identifier)
+        function: (wildcard_identifier)))
+    (action))
+  (action_block
+    (probes_list
+      (probe
+        provider: (uprobe_uretprobe_provider)
+        binary: (file_identifier)
+        function: (wildcard_identifier)))
+    (action)))
+
+============================================
+USDT probe with a wildcard namespace
+============================================
+usdt:/bin/app:ns*:probe {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (ustd_provider)
+        binary: (file_identifier)
+        namespace: (wildcard_identifier)
+        function: (wildcard_identifier)))
+    (action)))
+
+============================================
+USDT probes with wildcard function names
+============================================
+usdt:/bin/app:ns:probe* {}
+usdt:/bin/app:*probe* {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (ustd_provider)
+        binary: (file_identifier)
+        namespace: (wildcard_identifier)
+        function: (wildcard_identifier)))
+    (action))
+  (action_block
+    (probes_list
+      (probe
+        provider: (ustd_provider)
+        binary: (file_identifier)
+        function: (wildcard_identifier)))
+    (action)))
