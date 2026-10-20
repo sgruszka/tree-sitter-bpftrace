@@ -1376,3 +1376,89 @@ BEGIN { $x || $y && $z; }
           right: (binary_expression
             left: (scratch_variable)
             right: (scratch_variable)))))))
+
+============================================
+Conditional expression with both branches
+============================================
+BEGIN { $x = $condition ? 1 : 2; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (conditional_expression
+          condition: (scratch_variable)
+          consequence: (integer_literal)
+          alternative: (integer_literal))))))
+
+============================================
+Conditional expression nested in the alternative
+============================================
+BEGIN { $x = $a ? 1 : $b ? 2 : 3; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (conditional_expression
+          condition: (scratch_variable)
+          consequence: (integer_literal)
+          alternative: (conditional_expression
+            condition: (scratch_variable)
+            consequence: (integer_literal)
+            alternative: (integer_literal)))))))
+
+============================================
+Conditional expression nested in the consequence
+============================================
+BEGIN { $x = $a ? $b ? 1 : 2 : 3; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (conditional_expression
+          condition: (scratch_variable)
+          consequence: (conditional_expression
+            condition: (scratch_variable)
+            consequence: (integer_literal)
+            alternative: (integer_literal))
+          alternative: (integer_literal))))))
+
+============================================
+Conditional expression with binary operands
+============================================
+BEGIN { $x = $a + 1 > $b ? $c * 2 : $d + 3; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (conditional_expression
+          condition: (binary_expression
+            left: (binary_expression
+              left: (scratch_variable)
+              right: (integer_literal))
+            right: (scratch_variable))
+          consequence: (binary_expression
+            left: (scratch_variable)
+            right: (integer_literal))
+          alternative: (binary_expression
+            left: (scratch_variable)
+            right: (integer_literal)))))))
