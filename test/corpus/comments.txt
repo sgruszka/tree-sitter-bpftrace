@@ -1,0 +1,125 @@
+============================================
+Line comments around an action
+============================================
+// before action
+BEGIN {}
+// after action
+---
+(source_file
+  (line_comment)
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action))
+  (line_comment))
+
+============================================
+Line comments inside an action
+============================================
+BEGIN {
+  // before statement: } /*
+  print(1); // after statement
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (line_comment)
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (integer_literal))))
+      (line_comment))))
+
+============================================
+Multiline block comments around and inside an action
+============================================
+/* before
+ * action */
+BEGIN { /* before statement */ print(1); /* after statement */ }
+/* after action */
+---
+(source_file
+  (block_comment)
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (block_comment)
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (integer_literal))))
+      (block_comment)))
+  (block_comment))
+
+============================================
+Comments between declaration and call tokens
+============================================
+BEGIN {
+  let /* name */ $x /* value */ = /* initializer */ 1;
+  print(/* first */ $x /* last */);
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (declaration_statement
+        (block_comment)
+        name: (scratch_variable)
+        (block_comment)
+        (block_comment)
+        value: (integer_literal))
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (block_comment)
+            (scratch_variable)
+            (block_comment)))))))
+
+============================================
+Comments between binary expression tokens
+============================================
+BEGIN { $x = 1 /* left */ + /* right */ 2; }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (binary_expression
+          left: (integer_literal)
+          (block_comment)
+          (block_comment)
+          right: (integer_literal))))))
+
+============================================
+Comment-only source file
+============================================
+// line comment
+/* block comment */
+---
+(source_file
+  (line_comment)
+  (block_comment))
+
+============================================
+Unterminated block comment
+:error
+============================================
+BEGIN { /* unfinished
+---
