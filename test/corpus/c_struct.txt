@@ -49,6 +49,42 @@ struct Name  {
     (c_struct)))
 
 ============================================
+Structure with repeated stars in body comments
+============================================
+struct StarComments {
+  /***/ int a;
+  /****/ int b;
+  /*****/ int c;
+  /* { **/ int d;
+  /* ** still comment / } **/ int e;
+};
+BEGIN {}
+---
+(source_file
+  (preamble
+    (c_struct))
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action)))
+
+============================================
+Structure with repeated stars in comments before body
+============================================
+struct/***/ /* { **/ StarComments /* } ****/ { int x; };
+BEGIN {}
+---
+(source_file
+  (preamble
+    (c_struct))
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action)))
+
+============================================
 No space before name
 :error
 ============================================

@@ -162,9 +162,9 @@ static bool scan_struct_end(Scanner *scanner, TSLexer *lexer)
         case BLOCK_COMMENT_END:
             if (lexer->lookahead == '/')
                 scanner->state = main_state;
-            else
-                scanner->state = BLOCK_COMMENT;
-        break;
+            else if (lexer->lookahead != '*')
+              scanner->state = BLOCK_COMMENT;
+            break;
         }
     }
 
