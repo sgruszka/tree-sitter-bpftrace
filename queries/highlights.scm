@@ -11,6 +11,8 @@
 
 (integer_literal) @number
 
+(decimal_number) @number
+
 (boolean_literal) @boolean
 
 ; Variables
@@ -72,6 +74,9 @@
 
 (probe
   mode: (watchpoint_mode) @property)
+
+(probe
+  file: (file_identifier) @string.special.path)
 
 ; Types
 (type_specifier) @type
@@ -137,6 +142,7 @@
   ";"
   ":"
   "::"
+  "@"
   "."
 ] @punctuation.delimiter
 

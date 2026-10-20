@@ -231,12 +231,25 @@ module.exports = grammar({
       'kretprobe', 'kr',
     ),
 
+    _source_code_location: $ => seq(
+      '@',
+      field('file', $._file_identifier),
+      ':',
+      field('line', $.decimal_number),
+      optional(seq(
+        ':',
+        field('column', $.decimal_number),
+      )),
+    ),
+
     _uprobe_uretprobe: $ => seq(
       field('provider', $.uprobe_uretprobe_provider),
       ':',
       field('binary', $._file_identifier),
-      ':',
-      field('function', $.wildcard_identifier),
+      choice(
+        seq(':', field('function', $.wildcard_identifier)),
+        $._source_code_location,
+      ),
     ),
 
     uprobe_uretprobe_provider: $ => choice(
