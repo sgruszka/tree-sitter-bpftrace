@@ -915,3 +915,182 @@ BEGIN { $z = (1, "aaa", true).1; }
               (string_content))
             (boolean_literal))
           field: (integer_literal))))))
+
+============================================
+Kernel function calls
+============================================
+BEGIN {
+  $task = kfunc::bpf_task_from_pid(1);
+  kfunc::bpf_task_release($task);
+  kfunc::bpf_rcu_read_lock();
+  kfunc::bpf_task_under_cgroup(curtask, $cgroup);
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (integer_literal))))
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (scratch_variable))))
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments)))
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (identifier)
+            (scratch_variable)))))))
+
+============================================
+Nested kernel function calls
+============================================
+BEGIN {
+  print(kfunc::bpf_task_from_pid(1));
+  kfunc::bpf_task_release(kfunc::bpf_task_from_pid(1));
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (integer_literal))))))
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (integer_literal)))))))))
+
+============================================
+Field access on kernel function results
+============================================
+BEGIN {
+  kfunc::bpf_task_from_pid(1)->comm;
+  kfunc::bpf_task_from_pid(1).pid;
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (field_expression
+          argument: (call_expression
+            function: (identifier)
+            arguments: (arguments
+              (integer_literal)))
+          field: (identifier)))
+      (expression_statement
+        (field_expression
+          argument: (call_expression
+            function: (identifier)
+            arguments: (arguments
+              (integer_literal)))
+          field: (identifier))))))
+
+============================================
+Kernel namespace name as an ordinary identifier
+============================================
+BEGIN {
+  kfunc(1);
+  print(kfunc);
+  kfunc_long(1);
+  $task.kfunc;
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (integer_literal))))
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (identifier))))
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (integer_literal))))
+      (expression_statement
+        (field_expression
+          argument: (scratch_variable)
+          field: (identifier))))))
+
+============================================
+Whitespace after the kernel call namespace separator
+============================================
+BEGIN { kfunc:: bpf_task_release ($task); }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (scratch_variable)))))))
+
+============================================
+Kernel function call without a function name
+:error
+============================================
+BEGIN { kfunc::(); }
+---
+
+============================================
+Kernel function call without arguments
+:error
+============================================
+BEGIN { kfunc::bpf_task_release; }
+---
+
+============================================
+Unknown function call namespace
+:error
+============================================
+BEGIN { other::bpf_task_release($task); }
+---
+
+============================================
+Whitespace before the kernel call namespace separator
+:error
+============================================
+BEGIN { kfunc ::bpf_task_release($task); }
+---
