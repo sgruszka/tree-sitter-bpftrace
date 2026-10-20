@@ -119,6 +119,9 @@
 (call_expression
   function: (identifier) @function.call)
 
+(call_expression
+  namespace: "kfunc" @module)
+
 ; Punctuations
 [
   "("
@@ -133,6 +136,7 @@
   ","
   ";"
   ":"
+  "::"
   "."
 ] @punctuation.delimiter
 
