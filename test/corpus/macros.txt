@@ -39,6 +39,30 @@ macro foo(@a, $b, m) {
           right: (identifier))))))
 
 ============================================
+Macro body with return inside an if-expression
+============================================
+macro example($cond) {
+  $x = if ($cond) {
+    return 1;
+  };
+}
+---
+(source_file
+  (macro_definition
+    name: (identifier)
+    parameters: (macro_parameters
+      (scratch_variable))
+    body: (block
+      (assignment_statement
+        left: (scratch_variable)
+        right: (if_expression
+          condition: (parenthesized_expression
+            (scratch_variable))
+          consequence: (block
+            (return_statement
+              (integer_literal))))))))
+
+============================================
 Script parameters
 ============================================
 kprobe:$1 { $x = $2; print($x) }
