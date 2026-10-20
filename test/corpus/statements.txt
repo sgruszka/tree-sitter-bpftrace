@@ -125,6 +125,152 @@ begin {
                   (scratch_variable))))))))))
 
 ============================================
+Conditional break followed by another statement
+============================================
+BEGIN {
+  $i = 0;
+  while ($i < 10) {
+    $i++;
+    if $i > 5 { break; }
+    print($i);
+  }
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal))
+      (while_statement
+        condition: (binary_expression
+          left: (scratch_variable)
+          right: (integer_literal))
+        body: (block
+          (expression_statement
+            (update_expression
+              (scratch_variable)))
+          (if_statement
+            condition: (binary_expression
+              left: (scratch_variable)
+              right: (integer_literal))
+            consequence: (block
+              (break_statement)))
+          (expression_statement
+            (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (scratch_variable)))))))))
+
+============================================
+Conditional continue followed by another statement
+============================================
+BEGIN {
+  $i = 0;
+  while ($i < 10) {
+    $i++;
+    if $i < 5 { continue; }
+    print($i);
+  }
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (integer_literal))
+      (while_statement
+        condition: (binary_expression
+          left: (scratch_variable)
+          right: (integer_literal))
+        body: (block
+          (expression_statement
+            (update_expression
+              (scratch_variable)))
+          (if_statement
+            condition: (binary_expression
+              left: (scratch_variable)
+              right: (integer_literal))
+            consequence: (block
+              (continue_statement)))
+          (expression_statement
+            (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (scratch_variable)))))))))
+
+============================================
+Final break with a semicolon
+============================================
+BEGIN { while (pid) { break; } }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (while_statement
+        condition: (identifier)
+        body: (block
+          (break_statement))))))
+
+============================================
+Final break without a semicolon
+============================================
+BEGIN { while (pid) { break } }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (while_statement
+        condition: (identifier)
+        body: (block
+          (break_statement))))))
+
+============================================
+Final continue with a semicolon
+============================================
+BEGIN { while (pid) { continue; } }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (while_statement
+        condition: (identifier)
+        body: (block
+          (continue_statement))))))
+
+============================================
+Final continue without a semicolon
+============================================
+BEGIN { while (pid) { continue } }
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (while_statement
+        condition: (identifier)
+        body: (block
+          (continue_statement))))))
+
+============================================
 For loop with range
 ============================================
 begin {
