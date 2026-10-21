@@ -482,3 +482,25 @@ BEGIN { return pid + 1; }
         (binary_expression
           left: (identifier)
           right: (integer_literal))))))
+
+============================================
+Return followed by another statement
+============================================
+BEGIN {
+  return;
+  print("A");
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (return_statement)
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (string_literal
+              (string_content))))))))

@@ -447,7 +447,6 @@ module.exports = grammar({
     return_statement: $ => seq(
       'return',
       optional($._expression),
-      ';',
     ),
 
     _flow_statement: $ => choice(
