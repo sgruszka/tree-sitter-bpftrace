@@ -916,6 +916,60 @@
         }
       ]
     },
+    "_source_code_location": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "@"
+        },
+        {
+          "type": "FIELD",
+          "name": "file",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_file_identifier"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ":"
+        },
+        {
+          "type": "FIELD",
+          "name": "line",
+          "content": {
+            "type": "SYMBOL",
+            "name": "decimal_number"
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": ":"
+                },
+                {
+                  "type": "FIELD",
+                  "name": "column",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "decimal_number"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
     "_uprobe_uretprobe": {
       "type": "SEQ",
       "members": [
@@ -936,20 +990,34 @@
           "name": "binary",
           "content": {
             "type": "SYMBOL",
-            "name": "file_identifier"
+            "name": "_file_identifier"
           }
         },
         {
-          "type": "STRING",
-          "value": ":"
-        },
-        {
-          "type": "FIELD",
-          "name": "function",
-          "content": {
-            "type": "SYMBOL",
-            "name": "wildcard_identifier"
-          }
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": ":"
+                },
+                {
+                  "type": "FIELD",
+                  "name": "function",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "wildcard_identifier"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_source_code_location"
+            }
+          ]
         }
       ]
     },
@@ -1363,7 +1431,7 @@
                   "name": "pin",
                   "content": {
                     "type": "SYMBOL",
-                    "name": "file_identifier"
+                    "name": "_file_identifier"
                   }
                 }
               ]
@@ -1408,7 +1476,7 @@
           "name": "binary",
           "content": {
             "type": "SYMBOL",
-            "name": "file_identifier"
+            "name": "_file_identifier"
           }
         },
         {
@@ -1817,10 +1885,6 @@
               "type": "BLANK"
             }
           ]
-        },
-        {
-          "type": "STRING",
-          "value": ";"
         }
       ]
     },
@@ -3029,6 +3093,34 @@
         "type": "SEQ",
         "members": [
           {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "FIELD",
+                    "name": "namespace",
+                    "content": {
+                      "type": "STRING",
+                      "value": "kfunc"
+                    }
+                  },
+                  {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "STRING",
+                      "value": "::"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          },
+          {
             "type": "FIELD",
             "name": "function",
             "content": {
@@ -3451,6 +3543,10 @@
                 {
                   "type": "SYMBOL",
                   "name": "parenthesized_expression"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "tuple_expression"
                 },
                 {
                   "type": "SYMBOL",
@@ -4318,6 +4414,19 @@
         }
       ]
     },
+    "_file_identifier": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "file_identifier"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "script_parameter"
+        }
+      ]
+    },
     "_wildcard_identifier": {
       "type": "CHOICE",
       "members": [
@@ -4362,8 +4471,17 @@
       ]
     },
     "identifier": {
-      "type": "SYMBOL",
-      "name": "_identifier"
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_identifier"
+        },
+        {
+          "type": "STRING",
+          "value": "kfunc"
+        }
+      ]
     },
     "script_parameter": {
       "type": "PATTERN",

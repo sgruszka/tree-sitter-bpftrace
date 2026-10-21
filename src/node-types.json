@@ -1001,6 +1001,16 @@
             "named": true
           }
         ]
+      },
+      "namespace": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "kfunc",
+            "named": false
+          }
+        ]
       }
     }
   },
@@ -2010,6 +2020,10 @@
           },
           {
             "type": "subscript_expression",
+            "named": true
+          },
+          {
+            "type": "tuple_expression",
             "named": true
           }
         ]
@@ -3093,6 +3107,20 @@
           {
             "type": "file_identifier",
             "named": true
+          },
+          {
+            "type": "script_parameter",
+            "named": true
+          }
+        ]
+      },
+      "column": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "decimal_number",
+            "named": true
           }
         ]
       },
@@ -3128,6 +3156,20 @@
           }
         ]
       },
+      "file": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "file_identifier",
+            "named": true
+          },
+          {
+            "type": "script_parameter",
+            "named": true
+          }
+        ]
+      },
       "function": {
         "multiple": false,
         "required": false,
@@ -3152,6 +3194,16 @@
         "types": [
           {
             "type": "integer_literal",
+            "named": true
+          }
+        ]
+      },
+      "line": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "decimal_number",
             "named": true
           }
         ]
@@ -3206,6 +3258,10 @@
         "types": [
           {
             "type": "file_identifier",
+            "named": true
+          },
+          {
+            "type": "script_parameter",
             "named": true
           }
         ]
@@ -4970,6 +5026,10 @@
     "named": false
   },
   {
+    "type": "::",
+    "named": false
+  },
+  {
     "type": ";",
     "named": false
   },
@@ -5015,6 +5075,10 @@
   },
   {
     "type": "?",
+    "named": false
+  },
+  {
+    "type": "@",
     "named": false
   },
   {
