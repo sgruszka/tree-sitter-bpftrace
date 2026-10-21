@@ -69,6 +69,8 @@
   (#set! indent.open_delimiter "[")
   (#set! indent.close_delimiter "]"))
 
+; Semicolons are siblings of statements. Keep their enclosing block as the
+; indentation anchor, including when the block is unfinished at EOF.
 [
   ")"
   "]"
@@ -76,8 +78,6 @@
 ] @indent.end
 
 "}" @indent.branch
-
-";" @indent.end
 
 ; Unclosed actions can be represented as one ERROR instead of nested blocks.
 (ERROR
