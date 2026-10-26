@@ -511,7 +511,7 @@ module.exports = grammar({
     _for_statement_range: $ => seq(
       $.scratch_variable,
       ':',
-      choice($.map_variable, $.range),
+      choice($.map_variable, $.range, $.call_expression),
     ),
 
     range: $ => choice(
@@ -923,7 +923,7 @@ module.exports = grammar({
       optional(seq('(', ')')),
     ),
 
-    // 'kfunc' (call_exprssion namespace) is also valid as an ordinary identifier.
+    // 'kfunc' (call_expression namespace) is also valid as an ordinary identifier.
     identifier: $ => choice($._identifier, 'kfunc'),
 
     script_parameter: _ => /[$](#|\d+)/,
