@@ -63,7 +63,6 @@ ln -s ~/tree-sitter-bpftrace/libtree-sitter-bpftrace.so parser/bpftrace.so
 ln -s ~/tree-sitter-bpftrace/queries/highlights.scm  queries/bpftrace/highlights.scm
 ln -s ~/tree-sitter-bpftrace/queries/injections.scm  queries/bpftrace/injections.scm
 ln -s ~/tree-sitter-bpftrace/queries/folds.scm  queries/bpftrace/folds.scm
-ln -s ~/tree-sitter-bpftrace/queries/indents.scm  queries/bpftrace/indents.scm
 ```
 
 ### File type detection
@@ -95,34 +94,6 @@ vim.filetype.add({
       { priority = -math.huge }
     }
   }
-})
-```
-
-### Indentation support
-
-Tree-sitter indentation requires the nvim-treesitter plugin, even when you
-install the parser and queries manually. With its `main` branch, add the
-following to your `init.lua`:
-
-```lua
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = 'bpftrace',
-  callback = function()
-    vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-
-    -- Optional: use two-space indentation
-    vim.opt_local.shiftwidth = 2
-    vim.opt_local.expandtab = true
-  end,
-})
-```
-
-With the older nvim-treesitter `master` branch, enable the indentation module
-in your existing nvim-treesitter setup instead of adding the callback above:
-
-```lua
-require('nvim-treesitter.configs').setup({
-  indent = { enable = true },
 })
 ```
 
@@ -181,17 +152,6 @@ vim.api.nvim_create_autocmd('FileType', {
   callback = function() vim.treesitter.start() end,
 })
 ```
-
-If indentation does not work, check the active indentation function and whether
-Neovim can find the query:
-
-```vim
-:verbose setlocal indentexpr?
-:lua print(vim.inspect(vim.api.nvim_get_runtime_file('queries/bpftrace/indents.scm', true)))
-```
-
-The query lookup should list an `indents.scm` path. An empty list means the
-query is not installed in Neovim's runtime directories.
 
 If folding does not work, first check that the parser loads as described above.
 Then inspect the folding settings and check whether Neovim can find and load
