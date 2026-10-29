@@ -2064,6 +2064,10 @@
       "required": true,
       "types": [
         {
+          "type": "call_expression",
+          "named": true
+        },
+        {
           "type": "map_variable",
           "named": true
         },

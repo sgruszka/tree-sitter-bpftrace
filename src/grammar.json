@@ -630,17 +630,21 @@
       ]
     },
     "_predicate_expression": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "_expression"
-        },
-        {
-          "type": "STRING",
-          "value": "/"
-        }
-      ]
+      "type": "PREC",
+      "value": 60,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_expression"
+          },
+          {
+            "type": "STRING",
+            "value": "/"
+          }
+        ]
+      }
     },
     "probe": {
       "type": "CHOICE",
@@ -2145,6 +2149,10 @@
             {
               "type": "SYMBOL",
               "name": "range"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "call_expression"
             }
           ]
         }
@@ -4562,10 +4570,6 @@
     }
   ],
   "conflicts": [
-    [
-      "_div_left_side",
-      "_predicate_expression"
-    ],
     [
       "_expression",
       "pointer_type"
