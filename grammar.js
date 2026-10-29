@@ -33,7 +33,6 @@ module.exports = grammar({
   externals: $ => [$._c_struct, $.error_sentiel],
 
   conflicts: $ => [
-    [$._div_left_side, $._predicate_expression],
     [$._expression, $.pointer_type],
     [$._expression, $._type_specifier],
     [$.map_variable],
@@ -158,7 +157,7 @@ module.exports = grammar({
     ),
 
     predicate: $ => seq('/', $._predicate_expression),
-    _predicate_expression: $ => seq($._expression, '/'),
+    _predicate_expression: $ => prec(60, seq($._expression, '/')),
 
     probe: $ => choice(
       /* Built-in begin/end probes with no arguments */
