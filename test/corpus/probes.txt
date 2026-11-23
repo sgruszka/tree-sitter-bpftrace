@@ -647,3 +647,114 @@ Kretprobe with an offset
 ============================================
 kretprobe:vfs_read+0 {}
 ---
+
+============================================
+Uprobe with decimal offset
+============================================
+uprobe:/bin/bash:echo_builtin+0 {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (uprobe_uretprobe_provider)
+        binary: (file_identifier)
+        function: (wildcard_identifier)
+        offset: (integer_literal)))
+    (action)))
+
+============================================
+Uprobe with hexadecimal offset
+============================================
+uprobe:/bin/bash:echo_builtin+0x8 {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (uprobe_uretprobe_provider)
+        binary: (file_identifier)
+        function: (wildcard_identifier)
+        offset: (integer_literal)))
+    (action)))
+
+============================================
+Uprobe with large offset
+============================================
+uprobe:/bin/bash:echo_builtin+1000000 {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (uprobe_uretprobe_provider)
+        binary: (file_identifier)
+        function: (wildcard_identifier)
+        offset: (integer_literal)))
+    (action)))
+
+============================================
+Uprobe short alias with offset
+============================================
+u:./app:func+16 {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (uprobe_uretprobe_provider)
+        binary: (file_identifier)
+        function: (wildcard_identifier)
+        offset: (integer_literal)))
+    (action)))
+
+============================================
+Uprobe with script-parameter binary and offset
+============================================
+uprobe:$1:func+0 {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (uprobe_uretprobe_provider)
+        binary: (script_parameter)
+        function: (wildcard_identifier)
+        offset: (integer_literal)))
+    (action)))
+
+============================================
+Uprobe with wildcard binary and offset
+============================================
+uprobe:/bin/app*:func+0 {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (uprobe_uretprobe_provider)
+        binary: (file_identifier)
+        function: (wildcard_identifier)
+        offset: (integer_literal)))
+    (action)))
+
+============================================
+Uprobe without an offset after plus
+:error
+============================================
+uprobe:/bin/bash:echo_builtin+ {}
+---
+
+============================================
+Uprobe with multiple offsets
+:error
+============================================
+uprobe:/bin/bash:echo_builtin+1+2 {}
+---
+
+============================================
+Uretprobe with an offset
+:error
+============================================
+uretprobe:/bin/bash:echo_builtin+0 {}
+---
