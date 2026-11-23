@@ -231,8 +231,13 @@ module.exports = grammar({
 
     _kprobe: $ => seq(
       field('provider', alias(choice('kprobe', 'k'), $.kprobe_kretprobe_provider)),
-      $._probe_arguments__optional_module_and_function,
-      optional(seq('+', field('offset', $.integer_literal))),
+      choice(
+        seq(
+          $._probe_arguments__optional_module_and_function,
+          optional(seq('+', field('offset', $.integer_literal))),
+        ),
+        $._source_code_location,
+      ),
     ),
 
     _kretprobe: $ => seq(
