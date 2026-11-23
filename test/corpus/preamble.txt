@@ -80,3 +80,22 @@ enum { ZERO, ONE }
 (source_file
   (preamble
     (c_enum)))
+
+============================================
+Map declaration with named arguments
+============================================
+let @a = hash(max_entries=10, no_prealloc=true);
+---
+(source_file
+  (preamble
+    (map_declaration
+      (map_variable)
+      (call_expression
+        function: (identifier)
+        arguments: (arguments
+          (named_argument
+            name: (identifier)
+            value: (integer_literal))
+          (named_argument
+            name: (identifier)
+            value: (boolean_literal)))))))
