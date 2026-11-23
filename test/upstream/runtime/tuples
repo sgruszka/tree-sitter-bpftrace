@@ -62,6 +62,8 @@ PROG struct A { int x[4]; } u:./testprogs/array_access:test_struct { $t = ((int3
 EXPECT 20
 AFTER ./testprogs/array_access
 
+# Careful with '(' and ')', they are read by the test engine as a regex group,
+# so make sure to escape them.
 NAME array-style tuple access
 PROG begin{ $a = (1, 2, 3); print($a[1 + 1]); }
 EXPECT 3

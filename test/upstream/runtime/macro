@@ -30,6 +30,7 @@ NAME it can exit early
 PROG macro early() { exit(); } begin { early(); print(1); }
 EXPECT_NONE 1
 
+# Test builtins
 NAME it can call other macros as expressions
 PROG macro add1(x) { x + 1 } macro add2(y) { y + add1(y) } macro add3(z) { z + add2(z) } begin { print(add3(1));  }
 EXPECT 4

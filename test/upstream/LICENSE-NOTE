@@ -1,3 +1,3 @@
-Files in this directory originates from https://github.com/bpftrace/bpftrace
-Are licensed under the Apache License, Version 2.0
-See the LICENSE file of that project or https://www.apache.org/licenses/LICENSE-2.0
+The files in this directory originate from https://github.com/bpftrace/bpftrace
+and are licensed under the Apache License, Version 2.0. See the bpftrace project
+LICENSE file or https://www.apache.org/licenses/LICENSE-2.0 for details.

@@ -108,16 +108,16 @@ PROG i:ms:1 { time("%H-%M:%S\n"); exit();}
 EXPECT_REGEX [0-9]*-[0-9]*
 
 NAME join
-RUN {{BPFTRACE}} --unsafe -e 'i:ms:1 { system("echo '_A_'"); } t:syscalls:sys_enter_execve { join(args.argv); exit();}'
-EXPECT _A_
+RUN {{BPFTRACE}} --unsafe -e 'i:ms:100 { system("echo '_A_'"); } t:syscalls:sys_enter_execve / str(args.argv[2], 5) == "echo" / { join(args.argv); exit();}'
+EXPECT_REGEX .*echo _A_$
 
 NAME join_delim
-RUN {{BPFTRACE}} --unsafe -e 'i:ms:1 { system("echo '_A_'"); } t:syscalls:sys_enter_execve { join(args.argv, ","); exit();}'
-EXPECT _A_
+RUN {{BPFTRACE}} --unsafe -e 'i:ms:1 { system("echo '_A_'"); } t:syscalls:sys_enter_execve / str(args.argv[2], 5) == "echo" / { join(args.argv, ","); exit();}'
+EXPECT_REGEX .*,echo _A_$
 
 NAME join_multi_arg
-RUN {{BPFTRACE}} --unsafe -e 'i:ms:1 { system("echo 1 2 3 4 5 6"); } t:syscalls:sys_enter_execve { join(args.argv); exit();}'
-EXPECT 1 2 3 4 5 6
+RUN {{BPFTRACE}} --unsafe -e 'i:ms:1 { system("echo 1 2 3 4 5 6"); } t:syscalls:sys_enter_execve / str(args.argv[2], 5) == "echo" / { join(args.argv); exit();}'
+EXPECT_REGEX .*echo 1 2 3 4 5 6$
 
 NAME str
 PROG t:syscalls:sys_enter_execve { printf("P: %s\n", str(args.filename)); exit();}
@@ -717,22 +717,18 @@ EXPECT @[1]: 05:04:03:02:01:02
 NAME iter:task
 PROG iter:task { printf("comm: %s\n", ctx.task.comm); exit(); }
 EXPECT comm: bpftrace
-REQUIRES_FEATURE iter
 
 NAME iter:task_file
 PROG iter:task_file { printf("comm: %s\n", ctx.task.comm); exit(); }
 EXPECT comm: bpftrace
-REQUIRES_FEATURE iter
 
 NAME iter:task_vma
 PROG iter:task_vma { printf("comm: %s\n", ctx.task.comm); exit(); }
 EXPECT comm: bpftrace
-REQUIRES_FEATURE iter
 
 NAME iter printf multiple values
 PROG iter:task { printf("%s: %d\n", "hello", 0); exit(); }
 EXPECT hello: 0
-REQUIRES_FEATURE iter
 
 NAME cgroup_path
 PROG begin { print(cgroup_path(cgroup & ((1 << 32) - 1)));  }
@@ -888,10 +884,73 @@ EXPECT @: 100
 
 NAME write_user_unsafe_required
 PROG tracepoint:syscalls:sys_enter_openat { write_user(args.filename, "x", 1); }
-EXPECT_REGEX .*ERROR: write_user\(\) is unsafe. To use you need the --unsafe flag
+EXPECT_REGEX .*ERROR: bpf_probe_write_user\(\) is an unsafe function being used in safe mode
 WILL_FAIL
 
 NAME write_user_basic
 RUN {{BPFTRACE}} --unsafe -e 'tracepoint:syscalls:sys_enter_openat /pid == 0xffffffff/ { write_user(args.filename, "x", 1); }' -e 'BEGIN { exit(); }'
 EXPECT Attached 1 probe
 TIMEOUT 5
+NAME stats_field_access
+PROG begin { @stats = stats(4); @stats = stats(8); printf("%d %d %d\n", @stats.count, @stats.total, @stats.avg); }
+EXPECT @stats: { .count = 2, .average = 6, .total = 12 }
+EXPECT 2 12 6
+
+NAME stats_field_access_keyed
+PROG begin { @stats[10] = stats(4); @stats[10] = stats(8); printf("%d %d %d\n", @stats[10].count, @stats[10].total, @stats[10].avg); }
+EXPECT @stats[10]: { .count = 2, .average = 6, .total = 12 }
+EXPECT 2 12 6
+
+NAME kfunc calls single arg
+PROG tracepoint:syscalls:sys_enter_read { $t = kfunc::bpf_task_from_pid(1); if ($t != 0) { printf("pid1 tgid=%d\n", $t->tgid); kfunc::bpf_task_release($t); } exit(); }
+EXPECT pid1 tgid=1
+REQUIRES_FEATURE btf
+MIN_KERNEL 6.12
+
+NAME kfunc calls with multiple args
+PROG tracepoint:syscalls:sys_enter_read { $c = kfunc::bpf_cgroup_from_id(cgroup); if ($c != 0) { print(kfunc::bpf_task_under_cgroup(curtask, $c)); kfunc::bpf_cgroup_release($c); } exit(); }
+EXPECT 1
+REQUIRES_FEATURE btf
+MIN_KERNEL 6.12
+
+NAME kfunc call conflicts with imported definition
+PROG import "stdlib/test"; tracepoint:syscalls:sys_enter_read { $t = kfunc::bpf_task_from_pid(1); exit(); }
+EXPECT_REGEX .*ERROR: `kfunc::bpf_task_from_pid` conflicts with function `bpf_task_from_pid` defined in an imported file.*
+WILL_FAIL
+REQUIRES_FEATURE btf
+
+NAME kfunc call unknown name
+PROG begin { $x = kfunc::definitely_not_a_kernel_function(); }
+EXPECT_REGEX .*ERROR: Unknown kernel function: 'definitely_not_a_kernel_function'.*
+WILL_FAIL
+REQUIRES_FEATURE btf
+
+NAME kfunc call wrong probe context
+PROG tracepoint:syscalls:sys_enter_read { $x = kfunc::vfs_read(0, 0, 0, 0); }
+EXPECT_REGEX .*ERROR: Kernel function `vfs_read` is not callable from a "tracepoint" probe.*
+WILL_FAIL
+REQUIRES_FEATURE btf
+
+NAME kfunc call wrong argument type
+PROG tracepoint:syscalls:sys_enter_read { $t = kfunc::bpf_task_from_pid("x"); }
+EXPECT_REGEX .*ERROR: Expected int32 for argument `pid` got string.*
+WILL_FAIL
+REQUIRES_FEATURE btf
+
+NAME helper call without args
+PROG begin { print(helper::bpf_get_current_pid_tgid() >> 32 == pid); exit(); }
+EXPECT true
+
+NAME helper call with map args
+PROG begin { @m[1] = 5; $k = 1; print(helper::bpf_map_delete_elem(&@m, &$k)); print(helper::bpf_map_delete_elem(&@m, &$k)); exit(); }
+EXPECT_REGEX 0\n-2
+
+NAME helper call returning a kernel struct
+PROG begin { print(helper::bpf_get_current_task_btf()->pid == tid); exit(); }
+EXPECT true
+REQUIRES_FEATURE btf
+
+NAME helper call wrong probe context
+PROG kprobe:vfs_read { $x = helper::bpf_get_socket_cookie(curtask); }
+EXPECT_REGEX .*ERROR: BPF helper `bpf_get_socket_cookie` is not callable from a "kprobe" probe.*
+WILL_FAIL

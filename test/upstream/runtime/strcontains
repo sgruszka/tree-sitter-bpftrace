@@ -21,6 +21,9 @@ PROG tracepoint:syscalls:sys_enter_execve / str(args.argv[0]) == "./testprogs/tr
 AFTER ./testprogs/true zztest test
 EXPECT true
 
+# This test just ensures that the probe passes verification. There are no
+# guardrails here, if the read comes from proberead then we expect zero, but if
+# it points to BPF memory then it may be legitimate but random.
 NAME basic substring match
 PROG begin { print(strcontains("hello-test-world", "test"));  }
 EXPECT true

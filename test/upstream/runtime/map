@@ -63,3 +63,21 @@ EXPECT @a[2]: 1
 NAME map declaration unused
 PROG let @a = percpuhash(1); begin {  }
 EXPECT_REGEX .*WARNING: Unused map: @a.*
+NAME map declaration hash, named args
+PROG let @a = hash(max_entries=1); begin { @a[1] = 1; @a[2] = 2;  }
+EXPECT_REGEX .*WARNING: Map full; can't update element.*
+EXPECT @a[1]: 1
+
+NAME map declaration hash, no_prealloc map flags
+RUN {{BPFTRACE}} --unsafe -e 'let @a = hash(max_entries=1, no_prealloc=true); begin { @a[1] = 1; system("bpftool map show name AT_a"); exit(); }'
+EXPECT_REGEX flags 0x1
+REQUIRES bpftool
+
+NAME map declaration hash, no_prealloc not set
+RUN {{BPFTRACE}} --unsafe -e 'let @a = hash(max_entries=1); begin { @a[1] = 1; system("bpftool map show name AT_a"); exit(); }'
+EXPECT_REGEX flags 0x0
+REQUIRES bpftool
+
+NAME print hash with many elements
+RUN {{BPFTRACE}} -e 'let @a = hash(5000); begin { for ($i : 0..5000) { @a[$i] = $i; } print(@a); clear(@a); }' | awk -F '[[]|[]]: ' '/^@a\[/ { k = $2; if (k < 0 || k >= 5000 || seen[k]++ || $3 != k) bad++; n++ } END { print n + 0, bad + 0 }'
+EXPECT 5000 0

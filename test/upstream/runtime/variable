@@ -161,3 +161,6 @@ NAME variable map key lifetime
 PROG begin { $key = "test"; @map[$key] = 1; $key = "other"; @map[$key] = 2; }
 EXPECT @map[test]: 1
 EXPECT @map[other]: 2
+NAME buf_equality_equal_len
+PROG i:ms:1 {$a = buf("hi", 2); $b = buf("si", 2); printf("equal=%d, unequal=%d\n", $a == $b, $a != $b); exit();}
+EXPECT equal=0, unequal=1
