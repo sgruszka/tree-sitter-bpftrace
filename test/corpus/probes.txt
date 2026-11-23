@@ -758,3 +758,32 @@ Uretprobe with an offset
 ============================================
 uretprobe:/bin/bash:echo_builtin+0 {}
 ---
+
+============================================
+Kprobe at a source line
+============================================
+kprobe@file.c:42 {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (kprobe_kretprobe_provider)
+        file: (file_identifier)
+        line: (decimal_number)))
+    (action)))
+
+============================================
+Kprobe short alias at a source line and column
+============================================
+k@file.c:42:7 {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (kprobe_kretprobe_provider)
+        file: (file_identifier)
+        line: (decimal_number)
+        column: (decimal_number)))
+    (action)))
