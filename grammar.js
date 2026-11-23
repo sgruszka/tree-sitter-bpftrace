@@ -666,8 +666,14 @@ module.exports = grammar({
 
     arguments: $ => seq(
       '(',
-      sepBy(',', choice($._expression, $.typeof_expression)),
+      sepBy(',', choice($._expression, $.typeof_expression, $.named_argument)),
       ')',
+    ),
+
+    named_argument: $ => seq(
+      field('name', $.identifier),
+      '=',
+      field('value', $._expression),
     ),
 
     cast_expression: $ => prec(PREC.cast,
