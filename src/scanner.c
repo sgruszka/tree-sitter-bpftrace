@@ -5,6 +5,7 @@
 
 enum TokenType {
     C_STRUCT,
+    C_UNION,
     ERROR_SENTIEL,
 };
 
@@ -65,25 +66,21 @@ static bool skip_spaces(TSLexer *lexer)
     return true;
 }
 
-static bool scan_struct_start(Scanner *scanner, TSLexer *lexer)
+static bool scan_record_start(Scanner *scanner, TSLexer *lexer, const char *keyword)
 {
-    char str[] = "struct";
     unsigned int i;
 
-    if (!skip_spaces(lexer))
-        return false;
-
-    for (i = 0; i < sizeof(str) - 1; i++) {
+    for (i = 0; keyword[i]; i++) {
         if (lexer->eof(lexer))
             return false;
 
-        if (lexer->lookahead != str[i])
+        if (lexer->lookahead != keyword[i])
             return false;
 
         lexer->advance(lexer, false);
     }
 
-    /* Spaces or comment between struct keyword and name/attributes */
+    /* Spaces or comment between struct/union keyword and name/attributes */
     if (iswspace(lexer->lookahead)) {
         scanner->state = STRUCT_NAME;
     } else if (lexer->lookahead == '/') {
@@ -103,7 +100,7 @@ static bool scan_struct_start(Scanner *scanner, TSLexer *lexer)
     return true;
 }
 
-static bool scan_struct_end(Scanner *scanner, TSLexer *lexer)
+static bool scan_record_end(Scanner *scanner, TSLexer *lexer)
 {
     enum ScannerState main_state = STRUCT_NAME;
     bool line_cont = false;
@@ -177,12 +174,12 @@ static bool scan_struct_end(Scanner *scanner, TSLexer *lexer)
     return false;
 }
 
-static bool scan_struct(Scanner *scanner, TSLexer *lexer)
+static bool scan_record(Scanner *scanner, TSLexer *lexer, const char *keyword)
 {
-    if (!scan_struct_start(scanner, lexer))
+    if (!scan_record_start(scanner, lexer, keyword))
         return false;
 
-    return scan_struct_end(scanner, lexer);
+    return scan_record_end(scanner, lexer);
 }
 
 bool tree_sitter_bpftrace_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols)
@@ -193,8 +190,23 @@ bool tree_sitter_bpftrace_external_scanner_scan(void *payload, TSLexer *lexer, c
         return false;
     }
 
-    if (valid_symbols[C_STRUCT] && scan_struct(scanner, lexer)) {
-        lexer->result_symbol = C_STRUCT;
+    if ((!valid_symbols[C_STRUCT] && !valid_symbols[C_UNION]) || !skip_spaces(lexer))
+        return false;
+
+    enum TokenType token;
+    const char *keyword;
+    if (valid_symbols[C_STRUCT] && lexer->lookahead == 's') {
+        token = C_STRUCT;
+        keyword = "struct";
+    } else if (valid_symbols[C_UNION] && lexer->lookahead == 'u') {
+        token = C_UNION;
+        keyword = "union";
+    } else {
+        return false;
+    }
+
+    if (scan_record(scanner, lexer, keyword)) {
+        lexer->result_symbol = token;
         return true;
     }
 

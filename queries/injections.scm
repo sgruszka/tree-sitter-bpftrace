@@ -1,5 +1,6 @@
 ([
   (c_struct)
+  (c_union)
   (c_enum)
   (c_preproc)
   (c_preproc_block)

@@ -4,6 +4,7 @@
   (c_preproc_block)
   (c_enum)
   (c_struct)
+  (c_union)
   (macro_definition)
   (action_block)
   (if_statement)

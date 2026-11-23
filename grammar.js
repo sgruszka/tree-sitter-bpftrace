@@ -30,7 +30,7 @@ const PREC = {
 module.exports = grammar({
   name: 'bpftrace',
   extras: $ => [/\s/, $.line_comment, $.block_comment],
-  externals: $ => [$._c_struct, $.error_sentiel],
+  externals: $ => [$._c_struct, $._c_union, $.error_sentiel],
 
   conflicts: $ => [
     [$._expression, $.pointer_type],
@@ -59,6 +59,7 @@ module.exports = grammar({
       $.c_preproc,
       $.c_preproc_block,
       seq($.c_struct, optional(';')),
+      seq($.c_union, optional(';')),
       seq($.c_enum, optional(';')),
       $.import_statement,
       $.map_declaration,
@@ -95,6 +96,13 @@ module.exports = grammar({
 
     c_struct: $ => seq(
       $._c_struct,
+      optional(repeat1(
+        $._c_attribute_specifier,
+      )),
+    ),
+
+    c_union: $ => seq(
+      $._c_union,
       optional(repeat1(
         $._c_attribute_specifier,
       )),
@@ -673,6 +681,7 @@ module.exports = grammar({
       $.array_type,
       $.pointer_type,
       $.struct_type,
+      $.union_type,
       $.string_type,
       $.enum_type,
       $.identifier,
@@ -683,6 +692,7 @@ module.exports = grammar({
         $.integer_type,
         // Only for 'let'
         $.struct_type,
+        $.union_type,
         $.string_type,
         $.pointer_type,
         'buffer',
@@ -710,6 +720,7 @@ module.exports = grammar({
         $.integer_type,
         $.array_type,
         $.struct_type,
+        $.union_type,
         $.enum_type,
         $.identifier,
         $.pointer_type,
@@ -730,6 +741,8 @@ module.exports = grammar({
     ),
 
     struct_type: $ => seq('struct', $.identifier),
+
+    union_type: $ => seq('union', $.identifier),
 
     enum_type: $ => seq('enum', $.identifier),
 
@@ -784,7 +797,7 @@ module.exports = grammar({
       'offsetof',
       '(',
       // We could use type_specifier, but bpftrace does not support all types for offsetof
-      field('type', choice($.struct_type, $.identifier)),
+      field('type', choice($.struct_type, $.union_type, $.identifier)),
       ',',
       field('member', sepBy1('.', $.identifier)),
       ')',
