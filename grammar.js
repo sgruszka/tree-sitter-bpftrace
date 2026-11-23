@@ -176,7 +176,8 @@ module.exports = grammar({
       $._fentry_fexit_bpf,
       $._kprobe,
       $._kretprobe,
-      $._uprobe_uretprobe,
+      $._uprobe,
+      $._uretprobe,
       $._tracepoint,
       $._rawtracepoint,
       $._hardware_event,
@@ -250,19 +251,28 @@ module.exports = grammar({
       )),
     ),
 
-    _uprobe_uretprobe: $ => seq(
-      field('provider', $.uprobe_uretprobe_provider),
+    _uprobe: $ => seq(
+      field('provider', alias(choice('uprobe', 'u'), $.uprobe_uretprobe_provider)),
+      ':',
+      field('binary', $._file_identifier),
+      choice(
+        seq(
+          ':',
+          field('function', $.wildcard_identifier),
+          optional(seq('+', field('offset', $.integer_literal))),
+        ),
+        $._source_code_location,
+      ),
+    ),
+
+    _uretprobe: $ => seq(
+      field('provider', alias(choice('uretprobe', 'ur'), $.uprobe_uretprobe_provider)),
       ':',
       field('binary', $._file_identifier),
       choice(
         seq(':', field('function', $.wildcard_identifier)),
         $._source_code_location,
       ),
-    ),
-
-    uprobe_uretprobe_provider: $ => choice(
-      'uprobe', 'u',
-      'uretprobe', 'ur',
     ),
 
     _tracepoint: $ => seq(
