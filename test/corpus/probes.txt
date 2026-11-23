@@ -556,3 +556,94 @@ rt:sys_exit {}
         provider: (rawtracepoint_provider)
         function: (wildcard_identifier)))
     (action)))
+
+============================================
+Kprobe with decimal offset
+============================================
+kprobe:vfs_read+0 {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (kprobe_kretprobe_provider)
+        function: (wildcard_identifier)
+        offset: (integer_literal)))
+    (action)))
+
+============================================
+Kprobe with hexadecimal offset
+============================================
+kprobe:nf_tables_newtable+0x8 {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (kprobe_kretprobe_provider)
+        function: (wildcard_identifier)
+        offset: (integer_literal)))
+    (action)))
+
+============================================
+Kprobe with module and offset
+============================================
+kprobe:nf_tables:nf_tables_newtable+16 {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (kprobe_kretprobe_provider)
+        module: (wildcard_identifier)
+        function: (wildcard_identifier)
+        offset: (integer_literal)))
+    (action)))
+
+============================================
+Kprobe short alias with offset
+============================================
+k:vfs_read+1_024 {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (kprobe_kretprobe_provider)
+        function: (wildcard_identifier)
+        offset: (integer_literal)))
+    (action)))
+
+============================================
+Kretprobe without offset
+============================================
+kr:vfs_read {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (kprobe_kretprobe_provider)
+        function: (wildcard_identifier)))
+    (action)))
+
+============================================
+Kprobe without an offset after plus
+:error
+============================================
+kprobe:vfs_read+ {}
+---
+
+============================================
+Kprobe with multiple offsets
+:error
+============================================
+kprobe:vfs_read+1+2 {}
+---
+
+============================================
+Kretprobe with an offset
+:error
+============================================
+kretprobe:vfs_read+0 {}
+---
