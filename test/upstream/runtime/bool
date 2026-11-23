@@ -1,0 +1,26 @@
+NAME bool values
+PROG begin { print((true, false));  }
+EXPECT (true, false)
+TIMEOUT 1
+
+NAME bool as map keys and values
+PROG begin { @a[true] = false;  }
+EXPECT @a[true]: false
+TIMEOUT 1
+
+NAME cast castable map to bool
+PROG begin{ @a = count(); @b = sum(0); print(((bool)@a, (bool)@b)); exit(); }
+EXPECT (true, false)
+TIMEOUT 1
+
+NAME bool array
+PROG begin { @a = (bool[2])(uint16)1;  }
+EXPECT @a: [true,false]
+ARCH le
+TIMEOUT 1
+
+NAME bool array
+PROG begin { @a = (bool[2])(uint16)1;  }
+EXPECT @a: [false,true]
+ARCH be
+TIMEOUT 1

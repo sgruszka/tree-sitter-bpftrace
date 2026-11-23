@@ -1,0 +1,223 @@
+# https://github.com/bpftrace/bpftrace/pull/566#issuecomment-487295113
+NAME codegen_struct_save_nested
+PROG struct Foo { int m; struct { int x; int y; } bar; int n; } uprobe:./testprogs/nested_struct_test:test_nested_struct { @foo = (struct Foo *)arg0; @bar = @foo.bar; @x = @foo.bar.x; printf("_%s_\n", "done"); exit(); }
+EXPECT _done_
+EXPECT @bar: { .x = 20, .y = 30 }
+EXPECT @x: 20
+AFTER ./testprogs/nested_struct_test
+TIMEOUT 1
+
+NAME logical_and_or_different_sizes
+PROG struct Foo { int m; } uprobe:./testprogs/simple_struct:func { $foo = (struct Foo*)arg0; printf("%d %d %d %d %d\n", $foo.m, $foo.m && 0, 1 && $foo.m, $foo.m || 0, 0 || $foo.m); exit(); }
+AFTER ./testprogs/simple_struct
+EXPECT 2 0 1 1 1
+
+NAME verifier error reports attempted program
+ENV BPFTRACE_LOG_SIZE=1024
+RUN {{BPFTRACE}} -v -e 'begin {} begin { if (str($1) == str($2)) { printf("%s\n", str($1)); exit() } }' "hello" "hello"
+EXPECT_REGEX Error loading BPF program for begin_2
+WILL_FAIL
+TIMEOUT 1
+
+# https://github.com/bpftrace/bpftrace/issues/759
+# Update test once https://github.com/bpftrace/bpftrace/pull/781 lands
+# NAME ntop_map_printf
+# RUN {{BPFTRACE}} -e 'union ip { char v4[4]; char v6[16]; } uprobe:./testprogs/ntop:test_ntop { @a = ntop(2, ((union ip*)arg0).v4); printf("v4: %s; ", @a); @b = ntop(10, ((union ip*)arg1).v6); exit() } end { printf("v6: %s", @b); clear(@a); clear(@b) }'
+# AFTER ./testprogs/ntop
+# EXPECT v4: 127.0.0.1; v6: ffee:ffee:ddcc:ddcc:bbaa:bbaa:c0a8:1
+# TIMEOUT 1
+
+NAME modulo_operator
+PROG begin { @x = 4; printf("%d\n", @x % 2); exit() }
+EXPECT 0
+
+# More details: https://github.com/bpftrace/bpftrace/issues/4379
+NAME bad_modulo_optimization
+PROG BEGIN { @mod1 = 1; @mod0 = 0; print((uint64)10 % (uint64)@mod1); }
+EXPECT 0
+TIMEOUT 1
+
+# For a modulo operation where the RHS is 0 we treat the result as 1
+NAME zero_modulo
+PROG BEGIN { @mod1 = 1; @mod0 = 0; print((uint64)10 % (uint64)@mod0); }
+EXPECT 1
+EXPECT_REGEX .* WARNING: Divide or modulo by 0 detected. This can lead to unexpected results. 1 is being used as the result.*
+TIMEOUT 1
+
+# For a division operation where the RHS is 0 we treat the result as 1
+NAME zero_divide
+PROG BEGIN { @mod1 = 1; @mod0 = 0; print((uint64)10 / (uint64)@mod0); }
+EXPECT 1
+EXPECT_REGEX .* WARNING: Divide or modulo by 0 detected. This can lead to unexpected results. 1 is being used as the result.*
+TIMEOUT 1
+
+NAME c_array_indexing
+RUN {{BPFTRACE}} -e 'struct Foo { int a; uint8_t b[10]; } uprobe:testprogs/uprobe_test:uprobeFunction2 { $foo = (struct Foo *)arg0; printf("%c %c %c %c %c\n", $foo.b[0], $foo.b[1], $foo.b[2], $foo.b[3], $foo.b[4]) }' -c ./testprogs/uprobe_test
+EXPECT h e l l o
+
+# https://github.com/bpftrace/bpftrace/issues/1773
+NAME single_arg_wildcard_listing
+RUN {{BPFTRACE}} -l "*do_nanosleep*"
+EXPECT kprobe:do_nanosleep
+TIMEOUT 1
+
+NAME single_arg_wildcard_listing_tracepoint
+RUN {{BPFTRACE}} -l "*sched_switch*"
+EXPECT tracepoint:sched:sched_switch
+TIMEOUT 1
+
+# https://github.com/bpftrace/bpftrace/issues/1952
+NAME async_id_invalid_probe_expansion
+PROG config = { missing_probes=warn } kprobe:zzzzz { probe; printf("asdf\n") } begin { printf("_%s_\n", "success"); exit() }
+EXPECT _success_
+TIMEOUT 1
+
+NAME strncmp_n_longer_than_buffer
+PROG begin { printf("_%d_\n", strncmp("wow", comm, 17)); exit() }
+EXPECT _1_
+TIMEOUT 1
+
+NAME strncmp_checks_for_nul
+PROG begin { printf("_%d_\n", strncmp("one", "one ", 4)); exit() }
+EXPECT _1_
+TIMEOUT 1
+
+NAME string compare with empty
+PROG begin { if ("hello" == "") { printf("equal"); } else { printf("not equal"); }  }
+EXPECT not equal
+TIMEOUT 3
+
+NAME string compare with prefix
+PROG begin { if ("hello" == "hell") { printf("equal"); } else { printf("not equal"); }  }
+EXPECT not equal
+TIMEOUT 3
+
+NAME strncmp with prefix
+PROG begin { if (strncmp("hello", "hell", 5) == 0) { printf("equal"); } else { printf("not equal"); }  }
+EXPECT not equal
+TIMEOUT 3
+
+# The issue this test catches is the verifier doesn't allow multiple ALU ops on ctx pointer.
+# ctx+const is ok, but ctx+const+const is not ok.
+NAME access ctx struct field twice
+PROG tracepoint:sched:sched_wakeup { if (args.comm == "asdf") { print(args.comm) } exit(); }
+EXPECT Attached 1 probe
+TIMEOUT 1
+
+# https://github.com/bpftrace/bpftrace/issues/2135
+NAME address_probe_invalid_expansion
+RUN {{BPFTRACE}} -e "uprobe:./testprogs/uprobe_test:0x$(nm ./testprogs/uprobe_test | awk '$3 == "uprobeFunction1" {print $1}') { @[probe] = count(); exit() }"
+EXPECT Attached 1 probe
+TIMEOUT 1
+
+# The verifier is not able to track BTF info for double pointer dereferences and
+# array accesses so we must use bpf_probe_read_kernel, otherwise the program is
+# rejected. The below two tests make sure that we handle such situations.
+NAME fentry double pointer dereference
+PROG fentry:__module_get { print((*args.module.trace_events).flags); exit(); }
+AFTER lsmod
+EXPECT Attached 1 probe
+TIMEOUT 1
+
+NAME fentry double pointer array access
+PROG fentry:__module_get { print(args.module.trace_events[1].flags); exit(); }
+AFTER lsmod
+EXPECT Attached 1 probe
+TIMEOUT 1
+
+NAME fentry array access via pointer
+PROG fentry:__module_get { print(args.module.version[0]); exit(); }
+AFTER lsmod
+EXPECT Attached 1 probe
+TIMEOUT 1
+
+NAME unaligned key with aligned value
+PROG begin { @mapA["aaaabbb", 0] = 1; @mapA["ccccdddd", 0] = 1; }
+EXPECT Attached 1 probe
+TIMEOUT 1
+
+# In some cases, LLVM can generate code that violates the BPF verifier
+# constraint that the context pointer is not modified prior to access (see
+# #3603). #3629 introduces the use of intrinsics that should ensure that this
+# doesn't happen, but this runtime test exercises a pattern that previously
+# produced code that failed to verify.
+NAME preserve context pointer
+PROG begin { @test[(uint64)1] = (uint64)1; } tracepoint:syscalls:sys_enter_kill { if (strcontains(comm, "test")) { @test[args.pid] = 1; } if (args.pid == @test[1]) { print((1)); } if (args.pid == @test[1]) { print((1));  } }
+EXPECT Attached 2 probes
+TIMEOUT 1
+
+# Ensure that ternary generation works for nested blocks.
+NAME nested ternary operators
+PROG begin { let $x=1; let $y=2; let $z=3;  print(if ($x) { if ($y) { if ($z) { $x } else { $y } } else { $z } } else { 0 }); }
+EXPECT 1
+
+# Ensure scratch buffers for map keys are created for aggregate map
+# functions like `count()` and `sum()`
+# https://github.com/bpftrace/bpftrace/issues/4669
+NAME map key scratch buffer for map aggregates
+PROG config = { on_stack_limit = 0 }  begin { @a[pid, comm, "reallylongstr"] = count(); }
+EXPECT Attached 1 probe
+TIMEOUT 1
+
+# https://github.com/bpftrace/bpftrace/issues/4945
+NAME stack modes and size
+PROG begin { $a = (1, ustack); $b = (1, ustack(build_id)); $c = (1, ustack(build_id, 30)); $d = (1, kstack); $e = (1, kstack(raw)); $f = (1, kstack(raw, 30)); }
+EXPECT Attached 1 probe
+TIMEOUT 1
+
+# https://github.com/bpftrace/bpftrace/issues/5044
+NAME probe specific arguments
+PROG fentry:vmlinux:vfs_write { print(args.file); exit(); } t:syscalls:sys_enter_execve { print(args.filename); exit(); }
+EXPECT Attached 2 probes
+TIMEOUT 1
+
+# https://github.com/bpftrace/bpftrace/issues/5180
+NAME maps with hidden key fields aligned access
+PROG begin{ @a[(uint8)1] = hist(3,0); @b = count(); }
+EXPECT Attached 1 probe
+TIMEOUT 1
+
+# https://github.com/bpftrace/bpftrace/issues/5194
+NAME session_retval
+RUN {{BPFTRACE}} -e 'kprobe:ksys_read { print("enter"); } kretprobe:ksys_read { print(retval); }'
+AFTER ./testprogs/syscall read
+EXPECT Attached 1 probe
+TIMEOUT 1
+REQUIRES_FEATURE kprobe_session
+
+NAME debug location does not leak across probes
+PROG begin { $pid = curtask->pid; } end { $pid = curtask->pid; }
+EXPECT Attached 2 probes
+TIMEOUT 1
+
+NAME config max_strlen and on_stack_limit
+PROG config = { max_strlen = 8; on_stack_limit = 8 } t:syscalls:sys_enter_execve { print(str(args.filename)); exit(); }
+AFTER ./testprogs/syscall execve ./testprogs/true &>/dev/null
+EXPECT_REGEX /.......\.\.
+
+NAME config max_strlen with 8 cpus
+RUN printf '0-7\n' > /tmp/fake_possible && unshare -m bash -c 'mount --bind /tmp/fake_possible /sys/devices/system/cpu/possible && exec {{BPFTRACE}} -e "config = { max_strlen = 8; } t:syscalls:sys_enter_execve { print(str(args.filename)); exit(); }"'
+AFTER ./testprogs/syscall execve ./testprogs/true &>/dev/null
+EXPECT_REGEX /.......\.\.
+
+NAME config max_strlen with unaligned strings
+PROG config = { max_strlen = 256 } t:syscalls:sys_enter_execve { print(("ab", str(args.filename))); exit(); }
+AFTER ./testprogs/syscall execve ./testprogs/true &>/dev/null
+EXPECT_REGEX ^\(ab, /.+\)$
+
+NAME large string cast
+PROG begin { let $a = (string[1024])"hi"; print($a); }
+EXPECT hi
+TIMEOUT 1
+
+NAME scalars can be accessed in copied structs
+PROG begin { @s = *curtask; @k = @s->pid; @j = @s->parent->pid; } end { clear(@s); }
+EXPECT_REGEX @k:\s[0-9]+
+EXPECT_REGEX @j:\s[0-9]+
+
+# The 20-byte string makes the variable scratch buffer slots 20 bytes wide,
+# which leaves $w misaligned unless slots are padded to 8 bytes.
+NAME interop atomic on struct in variable scratch buffer
+PROG import "stdlib/test"; config = { on_stack_limit = 0 } begin { $s = "aaaaaaaaaaaaaaaaaaa"; $w = curtask->se.load; __test_atomic_inc(&$w); printf("%d %s\n", $w.weight == curtask->se.load.weight + 1, $s); exit(); }
+EXPECT 1 aaaaaaaaaaaaaaaaaaa
+REQUIRES_FEATURE btf

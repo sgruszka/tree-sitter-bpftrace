@@ -1,0 +1,8 @@
+interval:ms:1000
+{}
+
+interval:s:1
+{}
+
+interval:us:100000
+{}

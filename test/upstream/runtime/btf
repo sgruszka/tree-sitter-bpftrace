@@ -1,0 +1,111 @@
+NAME user_supplied_c_def_using_btf
+PROG struct foo { struct task_struct t; } begin {  }
+EXPECT Attached 1 probe
+REQUIRES_FEATURE btf
+
+NAME tracepoint_pointer_type_resolution
+PROG tracepoint:syscalls:sys_enter_nanosleep { args.rqtp.tv_sec; exit(); }
+EXPECT Attached 1 probe
+REQUIRES_FEATURE btf
+
+NAME tracepoint_nested_pointer_type_resolution
+PROG tracepoint:napi:napi_poll { args.napi.dev.name; exit(); }
+EXPECT Attached 1 probe
+REQUIRES_FEATURE btf
+
+NAME enum_value_reference
+PROG begin { printf("%d\n", sizeof(BTF_VAR_STATIC));  }
+EXPECT_REGEX ^8$
+REQUIRES_FEATURE btf
+
+NAME redefine_btf_type
+PROG struct task_struct { int x; } begin { printf("%d\n", curtask.x); exit() }
+EXPECT_REGEX -?[0-9][0-9]*
+REQUIRES_FEATURE btf
+
+NAME redefine_btf_type_missing_def
+PROG struct task_struct { struct thread_info x; } begin { printf("%d\n", curtask.x.status); }
+EXPECT_REGEX error:.*'struct thread_info'
+REQUIRES_FEATURE btf
+WILL_FAIL
+
+NAME kernel_module_attach
+RUN {{BPFTRACE}} -e 'fentry:nf_tables_newtable { printf("hit\n"); exit(); }'
+AFTER nft add table bpftrace
+EXPECT hit
+REQUIRES lsmod | grep '^nf_tables'
+REQUIRES nft --help
+CLEANUP nft delete table bpftrace
+
+NAME kernel_module_attach_wildcard
+RUN {{BPFTRACE}} -e 'fentry:nf_table*:nf_tables_newtable { printf("hit\n"); exit(); }'
+AFTER nft add table bpftrace
+EXPECT hit
+REQUIRES lsmod | grep '^nf_tables'
+REQUIRES nft --help
+CLEANUP nft delete table bpftrace
+
+NAME kernel_module_args
+RUN {{BPFTRACE}} -e 'fentry:nf_tables_newtable { printf("skb: %p\n", args.skb); exit(); }'
+AFTER nft add table bpftrace
+EXPECT_REGEX ^skb: 0x[a-f0-9]+$
+REQUIRES lsmod | grep '^nf_tables'
+REQUIRES nft --help
+CLEANUP nft delete table bpftrace
+
+NAME kernel_module_types
+RUN {{BPFTRACE}} -e 'fentry:nf_tables_newtable { printf("skb len: %d\n", args.skb.len); exit(); }'
+AFTER nft add table bpftrace
+EXPECT_REGEX ^skb len: [0-9]+$
+REQUIRES lsmod | grep '^nf_tables'
+REQUIRES nft --help
+CLEANUP nft delete table bpftrace
+
+NAME kernel_module_tracepoint
+PROG tracepoint:xfs:xfs_setfilesize { print(args.offset) } i:ms:1 { exit(); }
+EXPECT Attached 2 probes
+REQUIRES_FEATURE btf
+REQUIRES lsmod | grep "^xfs"
+
+# args.ctxt has type 'struct x86_emulate_ctxt' which is forward-defined in
+# 'vmlinux' BTF and fully defined in 'kvm' BTF.
+# This tests checks that the correct BTF definition is pulled from 'kvm'.
+NAME kernel_module_type_fwd
+PROG fentry:kvm:x86_emulate_insn { printf("%d\n", args.ctxt.mode); exit(); }
+EXPECT Attached 1 probe
+TIMEOUT 2
+REQUIRES lsmod | grep '^kvm'
+
+NAME kprobe_kernel_module_type_fwd
+PROG kprobe:kvm:x86_emulate_insn { $ctxt = (struct x86_emulate_ctxt *) arg0; printf("%d\n", $ctxt.mode); exit(); }
+EXPECT Attached 1 probe
+TIMEOUT 2
+REQUIRES lsmod | grep '^kvm'
+
+# This test only matters on Clang-built kernels, which support btf_type_tag
+# and require special handling in bpftrace
+NAME btf_type_tag_access
+PROG begin { printf("SUCCESS %d\n", curtask.parent.pid); exit() }
+EXPECT_REGEX SUCCESS [0-9][0-9]*
+REQUIRES_FEATURE btf
+
+NAME vmlinux integer types
+PROG begin { let $a: typeof(size_t) = 1; let $b: typeof(size_t*) = &$a; $c = (uint64_t)1; $d = (char)1; $e = (char *)&$d }
+EXPECT Attached 1 probe
+REQUIRES_FEATURE btf
+
+NAME btf_char_array_to_string
+PROG begin { if (curtask.comm == "bpftrace") { print(curtask.comm); printf("comm %s\n", curtask.comm); } }
+EXPECT bpftrace
+EXPECT comm bpftrace
+REQUIRES_FEATURE btf
+
+NAME void pointer types
+PROG tracepoint:workqueue:workqueue_execute_start { $workfn = args->function; $workfn = (void *)0; exit(); }
+EXPECT Attached 1 probe
+REQUIRES_FEATURE btf
+
+NAME function pointer types
+PROG tracepoint:workqueue:workqueue_execute_start { $workfn = (void *)0; $tl = (struct timer_list *)(args->work); $workfn = $tl->function; exit(); }
+EXPECT Attached 1 probe
+REQUIRES_FEATURE btf

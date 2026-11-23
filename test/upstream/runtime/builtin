@@ -1,0 +1,304 @@
+NAME pid
+PROG i:ms:1 { printf("SUCCESS %d\n", pid); exit(); }
+EXPECT_REGEX SUCCESS [0-9][0-9]*
+
+NAME tid
+PROG i:ms:1 { printf("SUCCESS %d\n", tid); exit(); }
+EXPECT_REGEX SUCCESS [0-9][0-9]*
+
+NAME uid
+PROG i:ms:1 { printf("SUCCESS %d\n", uid); exit(); }
+EXPECT_REGEX SUCCESS [0-9][0-9]*
+
+NAME gid
+PROG i:ms:1 { printf("SUCCESS %d\n", gid); exit(); }
+EXPECT_REGEX SUCCESS [0-9][0-9]*
+
+NAME nsecs
+PROG i:ms:1 { printf("SUCCESS %llu\n", nsecs); exit(); }
+EXPECT_REGEX SUCCESS [0-9]+
+
+NAME elapsed
+PROG i:ms:1 { printf("SUCCESS %llu\n", elapsed); exit(); }
+EXPECT_REGEX SUCCESS [0-9]+
+
+NAME numaid
+PROG i:ms:1 { printf("SUCCESS %lu\n", numaid); exit(); }
+EXPECT_REGEX SUCCESS [0-9]+
+
+NAME cpu
+PROG i:ms:1 { printf("SUCCESS %lu\n", cpu); exit(); }
+EXPECT_REGEX SUCCESS [0-9]+
+
+NAME ncpus
+PROG begin { printf("%ld\n", ncpus);  }
+EXPECT_REGEX ^[1-9][0-9]*$
+
+NAME comm
+PROG begin { printf("SUCCESS %s\n", comm);  }
+EXPECT SUCCESS bpftrace
+
+NAME kstack
+PROG begin { printf("%s\n", kstack);  }
+EXPECT Attached 1 probe
+
+NAME ustack
+PROG begin { printf("%s\n", ustack);  }
+EXPECT Attached 1 probe
+
+NAME arg
+PROG k:vfs_read { printf("SUCCESS %p\n", arg0); exit(); }
+EXPECT_REGEX ^SUCCESS 0x[0-9a-f]+$
+AFTER ./testprogs/syscall read
+
+NAME retval
+PROG kretprobe:vfs_read { printf("SUCCESS %d\n", retval); exit(); }
+EXPECT_REGEX SUCCESS .*
+AFTER ./testprogs/syscall read
+
+NAME func_kprobe
+PROG k:vfs_read { printf("func: '%s'\n", func); exit(); }
+EXPECT func: 'vfs_read'
+AFTER ./testprogs/syscall read
+
+NAME func_kretprobe
+PROG kr:vfs_read { printf("func: '%s'\n", func); exit(); }
+EXPECT func: 'vfs_read'
+REQUIRES_FEATURE get_func_ip
+AFTER ./testprogs/syscall read
+
+NAME func_uprobe
+PROG uprobe:./testprogs/uprobe_symres:test { printf("func: '%s'\n", func); exit(); }
+EXPECT func: 'test'
+AFTER ./testprogs/uprobe_symres
+
+NAME func_uretprobe
+PROG uretprobe:./testprogs/uprobe_symres:test { printf("func: '%s'\n", func); exit(); }
+# Kernels from v5.15 to v6.5 include the get_func_ip helper, but it does not
+# work for uretprobes: it will always return 0.
+EXPECT_REGEX ^func: 'test'$|^func: '0'$
+AFTER ./testprogs/uprobe_symres
+REQUIRES_FEATURE get_func_ip
+
+# This requires Blazesym since BCC code it depends on is prone to race condition,
+# (https://github.com/iovisor/bcc/pull/4319#issuecomment-1321731687)
+NAME func_uprobe_symcache_preload
+ENV BPFTRACE_CACHE_USER_SYMBOLS=PER_PID
+PROG uprobe:./testprogs/uprobe_symres_exited_process:test { @a[func] = 1; } i:5s { exit(); }
+EXPECT @a[test]: 1
+BEFORE ./testprogs/uprobe_symres_exited_process
+REQUIRES_FEATURE blazesym
+
+NAME func_uprobe_elf_symtable
+ENV BPFTRACE_CACHE_USER_SYMBOLS=PER_PROGRAM
+PROG uprobe:./testprogs/uprobe_symres_exited_process:test { print(func); exit(); }
+EXPECT test
+AFTER ./testprogs/disable_aslr ./testprogs/uprobe_symres_exited_process
+
+NAME func_wildcard
+PROG uprobe:./testprogs/uprobe_test:uprobeFunction* { print(func); }
+EXPECT uprobeFunction1
+EXPECT uprobeFunction2
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+
+NAME username
+PROG i:ms:1 { printf("SUCCESS %s\n", username); exit(); }
+EXPECT_REGEX SUCCESS .*
+
+NAME probe
+PROG k:do_nanosleep { printf("SUCCESS %s\n", probe); exit(); }
+EXPECT SUCCESS kprobe:do_nanosleep
+AFTER ./testprogs/syscall nanosleep 1e8
+
+NAME begin probe
+PROG begin { printf("%s", probe); } end{printf("-%s\n", probe); }
+EXPECT_REGEX ^begin-end$
+AFTER ./testprogs/syscall nanosleep 1e8
+
+NAME probe_wildcard
+PROG uprobe:./testprogs/uprobe_test:uprobeFunction* { print(probe); }
+EXPECT uprobe:./testprogs/uprobe_test:uprobeFunction1
+EXPECT uprobe:./testprogs/uprobe_test:uprobeFunction2
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+
+NAME curtask
+PROG i:ms:1 { printf("SUCCESS %p\n", curtask); exit(); }
+EXPECT_REGEX SUCCESS 0x[0-9a-f]+
+
+NAME curtask_field
+PROG struct task_struct {int x;} i:ms:1 { printf("SUCCESS %d\n", curtask.x); exit(); }
+EXPECT_REGEX SUCCESS -?[0-9][0-9]*
+
+NAME rand
+PROG i:ms:1 { printf("SUCCESS %lu\n", rand); exit(); }
+EXPECT_REGEX SUCCESS [0-9]+
+
+NAME cgroup
+PROG i:ms:1 { printf("SUCCESS %llu\n", cgroup); exit(); }
+EXPECT_REGEX SUCCESS [0-9]+
+
+NAME ctx
+PROG struct x {unsigned long x}; i:ms:1 { printf("SUCCESS %lu\n", ((struct x*)ctx).x); exit(); }
+EXPECT_REGEX SUCCESS [0-9]+
+
+NAME cat
+PROG i:ms:1 { cat("/proc/loadavg"); exit(); }
+EXPECT_REGEX ^([0-9]+\.[0-9]+ ?)+.*$
+
+NAME cat limited output
+ENV BPFTRACE_MAX_CAT_BYTES=1
+PROG i:ms:1 { cat("/proc/loadavg"); exit(); }
+EXPECT_REGEX ^[0-9]$
+
+NAME cat format str
+PROG i:ms:1 { $s = "loadavg"; cat("/proc/%s", $s); exit(); }
+EXPECT_REGEX ^([0-9]+\.[0-9]+ ?)+.*$
+
+NAME log size too small
+ENV BPFTRACE_LOG_SIZE=2
+RUN {{BPFTRACE}} -v -e 'begin { if (str($1) == str($2)) { printf("%s\n", str($1)); exit() } }' "hello" "hello"
+EXPECT ERROR: Error loading BPF program for begin_1. Error code: -28 (No space left on device).
+EXPECT_REGEX ^WARNING: Kernel log seems to be trimmed.*
+WILL_FAIL
+
+NAME increase log size
+ENV BPFTRACE_LOG_SIZE=10000000
+RUN {{BPFTRACE}} -e 'begin { if (str($1) == str($2)) { printf("%s\n", str($1)); exit() } }' "hello" "hello"
+EXPECT hello
+
+NAME cat "no such file"
+PROG i:ms:1 { cat("/does/not/exist/file"); exit(); }
+EXPECT ERROR: failed to open file '/does/not/exist/file' (No such file or directory)
+
+NAME sizeof
+PROG struct Foo { int x; char c; } begin { $x = 1; printf("%d %d %d %d %d\n", sizeof(struct Foo), sizeof((*(struct Foo*)0).x), sizeof((*(struct Foo*)0).c), sizeof(1 == 1), sizeof($x));  }
+EXPECT 8 4 1 1 1
+
+NAME sizeof_ints
+PROG begin { printf("%d %d %d %d %d %d\n", sizeof(uint8), sizeof(int8), sizeof(uint16), sizeof(int16), sizeof(uint32), sizeof(int32));  }
+EXPECT 1 1 2 2 4 4
+
+# printf only takes 7 args
+NAME sizeof_ints_pt2
+PROG begin { printf("%d %d\n", sizeof(uint64), sizeof(int64));  }
+EXPECT 8 8
+
+NAME sizeof_btf
+PROG begin { printf("size=%d\n", sizeof(struct task_struct));  }
+EXPECT_REGEX ^size=
+REQUIRES_FEATURE btf
+
+NAME sizeof_btf_int
+PROG begin { print(sizeof(uint64_t));  }
+EXPECT 8
+REQUIRES_FEATURE btf
+
+NAME offsetof
+PROG struct Foo { int x; struct Bar { int x; } bar; } begin { printf("%ld %ld\n", offsetof(struct Foo, x), offsetof(struct Foo, bar.x));  }
+EXPECT_REGEX ^0 4$
+
+NAME offsetof_btf
+PROG begin { print(offsetof(struct task_struct, pid)); }
+EXPECT_REGEX ^[0-9]+
+REQUIRES_FEATURE btf
+
+NAME print args in fentry
+PROG fentry:vfs_open { print(args); exit(); }
+EXPECT_REGEX { .path = 0x[0-9a-f]+, .file = 0x[0-9a-f]+ }
+AFTER ./testprogs/syscall open
+
+NAME args in fentry store in map
+PROG fentry:vfs_open { @= args; exit(); }
+EXPECT_REGEX @: { .path = 0x[0-9a-f]+, .file = 0x[0-9a-f]+ }
+AFTER ./testprogs/syscall open
+
+NAME args in fentry as a map key
+PROG fentry:vfs_open { @[args] = 1; exit(); }
+EXPECT_REGEX @[{ .path = 0x[0-9a-f]+, .file = 0x[0-9a-f]+ }]: 1
+AFTER ./testprogs/syscall open
+
+NAME args in uprobe print
+PROG uprobe:./testprogs/uprobe_test:uprobeFunction1 { print(args); exit(); }
+EXPECT_REGEX { .n = 0x[0-9a-f]+, .c = 120 }
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+
+NAME args in uprobe store in map
+PROG uprobe:./testprogs/uprobe_test:uprobeFunction1 { @ = args; exit(); }
+EXPECT_REGEX @: { .n = 0x[0-9a-f]+, .c = 120 }
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+
+NAME args in a tuple in map
+PROG uprobe:./testprogs/uprobe_test:uprobeFunction1 { $a = (1, "hello", args); @[$a] = (args, "bye"); exit(); }
+EXPECT_REGEX @[1, hello, { .n = 0x[0-9a-f]+, .c = 120 }]: \({ .n = 0x[0-9a-f]+, .c = 120 }, bye\)
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+
+NAME args in uprobe store in map and access field
+PROG uprobe:./testprogs/uprobe_test:uprobeFunction1 { @ = args; print(@.c); exit(); }
+EXPECT 120
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+
+NAME args in uprobe as a map key
+PROG uprobe:./testprogs/uprobe_test:uprobeFunction1 { @[args] = 1; exit(); }
+EXPECT_REGEX @[{ .n = 0x[0-9a-f]+, .c = 120 }]: 1
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+
+NAME mixed probe args
+PROG rawtracepoint:irq_handler_entry, rawtracepoint:irq_handler_exit, fentry:do_nanosleep { args }
+EXPECT Attached 3 probes
+
+NAME jiffies
+PROG i:ms:1 { printf("SUCCESS %llu\n", jiffies); exit(); }
+EXPECT_REGEX SUCCESS [0-9]+
+
+NAME ustack builtin with stack_mode config
+RUN {{BPFTRACE}} -e 'config = { stack_mode=raw } uprobe:./testprogs/uprobe_test:uprobeFunction1 { @c[ustack] = 1; exit(); }'
+EXPECT_REGEX ^@c\[\n[0-9a-f]+$
+ARCH !s390
+AFTER ./testprogs/uprobe_test
+
+NAME kstack builtin with stack_mode config
+RUN {{BPFTRACE}} -e 'config = { stack_mode=raw } k:do_nanosleep { @c[kstack] = 1; exit(); }'
+EXPECT_REGEX ^@c\[\n[0-9a-f]+$
+AFTER ./testprogs/syscall nanosleep  1e8
+
+NAME usermode_builtin_in_kprobe_fentry
+PROG k:vfs_read { printf("%d ", usermode); } fentry:vfs_open { print(usermode); }
+EXPECT 0 0
+AFTER ./testprogs/syscall read
+ARCH x86_64
+
+NAME usermode_builtin_in_uprobe
+PROG uprobe:./testprogs/uprobe_symres:test { print(usermode); exit(); }
+EXPECT 1
+AFTER ./testprogs/uprobe_symres
+ARCH x86_64
+
+NAME usermode_builtin_in_begin_end
+PROG begin { printf("%d ", usermode);  } end { print(usermode); }
+EXPECT 1 1
+ARCH x86_64
+
+NAME usermode_builtin_in_unsupported_arch
+PROG i:1ms { print(usermode); exit(); }
+EXPECT_REGEX .*ERROR: 'usermode' builtin is only supported on x86_64.*
+ARCH aarch64
+WILL_FAIL
+
+NAME config builtin reads integer, string, and boolean
+RUN {{BPFTRACE}} -e 'BEGIN { printf("%d %s %d\n", config().max_strlen, config().stack_mode, config().cpp_demangle); exit(); }'
+EXPECT 1024 bpftrace 1
+TIMEOUT 5

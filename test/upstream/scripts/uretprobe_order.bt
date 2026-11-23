@@ -1,0 +1,10 @@
+uretprobe:/bin/bash:echo_builtin
+{
+  printf("first");
+}
+
+uretprobe:/bin/bash:echo_builtin
+{
+  printf(" second\n");
+  exit();
+}

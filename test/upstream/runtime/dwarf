@@ -1,0 +1,198 @@
+NAME list uprobe args - basic type
+RUN {{BPFTRACE}} -lv 'uprobe:./testprogs/uprobe_test:main'
+EXPECT int argc
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+
+NAME list uprobe args - pointer type
+RUN {{BPFTRACE}} -lv 'uprobe:./testprogs/uprobe_test:uprobeFunction1'
+EXPECT int* n
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+
+NAME list uprobe args - struct pointer type
+RUN {{BPFTRACE}} -lv 'uprobe:./testprogs/uprobe_test:uprobeFunction2'
+EXPECT struct Foo* foo1
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+
+NAME uprobe arg by name - char
+PROG uprobe:./testprogs/uprobe_test:uprobeFunction1 { printf("c = %c\n", args.c); exit(); }
+EXPECT c = x
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+
+NAME uprobe arg by name - pointer
+PROG uprobe:./testprogs/uprobe_test:uprobeFunction1 { printf("n = %d\n", *(args.n)); exit(); }
+EXPECT n = 13
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+
+NAME uprobe arg by name - struct
+PROG uprobe:./testprogs/uprobe_test:uprobeFunction2 { printf("foo1.a = %d\n", args.foo1.a); exit(); }
+EXPECT foo1.a = 123
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+
+# Checking backwards compatibility
+NAME uprobe args as pointer
+PROG uprobe:./testprogs/uprobe_test:uprobeFunction1 { printf("c = %c\n", args->c); exit(); }
+EXPECT c = x
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+
+NAME struct field string
+PROG uprobe:./testprogs/uprobe_test:uprobeFunction2 { printf("foo1.b = %s\n", args.foo1.b); exit(); }
+EXPECT foo1.b = hello
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+
+NAME struct field array
+PROG uprobe:./testprogs/uprobe_test:uprobeFunction2 { print(args.foo1.c); exit(); }
+EXPECT [1,2,3]
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+
+NAME cast to struct
+PROG uprobe:./testprogs/uprobe_test:uprobeFunction2 { printf("foo1.a = %d\n", ((struct Foo *)arg0).a); exit(); }
+EXPECT foo1.a = 123
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+
+NAME struct override
+PROG struct Foo { int b; } uprobe:./testprogs/uprobe_test:uprobeFunction2 { printf("foo1.b = %d\n", ((struct Foo *)arg0).b); exit(); }
+EXPECT foo1.b = 123
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+
+NAME complex type declaration
+PROG uprobe:./testprogs/uprobe_test:uprobeFunctionBar { let $x: struct Foo *[2] = args.bar->foos; printf("bar.foos[0].a = %d\n", $x[0]->a); exit(); }
+EXPECT bar.foos[0].a = 123
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+
+# Attaching probes using source code location
+NAME uprobe source location - attach probe to source line
+PROG uprobe:./testprogs/uprobe_test@uprobe_test.c:22 { printf("0x%lx\n", reg("pc")); exit(); }
+EXPECT_REGEX ^0x[0-9A-Fa-f]+$
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+ARCH x86_64
+
+NAME uprobe source location - attach probe to source line
+PROG uprobe:./testprogs/uprobe_test@uprobe_test.c:22 { printf("0x%lx\n", reg("pc")); exit(); }
+EXPECT_REGEX ^0x[0-9A-Fa-f]+$
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+ARCH aarch64
+
+NAME uprobe source location - source line to address validation
+PROG uprobe:./testprogs/uprobe_test@uprobe_test.c:22 { @a = reg("pc"); }
+     uprobe:./testprogs/uprobe_test:uprobeFunction1 { @b = reg("pc"); if (@b == @a) { printf("0x%lx == 0x%lx\n", @a, @b); exit(); } }
+EXPECT_REGEX ^0x[0-9A-Fa-f]+ == 0x[0-9A-Fa-f]+$
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+ARCH x86_64
+
+NAME uprobe source location - source line to address validation
+PROG uprobe:./testprogs/uprobe_test@uprobe_test.c:22 { @a = reg("pc"); }
+     uprobe:./testprogs/uprobe_test:uprobeFunction1 { @b = reg("pc"); if (@b == @a) { printf("0x%lx == 0x%lx\n", @a, @b); exit(); } }
+EXPECT_REGEX ^0x[0-9A-Fa-f]+ == 0x[0-9A-Fa-f]+$
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+ARCH aarch64
+
+NAME uprobe source location - attach multiple probes
+PROG uprobe:./testprogs/uprobe_test@uprobe_test.c:34 { @a=1; }
+     uprobe:./testprogs/uprobe_test@uprobe_test.c:36 { @b=1; }
+     uprobe:./testprogs/uprobe_test@uprobe_test.c:39 { if (@a == 1 && @b == 1) { print("success"); exit(); } }
+EXPECT success
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test
+
+NAME parse stripped debuginfo - list args
+RUN {{BPFTRACE}} -lv 'uprobe:./testprogs/uprobe_test-stripped:main' --debuginfo=./external_debug
+EXPECT int argc
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+
+NAME parse stripped debuginfo - arg by name
+RUN {{BPFTRACE}} -e 'uprobe:./testprogs/uprobe_test-stripped:uprobeFunction1 { printf("%c\n", args.c); exit(); }' --debuginfo=./external_debug
+EXPECT x
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test-stripped
+
+NAME parse stripped debuginfo - attach by source line
+RUN {{BPFTRACE}} -e 'uprobe:./testprogs/uprobe_test-stripped@uprobe_test.c:22 { print("ok"); exit(); }' --debuginfo=./external_debug
+EXPECT ok
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/uprobe_test-stripped
+
+NAME parse stripped debuginfo - search multiple paths
+RUN {{BPFTRACE}} -lv 'uprobe:./testprogs/uprobe_test-stripped:main' --debuginfo=./external_debug/dwo --debuginfo=./external_debug/dwp --debuginfo=./external_debug
+EXPECT int argc
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+
+NAME parse stripped debuginfo - search standard .debug path
+RUN {{BPFTRACE}} -lv 'uprobe:./testprogs/uprobe_separate_debug-stripped:fn'
+EXPECT int n
+EXPECT const char* str
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+
+NAME parse DWO debuginfo - list args
+RUN {{BPFTRACE}} -lv 'uprobe:./testprogs/external_debug/dwo/uprobe_test-split:main'
+EXPECT int argc
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+
+NAME parse DWO debuginfo - arg by name
+RUN {{BPFTRACE}} -e 'uprobe:./testprogs/external_debug/dwo/uprobe_test-split:uprobeFunction1 { printf("%c\n", args.c); exit(); }'
+EXPECT x
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/external_debug/dwo/uprobe_test-split
+
+NAME parse DWO debuginfo - attach by source line
+RUN {{BPFTRACE}} -e 'uprobe:./testprogs/external_debug/dwo/uprobe_test-split@uprobe_test.c:22 { printf("ok"); exit(); }'
+EXPECT ok
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/external_debug/dwo/uprobe_test-split
+
+NAME parse DWP debuginfo - list args
+RUN {{BPFTRACE}} -lv 'uprobe:./testprogs/external_debug/dwp/uprobe_test-split:main'
+EXPECT int argc
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+
+NAME parse DWP debuginfo - arg by name
+RUN {{BPFTRACE}} -e 'uprobe:./testprogs/external_debug/dwp/uprobe_test-split:uprobeFunction1 { printf("%c\n", args.c); exit(); }'
+EXPECT x
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/external_debug/dwp/uprobe_test-split
+
+NAME parse DWP debuginfo - attach by source line
+RUN {{BPFTRACE}} -e 'uprobe:./testprogs/external_debug/dwp/uprobe_test-split@uprobe_test.c:22 { printf("ok"); exit(); }'
+EXPECT ok
+REQUIRES_FEATURE dwarf
+TIMEOUT 5
+BEFORE ./testprogs/external_debug/dwp/uprobe_test-split

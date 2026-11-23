@@ -1,0 +1,35 @@
+# Disabled - repeatedly fails on upstream kernel (6.14)
+NAME watchpoint - absolute address
+BEFORE ./testprogs/watchpoint
+RUN {{BPFTRACE}} -e "watchpoint:$(awk '{print $1}' /tmp/watchpoint_mem):8:w { printf(\"hit!\n\"); exit() }" -p {{BEFORE_PID}}
+EXPECT hit!
+ARCH aarch64|ppc64|ppc64le|x86_64
+CLEANUP rm -f /tmp/watchpoint_mem
+REQUIRES bash -c "exit 1"
+
+NAME kwatchpoint - knl absolute address
+RUN {{BPFTRACE}} -e "watchpoint:0x$(awk '$3 == "jiffies" {print $1}' /proc/kallsyms):4:w { printf(\"hit\n\"); exit(); }"
+EXPECT hit
+ARCH aarch64|ppc64|ppc64le|x86_64
+REQUIRES awk '$3 == "jiffies" {got=1} end {exit !got}' /proc/kallsyms
+
+NAME execution breakpoint
+RUN {{BPFTRACE}} -e 'watchpoint:0x10000000:1:x { printf("hit!\n"); exit() }' -c ./testprogs/watchpoint_exec
+EXPECT hit!
+ARCH aarch64|x86_64
+
+NAME watchpoint - created thread
+BEFORE ./testprogs/watchpoint_threaded
+RUN {{BPFTRACE}} -e 'watchpoint:0x10000000:1:w { printf("hit!\n"); exit() }' -c './testprogs/watchpoint_threaded 1'
+EXPECT hit!
+# Not all archs support mmap to our specific address, so be conservative here.
+# See 08a47afa ("Fixing absolute address test issue across platforms")
+ARCH x86_64
+
+# Attaches a watchpoint probe to an existing multi-threaded process. Waits a bit before running
+# bpftrace to allow the test program to start the thread that triggers the watchpoint.
+NAME watchpoint - existing thread
+BEFORE ./testprogs/watchpoint_threaded
+RUN sleep 1; {{BPFTRACE}} -p {{BEFORE_PID}} -e 'watchpoint:0x10000000:1:w { printf("hit!\n"); exit() }'
+EXPECT hit!
+ARCH x86_64

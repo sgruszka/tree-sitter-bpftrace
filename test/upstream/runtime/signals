@@ -1,0 +1,16 @@
+NAME strace no quit
+RUN {{BPFTRACE}} -e 'i:s:1 { printf("%s %d\n", "SUCCESS", 1); exit() }' & (./testprogs/syscall nanosleep 5e8 && strace -p $! -o /dev/null)
+EXPECT SUCCESS 1
+REQUIRES command -v strace
+TIMEOUT 3
+
+NAME sigint quit
+PROG end { printf("%s %d\n", "SUCCESS", 1) }
+AFTER pkill -SIGINT bpftrace
+EXPECT SUCCESS 1
+TIMEOUT 2
+
+NAME custom signal handling probe
+RUN {{BPFTRACE}} -e 'self:signal:SIGUSR1 { print("signal handler"); exit(); }'
+AFTER kill -s USR1 $(pidof bpftrace)
+EXPECT signal handler

@@ -1,0 +1,75 @@
+NAME uprobes - list probes by file
+RUN {{BPFTRACE}} -l 'uprobe:./testprogs/uprobe_test:*'
+EXPECT uprobe:./testprogs/uprobe_test:uprobeFunction1
+
+NAME uprobes - list probes by file with wildcarded filter
+RUN {{BPFTRACE}} -l 'uprobe:./testprogs/uprobe_test:uprobeFunc*'
+EXPECT uprobe:./testprogs/uprobe_test:uprobeFunction1
+
+NAME uprobes - list probes with wildcarded file matching multiple files
+RUN {{BPFTRACE}} -l 'uprobe:./testprogs/uprobe*:*'
+EXPECT uprobe:./testprogs/uprobe_test:uprobeFunction1
+
+NAME uprobes - list probes by file with wildcarded file and filter
+RUN {{BPFTRACE}} -l 'uprobe:./testprogs/uprobe_test*:uprobeFunc*'
+EXPECT uprobe:./testprogs/uprobe_test:uprobeFunction1
+
+NAME uprobes - list probes by file with specific filter
+RUN {{BPFTRACE}} -l 'uprobe:./testprogs/uprobe_test:uprobeFunction1'
+EXPECT uprobe:./testprogs/uprobe_test:uprobeFunction1
+
+NAME uprobes - list probes by file with wildcarded probe type
+RUN {{BPFTRACE}} -l '*:./testprogs/uprobe_test:*' | grep -e '^uprobe:'
+EXPECT uprobe:./testprogs/uprobe_test:uprobeFunction1
+
+NAME uprobes - list probes by pid
+RUN {{BPFTRACE}} -l -p {{BEFORE_PID}} | grep -e '^uprobe'
+EXPECT_REGEX uprobe:.*/testprogs/uprobe_test:uprobeFunction1
+BEFORE ./testprogs/uprobe_test
+
+NAME uprobes - list probes by pid; uprobes only
+RUN {{BPFTRACE}} -l 'uprobe:*' -p {{BEFORE_PID}}
+EXPECT_REGEX uprobe:.*/testprogs/uprobe_test:uprobeFunction1
+# Ensure that no probes from other binaries are listed. If bpftrace_test is
+# listed, unwanted globbing took place. bpftrace_test sits in the runtime
+# test runner's cwd (build/tests/).
+EXPECT_REGEX_NONE ^uprobe:bpftrace_test:
+BEFORE ./testprogs/uprobe_test
+
+NAME uprobes - list probes by pid in separate mount namespace
+RUN {{BPFTRACE}} -l -p {{BEFORE_PID}} | grep -e '^uprobe'
+EXPECT_REGEX uprobe:.*/bpftrace-unshare-mountns-test/uprobe_test:uprobeFunction1
+BEFORE ./testprogs/mountns_wrapper uprobe_test
+
+NAME uprobes - attach to probe for executable in separate mount namespace
+RUN {{BPFTRACE}} -e 'uprobe:/tmp/bpftrace-unshare-mountns-test/uprobe_test:uprobeFunction1 { printf("here\n" ); exit(); }' -p {{BEFORE_PID}}
+EXPECT Attached 1 probe
+BEFORE ./testprogs/mountns_wrapper uprobe_test
+
+NAME uprobes - attach to probe for executable in a pivot_root'd mount namespace
+RUN {{BPFTRACE}} -e 'uprobe:/proc/{{BEFORE_PID}}/root/uprobe_test:uprobeFunction1 { printf("func %s\n", func); exit(); }'
+EXPECT func uprobeFunction1
+BEFORE ./testprogs/mountns_pivot_wrapper uprobe_test
+
+NAME uprobes - attach to probe by pid with only wildcard
+RUN {{BPFTRACE}} -e 'uprobe:*:uprobeFunction1 { printf("here\n" ); exit(); }' -p {{BEFORE_PID}}
+EXPECT Attached 1 probe
+BEFORE ./testprogs/uprobe_test
+
+NAME uprobes - attach to multiple probes by pid with only wildcard
+RUN {{BPFTRACE}} -e 'uprobe:*:uprobeFunc* { printf("here\n" ); exit(); }' -p {{BEFORE_PID}}
+EXPECT here
+BEFORE ./testprogs/uprobe_test
+
+NAME uprobes - list probes in non-executable library
+RUN {{BPFTRACE}} -l 'uprobe:./testlibs/libsimple.so:fun'
+EXPECT uprobe:./testlibs/libsimple.so:fun
+
+NAME uprobes - probe function in non-executable library
+PROG uprobe:./testlibs/libsimple.so:fun {}
+EXPECT Attached 1 probe
+
+NAME uprobes - attach to single process with pid arg
+RUN {{BPFTRACE}} runtime/scripts/uprobe_pid_check.bt -p {{BEFORE_PID}} {{BEFORE_PID}}
+EXPECT hello
+BEFORE ./testprogs/uprobe_fork_loop

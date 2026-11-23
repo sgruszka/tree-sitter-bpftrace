@@ -1,0 +1,371 @@
+NAME it shows version
+RUN {{BPFTRACE}} --version
+EXPECT_REGEX ^bpftrace v\d
+TIMEOUT 1
+
+NAME it shows usage with help flag
+RUN {{BPFTRACE}} -h
+EXPECT USAGE:
+TIMEOUT 1
+
+NAME it shows usage with bad flag
+RUN {{BPFTRACE}} -idonotexist
+EXPECT USAGE:
+TIMEOUT 1
+WILL_FAIL
+
+NAME errors on non existent file
+RUN {{BPFTRACE}} non_existent_file.bt
+EXPECT ERROR: failed to open file 'non_existent_file.bt': No such file or directory
+TIMEOUT 1
+WILL_FAIL
+
+NAME piped script
+RUN {{BPFTRACE}} - < runtime/scripts/hello_world.bt
+EXPECT hello world!
+TIMEOUT 1
+
+NAME it lists kprobes
+RUN {{BPFTRACE}} --list | grep kprobes
+EXPECT_REGEX kprobe:.*
+TIMEOUT 1
+
+NAME it lists kprobes with glob matching
+RUN {{BPFTRACE}} -l 'kprobe*'
+EXPECT_REGEX kprobe:.*
+TIMEOUT 1
+
+NAME it lists kprobes with verbose mode
+RUN {{BPFTRACE}} -lv kprobe:*
+EXPECT_REGEX [ ]+[a-zA-Z_\*\s]+
+REQUIRES_FEATURE btf
+TIMEOUT 1
+
+NAME it lists multiple kprobes in verbose mode
+RUN {{BPFTRACE}} -lv kprobe:vfs_read,kprobe:vfs_write
+EXPECT kprobe:vfs_read
+EXPECT kprobe:vfs_write
+REQUIRES_FEATURE btf
+TIMEOUT 1
+
+NAME it lists tracepoints
+RUN {{BPFTRACE}} -l | grep tracepoint
+EXPECT_REGEX tracepoint:.*
+TIMEOUT 1
+
+NAME it lists software events
+RUN {{BPFTRACE}} -l | grep software
+EXPECT_REGEX software:.*
+TIMEOUT 1
+
+NAME it lists hardware events
+RUN {{BPFTRACE}} -l | grep hardware
+EXPECT_REGEX hardware:.*
+TIMEOUT 1
+
+NAME it lists fentry
+RUN {{BPFTRACE}} -l | grep fentry
+EXPECT_REGEX fentry:.*
+REQUIRES_FEATURE btf
+TIMEOUT 1
+
+NAME it lists fentry without module
+RUN {{BPFTRACE}} -l 'fentry:vfs_*'
+EXPECT_REGEX fentry:vmlinux:vfs_.*
+REQUIRES_FEATURE btf
+TIMEOUT 1
+
+NAME regression for #4162
+RUN {{BPFTRACE}} -l 'fentry:*'
+EXPECT_REGEX fentry:.*
+REQUIRES_FEATURE btf
+TIMEOUT 1
+
+NAME it lists rawtracepoints
+RUN {{BPFTRACE}} -l | grep rawtracepoint
+EXPECT_REGEX rawtracepoint:.*
+TIMEOUT 1
+
+NAME it lists rawtracepoint params
+RUN {{BPFTRACE}} -lv "rawtracepoint:*"
+EXPECT_REGEX [ ]+[a-zA-Z_\*\s]+
+REQUIRES_FEATURE btf
+TIMEOUT 1
+
+# The BTF FUNC_PROTOs for rawtracepoint params have an unnecessary initial
+# void * and a retval that can't be used so make sure they are not
+# included in the listing output
+NAME it doesn't list the first rawtracepoint param or retval
+RUN {{BPFTRACE}} -lv "rawtracepoint:consume_skb"
+EXPECT_NONE void * __data
+EXPECT_NONE int retval
+REQUIRES_FEATURE btf
+TIMEOUT 1
+
+NAME it lists fentry params
+RUN {{BPFTRACE}} -lv "fentry:*"
+EXPECT_REGEX [ ]+[a-zA-Z_\*\s]+
+REQUIRES_FEATURE btf
+TIMEOUT 1
+
+NAME it lists kprobes with regex filter
+RUN {{BPFTRACE}} -l "kprobe:*"
+EXPECT_REGEX kprobe:.*
+TIMEOUT 1
+
+NAME it lists kretprobes with regex filter
+RUN {{BPFTRACE}} -l "kretprobe:*"
+EXPECT_REGEX kretprobe:.*
+TIMEOUT 1
+
+NAME it lists uprobes with regex filter
+RUN {{BPFTRACE}} -l "uprobe:./testprogs/syscall:*"
+EXPECT_REGEX uprobe:.*
+TIMEOUT 1
+
+NAME it lists uretprobes with regex filter
+RUN {{BPFTRACE}} -l "uretprobe:./testprogs/syscall:*"
+EXPECT_REGEX uretprobe:.*
+TIMEOUT 1
+
+NAME it lists tracepoints with regex filter
+RUN {{BPFTRACE}} -l "tracepoint:raw_syscalls:*"
+EXPECT tracepoint:raw_syscalls:sys_exit
+TIMEOUT 1
+
+NAME it lists software events with regex filter
+RUN {{BPFTRACE}} -l "software:*"
+EXPECT software:cpu:
+TIMEOUT 1
+
+NAME it lists hardware events with regex filter
+RUN {{BPFTRACE}} -l "hardware:*"
+EXPECT hardware:cpu-cycles:
+TIMEOUT 1
+
+NAME it lists fentry events with regex filter
+RUN {{BPFTRACE}} -l "fentry:*"
+EXPECT_REGEX fentry:.*
+REQUIRES_FEATURE btf
+TIMEOUT 1
+
+NAME it lists fexit events with regex filter
+RUN {{BPFTRACE}} -l "fexit:*"
+EXPECT_REGEX fexit:.*
+REQUIRES_FEATURE btf
+TIMEOUT 1
+
+NAME it lists interval probes with regex filter
+RUN {{BPFTRACE}} -l "interval:*"
+EXPECT interval:hz:
+EXPECT interval:us:
+EXPECT interval:ms:
+EXPECT interval:s:
+TIMEOUT 1
+
+NAME it lists profile probes with regex filter
+RUN {{BPFTRACE}} -l "profile:*"
+EXPECT profile:hz:
+EXPECT profile:us:
+EXPECT profile:ms:
+EXPECT profile:s:
+TIMEOUT 1
+
+NAME listing with wildcarded probe type
+RUN {{BPFTRACE}} -l "*ware:*"
+EXPECT_REGEX hardware:.*
+EXPECT_REGEX software:.*
+TIMEOUT 1
+
+NAME it lists rawtracepoint with regex filter
+RUN {{BPFTRACE}} -l "rawtracepoint:*"
+EXPECT_REGEX rawtracepoint:.*
+TIMEOUT 1
+
+NAME it lists iter with regex filter
+RUN {{BPFTRACE}} -l "iter:*"
+EXPECT_REGEX iter:.*
+TIMEOUT 1
+
+NAME it only lists probes in the program
+RUN {{BPFTRACE}} -l -e 'fentry:vmlinux:vfs_read { exit(); }'
+EXPECT fentry:vmlinux:vfs_read
+EXPECT_NONE fentry:vmlinux:vfs_write
+
+NAME it lists uprobes in the program
+RUN {{BPFTRACE}} -l -e 'uretprobe:*:uprobeFunction* { exit(); }' --pid {{BEFORE_PID}}
+EXPECT_REGEX uretprobe:[\S]+uprobe_test:uprobeFunction1
+BEFORE ./testprogs/uprobe_test
+
+NAME it lists multiple probes in the program
+RUN {{BPFTRACE}} -l -e 'hardware:cache-misses:10 { exit(); } tracepoint:xdp:mem_connect { exit(); }'
+EXPECT hardware:cache-misses:
+EXPECT tracepoint:xdp:mem_connect
+
+NAME it lists struct definitions
+RUN {{BPFTRACE}} -lv 'struct task_struct'
+EXPECT vmlinux: struct task_struct {
+TIMEOUT 2
+
+NAME it lists multiple struct definitions
+RUN {{BPFTRACE}} -lv 'struct task_struct,struct file,struct fd'
+EXPECT vmlinux: struct task_struct {
+EXPECT vmlinux: struct file {
+EXPECT vmlinux: struct fd {
+TIMEOUT 2
+
+NAME it lists probes in a given file
+RUN {{BPFTRACE}} -l runtime/scripts/interval_order.bt
+EXPECT interval:ms:
+EXPECT interval:s:
+EXPECT interval:us:
+
+NAME it lists misc in verbose mode
+RUN {{BPFTRACE}} -lv 'kprobe:vfs_read,struct file'
+EXPECT kprobe:vfs_read
+EXPECT vmlinux: struct file {
+TIMEOUT 2
+
+NAME warning on non existent file
+RUN {{BPFTRACE}} -l non_existent_file.bt
+EXPECT WARNING: It appears that 'non_existent_file.bt' is a filename but the file does not exist. Treating 'non_existent_file.bt' as a search pattern.
+TIMEOUT 1
+
+NAME pid fails validation with leading non-number
+RUN {{BPFTRACE}} -p a1111 -e 'begin { print(1); }'
+EXPECT ERROR: Failed to parse pid: invalid integer: a1111
+TIMEOUT 1
+WILL_FAIL
+
+NAME pid fails validation with non-number in between
+RUN {{BPFTRACE}} -p 111a1 -e 'begin { print(1); }'
+EXPECT ERROR: Failed to parse pid: invalid trailing bytes: 111a1
+TIMEOUT 1
+WILL_FAIL
+
+NAME pid fails validation with non-numeric argument
+RUN {{BPFTRACE}} -p not_a_pid -e 'begin { print(1); }'
+EXPECT ERROR: Failed to parse pid: invalid integer: not_a_pid
+TIMEOUT 1
+WILL_FAIL
+
+NAME pid outside of valid pid range
+RUN {{BPFTRACE}} -p 5000000 -e 'begin { print(1); }'
+EXPECT ERROR: Pid out of range: 5000000
+TIMEOUT 1
+WILL_FAIL
+
+NAME libraries under /usr/include are in the search path
+RUN {{BPFTRACE}} -e "$(echo "#include <sys/xattr.h>"; echo "begin { }")" 2>&1
+EXPECT_NONE file not found
+REQUIRES ls /usr/include/sys/xattr.h
+TIMEOUT 1
+
+NAME non existent library include fails
+RUN {{BPFTRACE}} -e "$(echo "#include <lol/no.h>"; echo "begin { }")" 2>&1
+EXPECT definitions.h:2:10: fatal error: 'lol/no.h' file not found
+TIMEOUT 1
+WILL_FAIL
+
+NAME defines work
+RUN {{BPFTRACE}} -e "$(echo '#define _UNDERSCORE 314'; echo 'begin { printf("%d\n", _UNDERSCORE); }')"
+EXPECT 314
+TIMEOUT 1
+
+NAME clear map
+PROG begin { @ = 1; @a[1] = 1; clear(@); clear(@a); printf("ok\n"); }
+EXPECT ok
+TIMEOUT 1
+
+NAME clear count-map
+PROG begin { @ = count(); @a[1] = count(); clear(@); clear(@a); }
+EXPECT_NONE @: 0
+EXPECT_NONE @a[1]: 1
+TIMEOUT 1
+
+NAME parallel map access
+RUN {{BPFTRACE}} runtime/scripts/parallel_map_access.bt --no-warnings
+EXPECT SUCCESS
+TIMEOUT 10
+
+NAME spawn child
+RUN {{BPFTRACE}} -e 'i:ms:500 { printf("%d\n", cpid); }' --cmd './testprogs/syscall nanosleep 1e9'
+EXPECT_REGEX [0-9]+
+TIMEOUT 3
+
+NAME info flag
+RUN {{BPFTRACE}} --info
+EXPECT_REGEX kprobe_session:
+TIMEOUT 1
+
+NAME basic while loop
+PROG begin { $a = 0; while ($a <= 100) { @=avg($a++) }  }
+EXPECT @: 50
+REQUIRES_FEATURE loop
+
+NAME nested while loop
+PROG begin { $i = 0; while ($i < 3) { $j = 0; while ($j < 2) { @count = count(); $j++; } $i++; } }
+EXPECT @count: 6
+REQUIRES_FEATURE loop
+
+NAME while loop let without assignment is zeroed each iteration
+PROG begin { $y = 0; $i = 0; while ($i < 3) { let $z; if ($i == 0) { $z = 5; } $y += $z; $i++; } print($y); }
+EXPECT 5
+
+NAME disable warnings
+RUN {{BPFTRACE}} --no-warnings -e 'begin { @x = stats(10); print(@x, 2); clear(@x); }' 2>&1| grep -c -E "WARNING|invalid option"
+EXPECT_REGEX ^0$
+TIMEOUT 1
+WILL_FAIL
+
+NAME kaddr fails
+PROG begin { print(kaddr("asdfzzzzzzz")) }
+EXPECT stdin:1:15-35: ERROR: Failed to resolve kernel symbol: asdfzzzzzzz
+       begin { print(kaddr("asdfzzzzzzz")) }
+                     ~~~~~~~~~~~~~~~~~~~~
+TIMEOUT 1
+WILL_FAIL
+
+NAME print_per_cpu_map_vals
+REQUIRES_FEATURE lookup_percpu_elem
+PROG begin { @a = avg(5); @c = count(); @s = sum(5); @mn = min(1); @mx = max(-1); print((@a, @c, @s, @mn, @mx));  }
+EXPECT (5, 1, 5, 1, -1)
+TIMEOUT 3
+
+NAME print large int
+PROG begin { $a = 10223372036854775807; print(($a)); }
+EXPECT 10223372036854775807
+TIMEOUT 1
+
+NAME has_key error scalar
+PROG begin { @g = 2; if (has_key(@g, 2)) { printf("ok\n"); }  }
+EXPECT_REGEX .* ERROR: call to has_key\(\) expects a map with explicit keys.*
+WILL_FAIL
+
+NAME has_key error type mismatch
+PROG begin { @g[1, "hi"] = 2; if (has_key(@g, (1, 2))) { printf("ok\n"); }  }
+EXPECT_REGEX .* ERROR: Argument mismatch for @g: trying to access with arguments: '\(int8,int8\)' when map expects arguments: '\(int8,string\[3\]\)'.*
+WILL_FAIL
+
+NAME exit code
+PROG begin { exit(69); }
+RETURN_CODE 69
+TIMEOUT 1
+
+NAME print block expression with print
+PROG begin { print({ $x = 1; print ("bob"); $x > 1 }); }
+EXPECT bob
+EXPECT false
+
+NAME block expression with condition
+PROG begin { if ({ let $a = true; $a }) { print ("bob"); } }
+EXPECT bob
+
+NAME discard expression
+PROG begin { _ = { print(1); 1 } }
+EXPECT 1
+EXPECT_REGEX_NONE .*WARNING: Return value discarded..*
+
+NAME probe return
+PROG begin { $a = 1; print($a); return $a; }
+EXPECT 1

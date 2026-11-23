@@ -1,0 +1,10 @@
+kretprobe:hrtimer_nanosleep
+{
+  printf("first");
+}
+
+kretprobe:hrtimer_nanosleep
+{
+  printf(" second\n");
+  exit();
+}

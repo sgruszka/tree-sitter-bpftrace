@@ -1,0 +1,427 @@
+NAME if_gt
+PROG i:ms:1 {$a = 10; if ($a > 2) { $a = 20 } printf("a=%d\n", $a); exit();}
+EXPECT a=20
+
+NAME if_lt
+PROG i:ms:1 {$a = 10; if ($a < 2) { $a = 20 } printf("a=%d\n", $a); exit();}
+EXPECT a=10
+
+NAME ifelse_go_else
+PROG i:ms:1 {$a = ""; if (10 < 2) { $a = "hi" } else {$a = "hello"} printf("a=%s\n", $a); exit();}
+EXPECT a=hello
+
+NAME ifelse_go_if
+PROG i:ms:1 {$a = ""; if (10 > 2) { $a = "hi" } else {$a = "hello"} printf("a=%s\n", $a); exit();}
+EXPECT a=hi
+
+NAME ifelseif_go_elseif
+PROG i:ms:1 {$a = ""; if (1 > 2) { $a = "hi" } else if (2 < 3) { $a = "hello" } printf("a=%s\n", $a); exit();}
+EXPECT a=hello
+
+NAME ifelseifelse_go_else
+PROG i:ms:1 {$a = ""; if (1 > 2) { $a = "hi" } else if (5 < 3) { $a = "hello" } else { $a = "asdf" } printf("a=%s\n", $a); exit();}
+EXPECT a=asdf
+
+NAME if_cast
+PROG i:ms:1 { if ((int32)nsecs) { printf("done\n"); } exit(); }
+EXPECT done
+
+NAME ternary
+PROG i:ms:1 { $a = 1 ? "yes" : "no"; printf("%s\n", $a); exit();}
+EXPECT yes
+
+NAME ternary_lnot
+PROG i:ms:1 { $a = !nsecs ? 0 : 1; printf("%d\n", $a); exit() }
+EXPECT 1
+
+NAME ternary_int8
+PROG i:ms:1 { $a = 1 ? (int8)1 : 0; printf("%d\n", $a); exit();}
+EXPECT 1
+
+NAME ternary_mixed_int
+PROG i:ms:1 { $a = nsecs ? (uint8)1 : (int32)-1; printf("%d\n", $a); exit();}
+EXPECT 1
+
+NAME ternary_bool
+PROG i:ms:1 { $a = nsecs ? true : false; print($a); exit(); }
+EXPECT true
+
+NAME ternary_none_type
+PROG i:ms:1 { nsecs ? printf("yes\n") : printf("no") ; exit(); }
+EXPECT  yes
+
+NAME ternary_buf
+PROG i:ms:1 { $a = nsecs ? buf("hi", 2) : buf("bye", 3); print($a); exit(); }
+EXPECT hi
+
+NAME ternary_tuple
+PROG i:ms:1 { $a = nsecs ? ("hellolongstr", "a") : ("b", "hellolongstr"); print($a); exit(); }
+EXPECT (hellolongstr, a)
+
+NAME ternary_empty_2nd_operand
+PROG begin { $x = 1; $a =$x ?: 10; $b = 0 ?: 20; print(($a, $b)); exit(); }
+EXPECT (1, 20)
+
+NAME unroll
+PROG i:ms:1 {$a = 1; unroll (10) { $a = $a + 1; } printf("a=%d\n", $a); exit();}
+EXPECT a=11
+
+NAME unroll_max_value
+PROG i:ms:1 {$a = 1; unroll (101) { $a = $a + 2; } printf("a=%d\n", $a); exit();}
+EXPECT_REGEX .* ERROR: unroll maximum value is 100.*
+WILL_FAIL
+
+NAME unroll_min_value
+PROG i:ms:1 {$a = 1; unroll (0) { $a = $a + 2; } printf("a=%d\n", $a); exit();}
+EXPECT_REGEX .* ERROR: unroll minimum value is 1.*
+WILL_FAIL
+
+NAME unroll_param
+RUN {{BPFTRACE}} -e 'i:ms:1 {$a = 1; unroll ($1) { $a = $a + 1; } printf("a=%d\n", $a); exit();}' 10
+EXPECT a=11
+
+NAME unroll_printf
+PROG begin { unroll (1) { printf("a"); } printf("b\n");  }
+EXPECT ab
+
+NAME if_compare_and_print_string
+PROG begin { if (comm == "bpftrace") { printf("comm: %s\n", comm);} }
+EXPECT comm: bpftrace
+
+NAME struct positional string compare - equal returns true
+RUN {{BPFTRACE}} -e 'begin { if (str($1) == str($2)) { printf("I got %s\n", str($1));} }' "hello" "hello"
+EXPECT I got hello
+
+NAME struct positional string compare - equal returns false
+RUN {{BPFTRACE}} -e 'begin { if (str($1) == str($2)) { printf("I got %s\n", str($1));} else { printf("not equal\n");} }' "hi" "hello"
+EXPECT not equal
+
+NAME struct positional string compare - not equal
+RUN {{BPFTRACE}} -e 'begin { if (str($1) != str($2)) { printf("I got %s\n", str($1));} else { printf("not equal\n");} }' "hello" "hello"
+EXPECT not equal
+
+NAME positional string compare via variable - equal
+RUN {{BPFTRACE}} -e 'begin { $x = str($1, 6); if ($x == "hello") { printf("I got %s\n", "hello");} else { printf("not equal\n");} }' "hello"
+EXPECT I got hello
+
+NAME positional string compare via variable - not equal
+RUN {{BPFTRACE}} -e 'begin { $x = str($1, 5); if ($x == "hello") { printf("I got hello\n");} else { printf("not %s\n", "equal");} }' "hell"
+EXPECT not equal
+
+NAME positional attachpoint
+RUN {{BPFTRACE}} -e 'i:ms:$1 { printf("hello world\n"); exit(); }' 1
+EXPECT hello world
+TIMEOUT 1
+
+NAME positional attachpoint probe
+RUN {{BPFTRACE}} -e 'BEG$1 { printf("hello world\n"); exit(); }' IN
+EXPECT hello world
+TIMEOUT 1
+
+NAME positional attachpoint full
+RUN {{BPFTRACE}} -e '$1 { printf("hello world\n"); exit(); }' i:ms:1
+EXPECT hello world
+TIMEOUT 1
+
+NAME positional unsigned hex
+RUN {{BPFTRACE}} -e 'begin {printf("%lu", $1);}' 0xffffffffffffffff
+EXPECT 18446744073709551615
+TIMEOUT 1
+
+NAME string compare map lookup
+RUN {{BPFTRACE}} -e 't:syscalls:sys_enter_openat /comm == "syscall"/ { @[comm] = 1; }' -c "./testprogs/syscall openat"
+EXPECT @[syscall]: 1
+
+NAME struct partial string compare - pass
+RUN {{BPFTRACE}} -e 'begin { if (strncmp(str($1), str($2), 4) == 0) { printf("I got %s\n", str($1));} }' "hhvm" "hhvm-proc"
+EXPECT I got hhvm
+
+NAME struct partial string compare - pass reverse
+RUN {{BPFTRACE}} -e 'begin { if (strncmp(str($1), str($2), 4) == 0) { printf("I got %s\n", str($1));} }' "hhvm-proc" "hhvm"
+EXPECT I got hhvm-proc
+
+NAME strncmp function argument
+RUN {{BPFTRACE}} -e 'struct F {char s[8];} u:./testprogs/string_args:print { @=strncmp(((struct F*)arg0).s, "hello", 5); }' -c ./testprogs/string_args
+EXPECT @: 0
+
+NAME short non null-terminated string print
+RUN {{BPFTRACE}} -e 'struct F {char s[5];} u:./testprogs/string_args:print { $a = ((struct F*)arg0).s; printf("%s %s\n", $a, $a); }' -c ./testprogs/string_args
+EXPECT hello hello
+
+NAME optional_positional_int
+PROG begin { printf("-%d-\n", $1); exit() }
+EXPECT -0-
+TIMEOUT 1
+
+NAME optional_positional_str
+PROG begin { printf("-%s-\n", str($1)); exit() }
+EXPECT --
+TIMEOUT 1
+
+NAME positional number as string
+RUN {{BPFTRACE}} -e 'begin { printf("-%s-\n", str($1)); exit() }' 1
+EXPECT -1-
+TIMEOUT 1
+
+NAME positional as string literal
+RUN {{BPFTRACE}} -e 'begin { @ = kaddr(str($1)); exit() }' vfs_read
+EXPECT Attached 1 probe
+
+NAME positional arg count
+RUN {{BPFTRACE}} -e 'begin { printf("got %d args: %s %d\n", $#, str($1), $2); }' "one" 2
+EXPECT got 2 args: one 2
+
+NAME positional multiple bases
+RUN {{BPFTRACE}} -e 'begin { printf("got: %d %o 0x%x\n", $1, $2, $3); exit() }' 123 0775 0x123
+EXPECT got: 123 775 0x123
+
+NAME positional pointer arithmetic
+RUN {{BPFTRACE}} -e 'begin { printf("%s", str($1 + 1));  }' hello
+EXPECT ello
+TIMEOUT 1
+
+NAME positional strncmp
+RUN {{BPFTRACE}} -e 'begin { if (strncmp("hello", "hell", $1) == 0) { printf("ok\n"); }  }' 3
+EXPECT ok
+TIMEOUT 1
+
+NAME positional lhist
+RUN {{BPFTRACE}} -e 'begin { @ = lhist(0, $1, $2, $3); exit()}' 0 10000 1000
+EXPECT_REGEX @: *\n[\[(].*
+
+NAME positional buf
+RUN {{BPFTRACE}} -e 'begin { @ = buf("hello", $1);  }' 5
+EXPECT @: hello
+TIMEOUT 1
+
+NAME positional tseries
+RUN {{BPFTRACE}} -e 'begin { @ = tseries($1, 1ms, 1); exit()}' 0
+EXPECT_REGEX @:.*
+
+NAME positional kstack
+RUN {{BPFTRACE}} -e 'k:do_nanosleep { printf("SUCCESS %s\n%s\n", kstack(), kstack($1)); exit(); }' 1
+EXPECT SUCCESS
+AFTER ./testprogs/syscall nanosleep  1e8
+
+NAME positional ustack
+RUN {{BPFTRACE}} -e 'config = { show_debug_info=0 } u:./testprogs/uprobe_loop:uprobeFunction1 { printf("%s\n%s\n", ustack(), ustack($1)); exit(); }' 1
+EXPECT_REGEX .*uprobeFunction1\+[0-9]+\n\s+spin\+[0-9]+\n\s+main\+[0-9]+\n(?s:.*)\n\n\n\s+uprobeFunction1\+[0-9]+
+ARCH x86_64
+# The stack output expects prologue to be skipped on uprobes. See kernel:
+# cfa7f3d2c526 ("perf,x86: avoid missing caller address in stack traces captured in uprobe")
+MIN_KERNEL 6.12
+AFTER ./testprogs/uprobe_loop
+
+NAME positional ustack
+RUN {{BPFTRACE}} -e 'config = { show_debug_info=0 } u:./testprogs/uprobe_loop:uprobeFunction1 { printf("%s\n%s\n", ustack(), ustack($1)); exit(); }' 1
+EXPECT_REGEX .*uprobeFunction1\+[0-9]+\n\s+main\+[0-9]+\n(?s:.*)\n\n\n\s+uprobeFunction1\+[0-9]+ 
+ARCH aarch64
+AFTER ./testprogs/uprobe_loop
+
+NAME lhist can be cleared
+PROG begin{ @[1] = lhist(3,0,10,1); clear(@); exit() }
+EXPECT_REGEX_NONE @
+TIMEOUT 1
+
+NAME hist can be cleared
+PROG begin{ @[1] = hist(1); clear(@); exit() }
+EXPECT_REGEX_NONE @
+TIMEOUT 1
+
+NAME stats can be cleared
+PROG begin{ @[1] = stats(1); clear(@); exit() }
+EXPECT_REGEX_NONE @
+TIMEOUT 1
+
+NAME avg can be cleared
+PROG begin{ @[1] = avg(1); clear(@); exit() }
+EXPECT_REGEX_NONE @
+TIMEOUT 1
+
+NAME tseries can be cleared
+PROG begin{ @[1] = tseries(1, 1ms, 5); clear(@); exit() }
+EXPECT_REGEX_NONE @
+TIMEOUT 1
+
+NAME sigint under heavy load
+RUN {{BPFTRACE}} --unsafe -e 'tracepoint:sched:sched_switch { system("echo foo"); } end { print("end"); }'
+EXPECT end
+AFTER  ./testprogs/syscall nanosleep 2e9; pkill -SIGINT bpftrace
+
+NAME bitfield access
+PROG struct Foo { unsigned int a:4, b:8, c:3, d:1, e:16; } uprobe:./testprogs/bitfield_test:func{ $foo = (struct Foo *)arg0; printf("%d %d %d %d %d\n", $foo.a, $foo.b, $foo.c, $foo.d, $foo.e); exit()}
+EXPECT 1 2 5 0 65535
+AFTER ./testprogs/bitfield_test
+
+NAME bitfield_access_2
+PROG struct Bar { short a:4, b:8, c:3, d:1; int e:9, f:15, g:1, h:2, i:5 } uprobe:./testprogs/bitfield_test:func2 { $bar = (struct Bar *)arg0; printf("%d %d %d %d %d", $bar.a, $bar.b, $bar.c, $bar.d, $bar.e); printf(" %d %d %d %d", $bar.f, $bar.g, $bar.h, $bar.i); exit()}
+EXPECT 1 217 5 1 500 31117 1 2 27
+AFTER ./testprogs/bitfield_test
+
+NAME exit with unreachable code
+PROG i:ms:100 { @++; exit(); @++ }
+EXPECT_REGEX .* WARNING: Unreachable statement.*
+TIMEOUT 1
+
+NAME exit exits immediately
+PROG i:ms:100 { @++; if (@) { exit(); } @++ }
+EXPECT @: 1
+TIMEOUT 1
+
+NAME map_assign_map_ptr
+PROG i:ms:100 { @ = curtask; @a = @; printf("%p\n", @a); exit(); }
+EXPECT_REGEX 0x[0-9a-f]+
+TIMEOUT 1
+
+NAME runtime_error_check_lookup
+RUN {{BPFTRACE}} -k -e 'i:ms:100 { @[1] = 1; printf("%d\n", @[2]); exit(); }'
+EXPECT stdin:1:37-41: WARNING: Can't lookup map element because it does not exist.
+       Additional Info - helper: map_lookup_elem, retcode: 0
+       i:ms:100 { @[1] = 1; printf("%d\n", @[2]); exit(); }
+                                           ~~~~
+TIMEOUT 1
+
+NAME per_cpu_map_count_if
+REQUIRES_FEATURE lookup_percpu_elem
+PROG i:ms:1 { @ = count(); if (@ > 5) { printf("done\n"); exit(); }}
+EXPECT done
+
+NAME per_cpu_map_min_if
+REQUIRES_FEATURE lookup_percpu_elem
+PROG begin { @ = 10; } i:ms:1 { @--; @mn = min(@); if (@mn < 5) { printf("done\n");  }}
+EXPECT done
+
+NAME per_cpu_map_max_if
+REQUIRES_FEATURE lookup_percpu_elem
+PROG begin { @ = 1; } i:ms:1 { @++; @mx = max(@); if (@mx > 5) { printf("done\n");  }}
+EXPECT done
+
+NAME per_cpu_map_avg_if
+REQUIRES_FEATURE lookup_percpu_elem
+PROG begin { @ = avg(1); @ = avg(1); @ = avg(10); if (@ == 4) { printf("done\n");  }}
+EXPECT done
+
+NAME per_cpu_map_arithmetic
+REQUIRES_FEATURE lookup_percpu_elem
+PROG begin { @a = sum(10); @b = count(); $c = @a + @b; if ($c == 11) { printf("done\n"); } }
+EXPECT done
+
+NAME per_cpu_map_cast
+REQUIRES_FEATURE lookup_percpu_elem
+PROG begin { @a = count(); @b = sum(10); printf("%d-%d\n", (uint64)@a, (int64)@b); }
+EXPECT 1-10
+
+NAME per_cpu_map_as_map_key
+REQUIRES_FEATURE lookup_percpu_elem
+PROG begin {@a = count(); @b = sum(5); @c = min(1); @d = max(10); @e = avg(7); @[@a, @b, @c, @d, @e] = 1;  }
+EXPECT @[1, 5, 1, 10, 7]: 1
+
+NAME dry run empty output
+RUN {{BPFTRACE}} --dry-run -e 'begin { printf("hello\n"); @ = 0; }'
+EXPECT_NONE hello
+EXPECT_NONE @: 0
+
+NAME symbolize enum in map key
+PROG enum { ONE = 1, TWO = 2 }; begin { @[ONE] = 11; @[TWO] = 22; @m[ONE] = 333;  }
+EXPECT @[ONE]: 11
+EXPECT @[TWO]: 22
+EXPECT @m[ONE]: 333
+
+NAME symbolize enum in tuple map key
+PROG enum { ONE = 1, TWO = 2 }; begin { @[ONE,TWO,ONE] = -1;  }
+EXPECT @[ONE, TWO, ONE]: -1
+
+NAME symbolize enum in map value
+PROG enum { ONE = 1, TWO = 2 }; begin { @ = ONE;  }
+EXPECT @: ONE
+
+NAME symbolize enum in tuple map value
+PROG enum { ONE = 1, TWO = 2 }; begin { @ = (ONE, TWO);  }
+EXPECT @: (ONE, TWO)
+
+NAME no symbolize enum after arithmetic
+PROG enum { ONE = 1, TWO = 2 }; begin { @[ONE+1] = TWO-1;  }
+EXPECT @[2]: 1
+
+NAME no symbolize enum after arithmetic mixed
+PROG enum { ONE = 1, TWO = 2 }; begin { @[ONE+1] = TWO+1; @[ONE] = ONE;  }
+EXPECT @[2]: 3
+EXPECT @[1]: 1
+
+NAME symbolize enum in scratch variable
+PROG enum { FOO = 333 }; begin { $f = FOO; print($f);  }
+EXPECT FOO
+
+NAME symbolize enum in scratch variable tuple
+PROG enum { FOO = 333, BAR }; begin { $t = (FOO, BAR); print($t);  }
+EXPECT (FOO, BAR)
+
+NAME symbolize int cast to enum
+PROG enum BAZ { FOO = 333, BAR }; begin { print((enum BAZ)333);  }
+EXPECT FOO
+
+NAME no symbolize int cast to unknown enum variant
+PROG enum BAZ { FOO = 333, BAR }; begin { $x = 444; print((enum BAZ)$x);  }
+EXPECT 444
+
+NAME valid license
+PROG config={license="Dual BSD/GPL"} begin { @p[1] = 1; print(len(@p));  }
+EXPECT 1
+
+NAME invalid license
+PROG config={license="Potato"} begin { @p[1] = 1; print(len(@p));  }
+EXPECT_REGEX .*ERROR: Invalid value for license. Found: Potato. Valid values: Dual MIT/GPL, Dual BSD/GPL, Dual MPL/GPL, GPL and additional rights, GPL v2, GPL.*
+WILL_FAIL
+
+NAME named command line params
+RUN {{BPFTRACE}} -e 'begin { print((getopt("aa", 20), getopt("bb", -1), getopt("cc", true), getopt("dd"), getopt("ee", "hello")));  }' -- --dd --aa=0xffffffffffffffff --bb=-10 --cc=False
+EXPECT (18446744073709551615, -10, false, true, hello)
+TIMEOUT 1
+
+NAME named and positional params
+RUN {{BPFTRACE}} -e 'begin { print(($1, getopt("aa", 10), getopt("bb", -1), $2, getopt("cc", "hello"), getopt("dd")));  }' pos1 -- --aa=20 --bb=5 --cc=bye pos2 --dd
+EXPECT (pos1, 20, 5, pos2, bye, true)
+TIMEOUT 1
+
+NAME named params with description
+RUN {{BPFTRACE}} -e 'begin { print((getopt("aa", 10, "AA"), getopt("bb", 1))); }' -- --aa=22 --bb=2
+EXPECT (22, 2)
+TIMEOUT 1
+
+NAME named params with description help
+RUN {{BPFTRACE}} -e 'begin { print((getopt("aa", 10, "Description of aa"), getopt("bb", 1), getopt("cc"))); }' -- --help
+EXPECT HINT: expected program options:
+EXPECT --cc
+EXPECT --bb
+EXPECT --aa: Description of aa
+TIMEOUT 1
+WILL_FAIL
+
+# Can't run through the standard AOT path because we need to pass CLI args
+NAME named command line params aot
+RUN {{BPFTRACE}} -e 'begin { print((getopt("aa", 10), getopt("cc", true), getopt("dd"), getopt("ee", "hello")));  }' --aot /tmp/tmpprog.btaot && /tmp/tmpprog.btaot -- --dd --aa=20 --cc=False
+EXPECT (20, false, true, hello)
+TIMEOUT 1
+
+NAME named command line params for file arg
+RUN {{BPFTRACE}} runtime/scripts/named_params.bt -- --aa=20
+EXPECT 20
+TIMEOUT 1
+
+NAME named command line params before double dash
+RUN {{BPFTRACE}} -e 'begin {  }' --aa=20
+EXPECT USAGE:
+WILL_FAIL
+
+NAME named command line params wrong value type
+RUN {{BPFTRACE}} -e 'begin { print(getopt("aa", 10));  }' -- --aa=False
+EXPECT ERROR: program command line option --aa invalid integer (value: False)
+EXPECT_NONE USAGE:
+WILL_FAIL
+
+NAME unexpected named command line params
+RUN {{BPFTRACE}} -e 'begin { print(getopt("aa", 10)); }' -- --bb
+EXPECT ERROR: unexpected program command line options: --bb
+EXPECT HINT: expected program options: --aa
+EXPECT_NONE USAGE:
+WILL_FAIL

@@ -1,0 +1,10 @@
+uprobe:/bin/bash:echo_builtin
+{
+  printf("first");
+}
+
+uprobe:/bin/bash:echo_builtin
+{
+  printf(" second\n");
+  exit();
+}
