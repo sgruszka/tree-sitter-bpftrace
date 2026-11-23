@@ -1,0 +1,101 @@
+#!/usr/bin/env python3
+
+from pathlib import Path
+import shlex
+import subprocess
+
+def run_programs(command):
+    if not command.startswith("{{BPFTRACE}}"):
+        return []
+    try:
+        lexer = shlex.shlex(command, posix=True, punctuation_chars=";&|()<>")
+        lexer.whitespace_split = True
+        lexer.commenters = ""
+        words = list(lexer)
+    except ValueError:
+        return [None]
+    if not words or words[0] != "{{BPFTRACE}}":
+        return []
+
+    expressions = []
+    index = 1
+    while index < len(words):
+        word = words[index]
+        # Ignore -e belonging to a later command, such as grep -e.
+        if word == "--" or (word and all(c in ";&|()<>" for c in word)):
+            break
+        if word == "-e":
+            if index + 1 == len(words):
+                return [None]
+            index += 1
+            expression = words[index]
+            if any(marker in expression for marker in ("$(", "`", "{{")):
+                return [None]
+            expressions.append(expression)
+        index += 1
+    return ["\n".join(expressions)] if expressions else []
+
+
+def programs(suite):
+    name = "(unnamed)"
+    program = None
+    directive = None
+    # The extra blank line flushes the final directive.
+    for line in suite.read_text(encoding="utf-8").splitlines() + [""]:
+        if line.startswith("#"):
+            continue
+        width = len(directive) + 1 if directive else 0
+        if program is not None and len(line) >= width and line[:width].isspace():
+            program += "\n" + line[width:]
+            continue
+        if program is not None:
+            for source in run_programs(program) if directive == "RUN" else [program]:
+                yield name, source
+            program = None
+        if not line.strip():
+            name = "(unnamed)"
+        elif line == "NAME" or line.startswith(("NAME ", "NAME\t")):
+            name = line[5:]
+        elif line == "PROG" or line.startswith(("PROG ", "PROG\t")):
+            directive = "PROG"
+            program = line[5:]
+        elif line == "RUN" or line.startswith(("RUN ", "RUN\t")):
+            directive = "RUN"
+            program = line[4:]
+
+
+def main():
+    passed = failed = skipped = 0
+    runtime = Path(__file__).resolve().parent / Path("upstream/runtime")
+    tree_sitter_root = Path(__file__).resolve().parents[1]
+    for suite in sorted(runtime.iterdir()):
+        if not suite.is_file():
+            continue
+        for name, program in programs(suite):
+            label = f"{suite.name}: {name}"
+            if program is None:
+                skipped += 1
+                print(f"{label}: SKIP (RUN needs shell/runtime expansion or unsupported quoting)",
+                      flush=True)
+                continue
+            result = subprocess.run(
+                ["tree-sitter", "parse", "-q"],
+                input=program + "\n",
+                text=True,
+                stdout=subprocess.DEVNULL,
+                cwd=tree_sitter_root,
+                check=False,
+            )
+            if result.returncode == 0:
+                passed += 1
+                print(f"{label}: \033[32mOK\033[0m", flush=True)
+            else:
+                failed += 1
+                print(program)
+                print(f"{label}: \033[31mFAIL\033[0m", flush=True)
+    print(f"\nPassed: {passed}\nFailed: {failed}\nSkipped: {skipped}"
+          f"\nTotal:  {passed + failed + skipped}")
+
+
+if __name__ == "__main__":
+    main()
