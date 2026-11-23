@@ -174,7 +174,8 @@ module.exports = grammar({
       /* Probes with diffrent arguments, i.e. fentry[:module]:function  */
       $._fentry_fexit,
       $._fentry_fexit_bpf,
-      $._kprobe_kretprobe,
+      $._kprobe,
+      $._kretprobe,
       $._uprobe_uretprobe,
       $._tracepoint,
       $._rawtracepoint,
@@ -227,15 +228,15 @@ module.exports = grammar({
       'kretfunc', // Deprecated alias of fexit
     ),
 
-    _kprobe_kretprobe: $ => seq(
-      // TODO add: kprobe[:module]:fn+offset
-      field('provider', $.kprobe_kretprobe_provider),
+    _kprobe: $ => seq(
+      field('provider', alias(choice('kprobe', 'k'), $.kprobe_kretprobe_provider)),
       $._probe_arguments__optional_module_and_function,
+      optional(seq('+', field('offset', $.integer_literal))),
     ),
 
-    kprobe_kretprobe_provider: _ => choice(
-      'kprobe', 'k',
-      'kretprobe', 'kr',
+    _kretprobe: $ => seq(
+      field('provider', alias(choice('kretprobe', 'kr'), $.kprobe_kretprobe_provider)),
+      $._probe_arguments__optional_module_and_function,
     ),
 
     _source_code_location: $ => seq(
