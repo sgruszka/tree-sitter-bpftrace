@@ -656,7 +656,7 @@ module.exports = grammar({
     call_expression: $ => prec(PREC.call,
       seq(
         optional(seq(
-          field('namespace', 'kfunc'),
+          field('namespace', choice('kfunc', 'helper')),
           token.immediate('::'),
         )),
         field('function', $.identifier),
@@ -951,8 +951,8 @@ module.exports = grammar({
       optional(seq('(', ')')),
     ),
 
-    // 'kfunc' (call_expression namespace) is also valid as an ordinary identifier.
-    identifier: $ => choice($._identifier, 'kfunc'),
+    // Call namespaces are also valid as ordinary identifiers.
+    identifier: $ => choice($._identifier, 'kfunc', 'helper'),
 
     script_parameter: _ => /[$](#|\d+)/,
     scratch_variable: _ => /[$][_a-zA-Z][_a-zA-Z0-9]*/,

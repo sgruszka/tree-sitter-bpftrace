@@ -125,7 +125,7 @@
   function: (identifier) @function.call)
 
 (call_expression
-  namespace: "kfunc" @module)
+  namespace: ["kfunc" "helper"] @module)
 
 ; Punctuations
 [
