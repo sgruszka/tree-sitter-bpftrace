@@ -1,0 +1,113 @@
+============================================
+Simple union
+============================================
+union MyUnion {
+  int x;
+  float y;
+}
+---
+(source_file
+  (preamble
+    (c_union)))
+
+============================================
+Nested union
+============================================
+union Outer {
+  struct { int x; int y; } point;
+  union { int i; float f; } value;
+}
+---
+(source_file
+  (preamble
+    (c_union)))
+
+============================================
+Union with comments before name
+============================================
+union/* { */Name { }
+---
+(source_file
+  (preamble
+    (c_union)))
+
+============================================
+Union with comments inside
+============================================
+union Name {
+  int x; // }
+  float y; /* } */
+}
+---
+(source_file
+  (preamble
+    (c_union)))
+
+============================================
+Union with a continued line comment
+============================================
+union Continued {
+  int x; // continued comment \
+  }
+  float y;
+};
+BEGIN {}
+---
+(source_file
+  (preamble
+    (c_union))
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action)))
+
+============================================
+Union with packed attribute
+============================================
+union Packed { int x; } __attribute__((packed));
+---
+(source_file
+  (preamble
+    (c_union)))
+
+============================================
+Union with alignment attribute
+============================================
+union Aligned { int x; } __attribute__((aligned(8)));
+---
+(source_file
+  (preamble
+    (c_union)))
+
+============================================
+Union with multiple attributes
+============================================
+union Both { int x; } __attribute((packed)) __attribute__((aligned(16)));
+---
+(source_file
+  (preamble
+    (c_union)))
+
+============================================
+No space before union name
+:error
+============================================
+unionName { }
+---
+
+============================================
+No open brace in union
+:error
+============================================
+union Name }
+---
+
+============================================
+Unterminated union with a continued line comment
+:error
+============================================
+union N {
+  int i; // continued comment \
+}
+---
