@@ -183,6 +183,7 @@ module.exports = grammar({
       $._hardware_event,
       $._software_event,
       $._bench_test,
+      $._self,
       $._profile_interval,
       $._iter,
       $._usdt,
@@ -338,6 +339,16 @@ module.exports = grammar({
       'bench',
       'test',
     ),
+
+    _self: $ => seq(
+      field('provider', $.self_provider),
+      ':',
+      'signal',
+      ':',
+      field('signal', $.identifier),
+    ),
+
+    self_provider: _ => 'self',
 
     _profile_interval: $ => seq(
       field('provider', $.profile_interval_provider),

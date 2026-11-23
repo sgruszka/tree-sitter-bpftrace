@@ -787,3 +787,16 @@ k@file.c:42:7 {}
         line: (decimal_number)
         column: (decimal_number)))
     (action)))
+
+============================================
+Self signal probe
+============================================
+self:signal:SIGUSR1 {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (self_provider)
+        signal: (identifier)))
+    (action)))
