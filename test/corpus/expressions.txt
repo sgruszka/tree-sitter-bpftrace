@@ -1462,3 +1462,127 @@ BEGIN { $x = $a + 1 > $b ? $c * 2 : $d + 3; }
           alternative: (binary_expression
             left: (scratch_variable)
             right: (integer_literal)))))))
+
+============================================
+BPF helper calls
+============================================
+BEGIN {
+  $task = helper::bpf_get_current_task_btf();
+  helper::bpf_send_signal(9);
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (assignment_statement
+        left: (scratch_variable)
+        right: (call_expression
+          function: (identifier)
+          arguments: (arguments)))
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (integer_literal)))))))
+
+============================================
+Helper namespace name as an ordinary identifier
+============================================
+BEGIN {
+  helper(1);
+  print(helper);
+  helper_long(1);
+  $task.helper;
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (integer_literal))))
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (identifier))))
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (integer_literal))))
+      (expression_statement
+        (field_expression
+          argument: (scratch_variable)
+          field: (identifier))))))
+
+============================================
+Nested BPF helper calls
+============================================
+BEGIN {
+  print(helper::bpf_get_current_cgroup_id());
+  helper::bpf_get_current_task_btf()->comm;
+}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (call_expression
+              function: (identifier)
+              arguments: (arguments)))))
+      (expression_statement
+        (field_expression
+          argument: (call_expression
+            function: (identifier)
+            arguments: (arguments))
+          field: (identifier))))))
+
+============================================
+Macro named helper
+============================================
+macro helper() {}
+BEGIN { helper(); }
+---
+(source_file
+  (macro_definition
+    name: (identifier)
+    parameters: (macro_parameters)
+    body: (block))
+  (action_block
+    (probes_list
+      (probe
+        provider: (begin_end_provider)))
+    (action
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (arguments))))))
+
+============================================
+Helper call without a function name
+:error
+============================================
+BEGIN { helper::(); }
+---
+
+============================================
+Whitespace before the helper namespace separator
+:error
+============================================
+BEGIN { helper ::bpf_send_signal(9); }
+---
