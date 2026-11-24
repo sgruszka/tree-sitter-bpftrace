@@ -138,6 +138,27 @@
           "members": [
             {
               "type": "SYMBOL",
+              "name": "c_union"
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": ";"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
               "name": "c_enum"
             },
             {
@@ -291,6 +312,30 @@
         {
           "type": "SYMBOL",
           "name": "_c_struct"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "REPEAT1",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_c_attribute_specifier"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
+    "c_union": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_c_union"
         },
         {
           "type": "CHOICE",
@@ -667,11 +712,19 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_kprobe_kretprobe"
+          "name": "_kprobe"
         },
         {
           "type": "SYMBOL",
-          "name": "_uprobe_uretprobe"
+          "name": "_kretprobe"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_uprobe"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_uretprobe"
         },
         {
           "type": "SYMBOL",
@@ -692,6 +745,10 @@
         {
           "type": "SYMBOL",
           "name": "_bench_test"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_self"
         },
         {
           "type": "SYMBOL",
@@ -882,41 +939,104 @@
         }
       ]
     },
-    "_kprobe_kretprobe": {
+    "_kprobe": {
       "type": "SEQ",
       "members": [
         {
           "type": "FIELD",
           "name": "provider",
           "content": {
-            "type": "SYMBOL",
-            "name": "kprobe_kretprobe_provider"
+            "type": "ALIAS",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "kprobe"
+                },
+                {
+                  "type": "STRING",
+                  "value": "k"
+                }
+              ]
+            },
+            "named": true,
+            "value": "kprobe_kretprobe_provider"
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_probe_arguments__optional_module_and_function"
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SEQ",
+                      "members": [
+                        {
+                          "type": "STRING",
+                          "value": "+"
+                        },
+                        {
+                          "type": "FIELD",
+                          "name": "offset",
+                          "content": {
+                            "type": "SYMBOL",
+                            "name": "integer_literal"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_source_code_location"
+            }
+          ]
+        }
+      ]
+    },
+    "_kretprobe": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "provider",
+          "content": {
+            "type": "ALIAS",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "kretprobe"
+                },
+                {
+                  "type": "STRING",
+                  "value": "kr"
+                }
+              ]
+            },
+            "named": true,
+            "value": "kprobe_kretprobe_provider"
           }
         },
         {
           "type": "SYMBOL",
           "name": "_probe_arguments__optional_module_and_function"
-        }
-      ]
-    },
-    "kprobe_kretprobe_provider": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "kprobe"
-        },
-        {
-          "type": "STRING",
-          "value": "k"
-        },
-        {
-          "type": "STRING",
-          "value": "kretprobe"
-        },
-        {
-          "type": "STRING",
-          "value": "kr"
         }
       ]
     },
@@ -974,15 +1094,119 @@
         }
       ]
     },
-    "_uprobe_uretprobe": {
+    "_uprobe": {
       "type": "SEQ",
       "members": [
         {
           "type": "FIELD",
           "name": "provider",
           "content": {
+            "type": "ALIAS",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "uprobe"
+                },
+                {
+                  "type": "STRING",
+                  "value": "u"
+                }
+              ]
+            },
+            "named": true,
+            "value": "uprobe_uretprobe_provider"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ":"
+        },
+        {
+          "type": "FIELD",
+          "name": "binary",
+          "content": {
             "type": "SYMBOL",
-            "name": "uprobe_uretprobe_provider"
+            "name": "_file_identifier"
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": ":"
+                },
+                {
+                  "type": "FIELD",
+                  "name": "function",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "wildcard_identifier"
+                  }
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SEQ",
+                      "members": [
+                        {
+                          "type": "STRING",
+                          "value": "+"
+                        },
+                        {
+                          "type": "FIELD",
+                          "name": "offset",
+                          "content": {
+                            "type": "SYMBOL",
+                            "name": "integer_literal"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_source_code_location"
+            }
+          ]
+        }
+      ]
+    },
+    "_uretprobe": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "provider",
+          "content": {
+            "type": "ALIAS",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "uretprobe"
+                },
+                {
+                  "type": "STRING",
+                  "value": "ur"
+                }
+              ]
+            },
+            "named": true,
+            "value": "uprobe_uretprobe_provider"
           }
         },
         {
@@ -1022,27 +1246,6 @@
               "name": "_source_code_location"
             }
           ]
-        }
-      ]
-    },
-    "uprobe_uretprobe_provider": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "uprobe"
-        },
-        {
-          "type": "STRING",
-          "value": "u"
-        },
-        {
-          "type": "STRING",
-          "value": "uretprobe"
-        },
-        {
-          "type": "STRING",
-          "value": "ur"
         }
       ]
     },
@@ -1266,6 +1469,43 @@
         }
       ]
     },
+    "_self": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "provider",
+          "content": {
+            "type": "SYMBOL",
+            "name": "self_provider"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ":"
+        },
+        {
+          "type": "STRING",
+          "value": "signal"
+        },
+        {
+          "type": "STRING",
+          "value": ":"
+        },
+        {
+          "type": "FIELD",
+          "name": "signal",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          }
+        }
+      ]
+    },
+    "self_provider": {
+      "type": "STRING",
+      "value": "self"
+    },
     "_profile_interval": {
       "type": "SEQ",
       "members": [
@@ -1476,12 +1716,20 @@
           "value": ":"
         },
         {
-          "type": "FIELD",
-          "name": "binary",
-          "content": {
-            "type": "SYMBOL",
-            "name": "_file_identifier"
-          }
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "binary",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_file_identifier"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         },
         {
           "type": "CHOICE",
@@ -3110,8 +3358,17 @@
                     "type": "FIELD",
                     "name": "namespace",
                     "content": {
-                      "type": "STRING",
-                      "value": "kfunc"
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "STRING",
+                          "value": "kfunc"
+                        },
+                        {
+                          "type": "STRING",
+                          "value": "helper"
+                        }
+                      ]
                     }
                   },
                   {
@@ -3170,6 +3427,10 @@
                     {
                       "type": "SYMBOL",
                       "name": "typeof_expression"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "named_argument"
                     }
                   ]
                 },
@@ -3192,6 +3453,10 @@
                           {
                             "type": "SYMBOL",
                             "name": "typeof_expression"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "named_argument"
                           }
                         ]
                       }
@@ -3208,6 +3473,31 @@
         {
           "type": "STRING",
           "value": ")"
+        }
+      ]
+    },
+    "named_argument": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "FIELD",
+          "name": "value",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_expression"
+          }
         }
       ]
     },
@@ -3295,6 +3585,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "union_type"
+        },
+        {
+          "type": "SYMBOL",
           "name": "string_type"
         },
         {
@@ -3320,6 +3614,10 @@
             {
               "type": "SYMBOL",
               "name": "struct_type"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "union_type"
             },
             {
               "type": "SYMBOL",
@@ -3419,6 +3717,10 @@
             },
             {
               "type": "SYMBOL",
+              "name": "union_type"
+            },
+            {
+              "type": "SYMBOL",
               "name": "enum_type"
             },
             {
@@ -3484,6 +3786,19 @@
         {
           "type": "STRING",
           "value": "struct"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        }
+      ]
+    },
+    "union_type": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "union"
         },
         {
           "type": "SYMBOL",
@@ -3716,6 +4031,10 @@
               {
                 "type": "SYMBOL",
                 "name": "struct_type"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "union_type"
               },
               {
                 "type": "SYMBOL",
@@ -4488,6 +4807,10 @@
         {
           "type": "STRING",
           "value": "kfunc"
+        },
+        {
+          "type": "STRING",
+          "value": "helper"
         }
       ]
     },
@@ -4587,6 +4910,10 @@
     {
       "type": "SYMBOL",
       "name": "_c_struct"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_c_union"
     },
     {
       "type": "SYMBOL",
