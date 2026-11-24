@@ -800,3 +800,30 @@ self:signal:SIGUSR1 {}
         provider: (self_provider)
         signal: (identifier)))
     (action)))
+
+============================================
+USDT probe with an empty binary
+============================================
+usdt::tracetest:testprobe {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (ustd_provider)
+        namespace: (wildcard_identifier)
+        function: (wildcard_identifier)))
+    (action)))
+
+============================================
+USDT probe with an empty binary and namespace
+============================================
+usdt:::*probe2 {}
+---
+(source_file
+  (action_block
+    (probes_list
+      (probe
+        provider: (ustd_provider)
+        function: (wildcard_identifier)))
+    (action)))

@@ -400,7 +400,7 @@ module.exports = grammar({
     _usdt: $ => seq(
       field('provider', $.ustd_provider),
       ':',
-      field('binary', $._file_identifier),
+      optional(field('binary', $._file_identifier)),
       optional(choice(
         ':',
         seq(':', field('namespace', $.wildcard_identifier)),
