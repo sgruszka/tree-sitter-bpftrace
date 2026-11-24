@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           cache: npm
-          node-version: ${{vars.NODE_VERSION}}
+          node-version: 22
       - name: Install modules
         run: npm ci --legacy-peer-deps
       - name: Run ESLint
